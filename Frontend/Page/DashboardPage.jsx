@@ -5,7 +5,7 @@ function DashboardPage({children}) {
     <div className="flex h-screen bg-[#E7E9EB]">
       <AdminSidebar/>
       <div className="flex-1 overflow-y-auto">
-        {/* <Header /> */}
+        {/* ใส่<Header /> */}
         <main className="p-4">
           {children}
         </main>

@@ -26,7 +26,7 @@ function AdminSidebar() {
   ];
 
   return (
-    <div className="flex flex-col w-64 h-screen bg-teal-700 text-white">
+    <div className="flex flex-col w-64 h-screen bg-[#007A6D] text-white">
       <div className="px-9 py-6 text-3xl font-light-bold border-b border-teal-600">
         Admin Panel
       </div>
