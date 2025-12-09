@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Link, useNavigate} from "react-router-dom"
 import { FiEye } from "react-icons/fi";
 import { FiEyeOff } from "react-icons/fi";
-import { Registerapi } from "../api/userapi";
+import { Registerapi } from "../api/Userapi";
 
 function Registerpage() {
   const navigate = useNavigate()

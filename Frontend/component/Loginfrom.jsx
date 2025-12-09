@@ -2,7 +2,7 @@ import { useState } from "react"
 import { FiEye } from "react-icons/fi";
 import { FiEyeOff } from "react-icons/fi";
 import { Link, useNavigate} from "react-router-dom"
-import { Loginapi } from "../api/userapi";
+import { Loginapi } from "../api/Userapi";
 
 
 function Loginfrom() {

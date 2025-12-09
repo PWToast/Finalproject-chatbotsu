@@ -7,3 +7,7 @@ export const Loginapi = (user) => {
 export const Registerapi = (user) => {
     return axios.post('http://localhost:3000/register', user)
 }
+
+export const handleLogout = () =>{
+    localStorage.removeItem('token')
+}

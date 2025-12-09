@@ -10,7 +10,7 @@ const port = 3000
 app.use(cors());
 app.use(express.json())
 
-const secert = 'supersecret'
+const secret = 'supersecret'
 
 const initMySQL = async ()=>{
     conn = await mysql.createConnection({
@@ -78,7 +78,8 @@ app.post('/login', async (req, res)=>{
             return false
         }
 
-        const token = jwt.sign({email}, secert, {expiresIn: '1h'})
+        //หมดอายุใน 1 นาที
+        const token = jwt.sign({email}, secret, {expiresIn: '1m'})
 
         res.json({
            message:'login success!',
@@ -98,7 +99,7 @@ app.post('/login', async (req, res)=>{
 app.get('/user', async (req, res)=>{
     try{
         const {token} = req.body
-        const email = jwt.verify(token, secert)
+        const email = jwt.verify(token, secret)
 
         res.json({
             message:'login states ok',
@@ -115,3 +116,40 @@ app.get('/user', async (req, res)=>{
     }
 })
 
+const verifyToken = (req, res, next) =>{
+    try{
+        const authHeader = req.headers['authorization']
+        const token = authHeader && authHeader.split(' ')[1]
+
+        if(token == null){
+            throw{
+                statusCode: 401,
+            }
+        }
+        
+        jwt.verify(token, secret, (err, user) => {
+            if(err){
+                return res.sendStatus(403)
+            }
+            req.user = user
+            next()
+        })
+
+    }catch(error){
+        const status = error.statusCode || 500;
+        res.status(status).json({
+            message:"error, something wrong!",
+            error: error.message
+        })
+    }
+}
+
+app.get('/verify', verifyToken , (req, res) =>{
+    const email = req.user.email
+
+    res.json ({
+        message: `verify success welcome, ${email}`
+    })
+
+    console.log(`verify success welcome, ${email}`)
+})
