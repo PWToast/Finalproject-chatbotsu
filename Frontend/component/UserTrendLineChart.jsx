@@ -2,7 +2,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer,Legend} from 'recharts';
 
 const COLORS = ['#FF8042', '#0088FE'];
 
-function UserSourcePieChart() {
+function UserTrendLineChart() {
     const sourceData = [
         { title : "web", amount : 10 },
         { title : "Line", amount : 60 }
@@ -11,7 +11,7 @@ function UserSourcePieChart() {
 
     return (
         <div className="p-2 w-full h-[300px] rounded-md shadow-md bg-white"> {/* **กำหนดความสูงให้ div ภายนอก** */}
-            <p className="p-2 text-3xl font-light-bold">{"Pie Chart"}</p>
+            <p className="p-2 text-3xl font-light-bold">{"Line Chart"}</p>
             
             <ResponsiveContainer width="100%" height="80%">
                 <PieChart>
@@ -42,4 +42,4 @@ function UserSourcePieChart() {
         </div>
     );
 };
-export default UserSourcePieChart;
+export default UserTrendLineChart;
