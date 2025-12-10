@@ -31,9 +31,9 @@ function OverviewBoard() {
     },
   ];
     return (
-    <div className="p-2">
-        <p className="px-1 text-3xl font-light-bold">Overview</p>
-            <div className="my-1 grid lg:grid-cols-4 gap-6">
+    <div className=''>
+        <p className="m-1 text-3xl font-light-bold">Overview</p>
+            <div className="grid lg:grid-cols-4 gap-2">
                 {statData.map(data => (
                 <OverviewStatCard 
                     key={data.id}
