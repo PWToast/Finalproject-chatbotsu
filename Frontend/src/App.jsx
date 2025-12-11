@@ -1,11 +1,14 @@
 import './App.css'
-import DashboardPage from '../Page/DashboardPage.jsx';
-
+import Navbar from '../component/navbar'
+import Loginfrom from '../component/Loginfrom'
 function App() {
 
   return (
     <>
-    <DashboardPage/>
+      <div className='flex flex-col'>
+          <Navbar/>
+          <Loginfrom/>
+      </div>
     </>
   )
 }

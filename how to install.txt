@@ -1,0 +1,12 @@
+--- นัด ---
+หมายเหตุ: มีการเปลี่ยน port ตัวแรกจาก 3306 เป็น3307 ในไฟล์ docker-compose.yml
+มีการเพิ่ม port:3307 และเปลี่ยน user เป็น 'user1' ในไฟล์ index.js
+
+how to install
+cd frontend > npm install
+cd backend > docker compose up -d
+cd backend/api > npm install > npx nodemon index.js
+
+
+
+

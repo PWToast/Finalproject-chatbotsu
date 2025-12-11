@@ -34,10 +34,9 @@ function AdminSidebar() {
         {navItems.map((item) => {
           const Icon = item.icon; 
           return (
-            // ต้องเปลี่ยน a เป็น Link ตอนกดจะได้เปลี่ยนหน้า
-            <a
+            <Link
               key={item.name}
-              href={item.path} //ต้องเปลี่ยนเป็น to={item.path}
+              to={item.path} 
               className="
                 flex items-center p-3 rounded-lg 
                 text-xl font-light leading-snug 
@@ -45,7 +44,7 @@ function AdminSidebar() {
             >
               <Icon className="w-6 h-6 mr-3" />
               {item.name}
-            </a>
+            </Link>
           );
         })}
       </nav>
