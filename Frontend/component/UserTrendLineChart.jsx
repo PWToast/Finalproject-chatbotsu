@@ -1,45 +1,39 @@
-import { PieChart, Pie, Cell, ResponsiveContainer,Legend} from 'recharts'; 
+import { LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Line,ResponsiveContainer } from 'recharts';
 
-const COLORS = ['#FF8042', '#0088FE'];
 
-function UserTrendLineChart() {
-    const sourceData = [
-        { title : "web", amount : 10 },
-        { title : "Line", amount : 60 }
-    ];
-    
-
+function QuestionCategoryBarChart() {
+    const conversationData = [
+    { month: 'Jan', count: 10 },
+    { month: 'Feb', count: 2 },
+    { month: 'Mar', count: 3 },
+    { month: 'Apr', count: 10 },
+    { month: 'May', count: 5 },
+    { month: 'Jun', count: 0 },
+    { month: 'Jul', count: 0 },
+    { month: 'Aug', count: 0 },
+    { month: 'Sep', count: 32 },
+    { month: 'Oct', count: 44 },
+    { month: 'Nov', count: 2},
+    { month: 'Dec', count: 23 }, 
+];
+    const COLORS = ['#FF6B6B', '#4ECDC4', '#FFC33C', '#5B6B7C'];
     return (
-        <div className="p-2 w-full h-[300px] rounded-md shadow-md bg-white"> {/* **กำหนดความสูงให้ div ภายนอก** */}
+        <div className="p-2 w-full h-[300px] rounded-md shadow-md bg-white"> 
             <p className="p-2 text-3xl font-light-bold">{"Line Chart"}</p>
             
             <ResponsiveContainer width="100%" height="80%">
-                <PieChart>
-                    <Pie 
-                        data={sourceData}
-                        dataKey="amount" // ใช้ 'amount' ตามที่คุณกำหนด
-                        nameKey="title"
-                        innerRadius={0} 
-                        outerRadius={80} 
-                        labelLine={true} // เปิดเส้นเชื่อมสำหรับ Label ด้านนอก
-                        label={({ title, amount, percent }) => 
-                            `${title}: ${amount.toLocaleString()} (${(percent * 100).toFixed(0)}%)`
-                        }
-                    >
-                        {sourceData.map((entry, index) => (
-                            <Cell 
-                                key={`cell-${index}`} 
-                                fill={COLORS[index % COLORS.length]} 
-                            />
-                        ))}
-                    </Pie>
-                    <Legend // ป้าย แสดง line/web
-                        layout="horizontal"
-                        verticalAlign="bottom"
-                    />
-                </PieChart>
+                <LineChart 
+                    data={conversationData}
+                >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <Tooltip />
+                    <Legend />
+                    <YAxis dataKey="count" type="number" name="จำนวนครั้ง"/> 
+                    <XAxis dataKey="month" type="category" name="เวลา" /> 
+                    <Line type="monotone" dataKey="count" name="จำนวนการสนทนา" stroke="#007A6D"/>
+                </LineChart>
             </ResponsiveContainer>
         </div>
     );
 };
-export default UserTrendLineChart;
+export default QuestionCategoryBarChart;

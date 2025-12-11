@@ -13,7 +13,7 @@ function OverviewBoard() {
     },
     { 
       id: 2,
-      title: 'จำนวนบทสนทนา (ครั้ง)', 
+      title: 'จำนวนบทสนทนาสะสม (ครั้ง)', 
       value: 5, 
       fontColor: 'text-black' 
     },
