@@ -7,8 +7,6 @@ function UserSourcePieChart() {
         { title : "web", amount : 10 },
         { title : "Line", amount : 60 }
     ];
-    
-
     return (
         <div className="p-2 w-full h-[300px] rounded-md shadow-md bg-white">
             <p className="p-2 text-3xl font-light-bold">{"Pie Chart"}</p>
