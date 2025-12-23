@@ -24,7 +24,7 @@ function Chatpage() {
     try{
       const buffermessage = message
       setMessage('')
-      const res = await axios.post('http://localhost:7000/chat_rag_memory', {message: message})
+      const res = await axios.post('http://localhost:8000/chat_rag_memory', {message: message})
       setMessageString(prev => [...prev,{user_message:buffermessage, ai_message:res.data.response}])
     }catch(error){
       alert("error", error)
