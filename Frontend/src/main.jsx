@@ -5,7 +5,7 @@ import App from './App.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Registerpage from '../Page/Registerpage.jsx'
 import Homepage from '../Page/Homepage.jsx'
-
+import Chatpage from '../Page/Chatpage.jsx'
 const router = createBrowserRouter([
   {
     path: '/',
@@ -18,6 +18,9 @@ const router = createBrowserRouter([
   {
     path: 'home',
     element:<Homepage/>
+  },{
+    path: 'chat',
+    element:<Chatpage/>
   }
 ])
 

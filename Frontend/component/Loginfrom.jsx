@@ -40,7 +40,7 @@ function Loginfrom() {
 
   return (
     <>
-        <span className='text-[50px] self-center absolute mt-20'>SU Chatbot FAQ</span>
+        <span className='text-[50px] self-center absolute pt-20'>SU Chatbot FAQ</span>
         <div className='h-190 flex flex-row gap-10 justify-center items-center'>
             <div className='h-90 w-100 bg-[#D9D9D9] border border-transparent rounded-xl shadow-xl/30'>
               <div className='h-75 flex flex-col justify-between'>
