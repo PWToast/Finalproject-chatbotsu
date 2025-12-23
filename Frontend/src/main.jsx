@@ -6,6 +6,10 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Registerpage from '../Page/Registerpage.jsx'
 import Homepage from '../Page/Homepage.jsx'
 import Chatpage from '../Page/Chatpage.jsx'
+import DashboardPage from '../Page/DashboardPage.jsx'
+import ChatHistoryPage from '../Page/ChatHistoryPage.jsx'
+import ManageDataPage from '../Page/ManageDataPage.jsx'
+
 const router = createBrowserRouter([
   {
     path: '/',
@@ -21,6 +25,18 @@ const router = createBrowserRouter([
   },{
     path: 'chat',
     element:<Chatpage/>
+  },
+  {
+    path: 'dashboard',
+    element:<DashboardPage/>
+  },
+  {
+    path: 'manage-rag-soures',
+    element:<ManageDataPage/>
+  },
+  {
+    path: 'conversation-history',
+    element:<ChatHistoryPage/>
   }
 ])
 
