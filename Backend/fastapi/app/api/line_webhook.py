@@ -1,12 +1,6 @@
-from pydantic import BaseModel
-from fastapi import FastAPI,Request, HTTPException, Header
-import chromadb
-from langchain_chroma import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
-from test_chat_rag_memory import chat_rag_memory
-from fastapi.middleware.cors import CORSMiddleware
-
+from fastapi import APIRouter, Request, Header, HTTPException
 import os
+from pathlib import Path
 from dotenv import load_dotenv
 from linebot.v3 import WebhookHandler
 from linebot.v3.exceptions import InvalidSignatureError
@@ -25,20 +19,16 @@ from linebot.v3.messaging import (
     PostbackAction
 )
 
-app = FastAPI()
+import chromadb
+from langchain_chroma import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"]
-)
+from app.services.users.line_user import ensure_line_user
+from app.services.llm.test_chat_rag_memory import chat_rag_memory
 
+router = APIRouter(prefix="/line", tags=["line"])
 
-client = chromadb.PersistentClient(path="./chroma_db")
+client = chromadb.PersistentClient(path="app/services/llm/chroma_db")  #ดู path folderให้ถูกต้อง
 embedding_model = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
 vector_store_from_client = Chroma(
     client=client,
@@ -46,22 +36,8 @@ vector_store_from_client = Chroma(
     embedding_function=embedding_model,
 )
 
-class Item(BaseModel):
-    message: str
-
-@app.get("/")
-def hello():
-    return {"message": "hello"}
-
-@app.post("/chat_rag_memory")
-def llm_chat(item: Item):
-    #ส่งคำถาม,ตัว embedding, user_id(คือthread_id)
-    answer,agency = chat_rag_memory(item.message,vector_store_from_client,"test_user_id")
-    #เรียกฟังชันเก็บลง db ได้ตรงนี้
-    #
-    return {"response": answer}
-
-load_dotenv(override=True)
+ENV_PATH = Path(__file__).resolve().parent / ".env"
+load_dotenv(dotenv_path=ENV_PATH, override=True)
 get_channel_secret = os.getenv('CHANNEL_SECRET')
 get_access_token = os.getenv('ACCESS_TOKEN')
 
@@ -78,7 +54,7 @@ get_access_token = os.getenv('ACCESS_TOKEN')
 configuration = Configuration(access_token=get_access_token)
 handler = WebhookHandler(channel_secret=get_channel_secret)
 
-@app.post("/line-chat")
+@router.post("/chat")
 async def callback(request: Request, x_line_signature: str = Header(None)):
     body = await request.body()
     body_str = body.decode('utf-8')
@@ -93,12 +69,17 @@ async def callback(request: Request, x_line_signature: str = Header(None)):
 
 @handler.add(MessageEvent, message=TextMessageContent)
 def handle_message(event: MessageEvent):
-
-    user_id = event.source.user_id #ใช้สำหรับ thread_id
-    print("user_id: ",user_id)
+    line_user_id = event.source.user_id #ใช้สำหรับ thread_id
+    # print("line_user_id: ",line_user_id)
+    created = ensure_line_user(line_user_id)#เช็คว่าผู้ใช้ใหม่ไหม
+    if created:
+        print("new line user:",line_user_id)
+    else:
+        print("old line user:",line_user_id)
     question = event.message.text
     print("question: ",question)
-    answer,category = chat_rag_memory(question,vector_store_from_client,user_id) 
+    
+    answer,category = chat_rag_memory(question,vector_store_from_client,line_user_id) 
     
         
     reply_message = TextMessage(text=answer)

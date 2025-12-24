@@ -13,6 +13,6 @@ new terminal > cd backend/api > npm install > npx nodemon index.js
 new terminal > cd frontend > npm run dev
 (เปิด docker desktop "backend")
 new terminal > cd backend/api > npx nodemon index.js
-new terminal > cd backend/llm > .venv\Scripts\activate > uvicorn test_api:app --reload
+new terminal > cd backend/fastapi > .venv\Scripts\activate > uvicorn app.main:app --reload
 
 (ถ้าใช้ไลน์ด้วย) new terminal > รัน ngrok http 8000 เปลี่ยนลิ้งค์เอาลิ้งไปเปลี่ยนที่ developer console
