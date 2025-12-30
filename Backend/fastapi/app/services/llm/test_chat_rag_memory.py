@@ -13,6 +13,7 @@ class BasicChatState(TypedDict):
     documents: list
     agency: str
     route_decision: str
+    is_fallback: bool
 
 def get_route(state: BasicChatState):
     route = state.get("route_decision", "other")
@@ -47,14 +48,14 @@ def llm_decision(state: BasicChatState):
 
     system_msg = SystemMessagePromptTemplate.from_template(
     """คุณคือผู้เชี่ยวชาญด้านการจัดประเภทคำถามที่เกี่ยวข้องกับ การลงทะเบียน เพิ่มถอนรายวิชา การยื่นขอใบคำร้อง การใช้งานเว็บไซต์ reg 
-    การใช้งานบริการคอมพิวเตอร์ การพิมพ์เอกสาร การใช้งาน SU-IT Account กยศ(กู้ยืมเพื่อการศึกษา) หอพักนักศึกษา 
+    การใช้งานบริการคอมพิวเตอร์ การพิมพ์เอกสาร การใช้งาน SU-IT Account กยศ(กู้ยืมเพื่อการศึกษา) การเก็บชั่วโมงจิตอาสา หอพักนักศึกษา 
     คุณมีหน้าที่ตัดสินใจว่าจะส่งต่อคำถามล่าสุดไปที่ขั้นตอนใด
     
     คุณต้องตอบกลับด้วย 'คำสั่งเดียว' จากตัวเลือกต่อไปนี้เท่านั้น:
     
     1. **retrieve**: ถ้าคำถามล่าสุดเป็นคำถาม 'ใหม่' หรือ 'โดดเดี่ยว' ที่ไม่ต้องการบริบทใดๆ แต่ต้องการข้อมูลจากฐานความรู้
-    2. **general**: ถ้าคำถามล่าสุดเป็นคำถาม 'ทักทาย' หรือ 'พูดคุยทั่วไป' ที่ไม่ต้องการข้อมูลจากฐานความรู้ ซึ่งรวมถึงคำถามประเภท 'การจัดการบริบท/การทบทวนบทสนทนา' เช่น 'เมื่อกี้ถามอะไรไปบ้าง', 'คุณตอบว่าอะไรนะ'
-    3. **other**: เลือกคำนี้ **ถ้าคำถามไม่เข้าข่ายทั้ง 'retrieve' และ 'general' เลย หรือ คำถามที่ไม่เกี่ยวข้องกับขอบเขตความเชี่ยวชาญ (เช่น เรื่องส่วนตัว, เรื่องนอกประเด็น) หรือคำถามที่กำกวม หรือไม่ชัดเจน
+    2. **general**: ถ้าคำถามล่าสุดเป็นคำถาม 'ทักทาย' หรือ 'พูดคุยทั่วไป' อยู่ในขอบเขตที่เชี่ยวชาญ ซึ่งรวมถึงคำถามประเภท 'การจัดการบริบท/การทบทวนบทสนทนา' เช่น 'เมื่อกี้ถามอะไรไปบ้าง', 'คุณตอบว่าอะไรนะ'
+    3. **other**: เลือกคำนี้ **ถ้าคำถามไม่เข้าข่ายทั้ง 'retrieve' และ 'general' เลย หรือ คำถามที่ไม่เกี่ยวข้องกับขอบเขตความเชี่ยวชาญ
     ---
     
     **กฎที่ต้องปฏิบัติตามอย่างเคร่งครัด:**
@@ -127,9 +128,9 @@ def generate_response(state: BasicChatState):
     rag_prompt = [
         SystemMessage(content=f"""คุณเป็นผู้ช่วยของมหาวิทยาลัย ทำหน้าที่ตอบคำถามให้นักศึกษา 
         โดยใช้ข้อมูลจากเอกสารอ้างอิงที่ได้รับเท่านั้น โดยดูจากความเกี่ยวข้องกับคำถามมากที่สุด 
-        ตอบเป็นภาษาที่สุภาพ เข้าใจง่าย เหมาะกับนักศึกษา หากบริบทที่ได้รับเกี่ยวกับห้องเรียน ต้องเลือกตอบเพียงห้องเดียวเท่านั้น 
+        ตอบเป็นภาษาที่สุภาพ เข้าใจง่าย เหมาะกับนักศึกษา 
         สามารถตอบด้วยอิโมจิได้ และสามารถลงท้ายด้วยการแนะนำเพิ่มเติมเกี่ยวกับหัวข้อคำถามนั้น
-        ถ้าหากเอกสารอ้างไม่มีข้อมูลที่เกี่ยวข้อง ให้ตอบแค่ข้อความนี้ 'Unknown'
+        ถ้าหากเอกสารอ้างไม่มีข้อมูลที่เกี่ยวข้องกับคำถาม ให้ตอบแค่ข้อความนี้ 'Unknown'
         ห้ามขึ้นต้นตอบด้วย "AI:" หรือ "Assistant:" หรือ prefix ใด ๆ ให้ตอบเฉพาะข้อความเท่านั้น
 
                       เอกสารอ้างอิง:
@@ -145,19 +146,29 @@ def generate_response(state: BasicChatState):
     # คืนคำตอบกลับไปอัปเดต State (ผ่าน add_messages)
     fallback_message = "Unknown"
     agency = state["agency"]
+    is_fallback = False
     if response == fallback_message:
         agency = "อื่นๆ"
         response = "ไม่พบข้อมูลที่เกี่ยวข้องในระบบ คุณสามารถถามคำถามที่เกี่ยวข้องกับ การลงทะเบียน เพิ่ม-ถอน คำร้อง บริการทางคอมพิวเตอร์ กยศ. หรือหอพักได้เป็นต้น"
+        is_fallback = True
     print("หมวดปัจจุบัน: ", agency)
     print("คำตอบสุดท้าย:\n",response)
-    return {"messages": [AIMessage(content=response)],"agency": agency}
+    return {"messages": [AIMessage(content=response)],"agency": agency,"is_fallback":is_fallback}
 
 #Node นี้คือเส้นทางหากต้องการคุยทั่วไป แนะนำตัว หรือถามคำถามทั่วไป, การสนทนาต่อเนื่องหรือเกี่ยวกับประวัติแชท 
 #ต้องถามให้รัดกุมนะรู้สึก model จะยังสับสนและแยกไม่ออกในบางที
 def general_chat(state: BasicChatState):
-    """โหนดสำหรับตอบคำถามทั่วไป (ถ้ามี Router)"""
     #ตอบคำถามทั่วไป
-    response = llm.invoke(state["messages"])
+    history = state["messages"][:-1] # ประวัติเก่า (ไม่รวมคำถามล่าสุด)
+    latest_query = state["messages"][-1].content # คำถามล่าสุด
+    general_prompt = [
+        SystemMessage(content=f"""คุณเป็นผู้ช่วยตอบคำถามทั่วไป ชื่อว่า SU AskMe FAQ เรียกตัวเองว่าน้องบอท คุณมีหน้าตอบคำถามผู้ใช้โดยใช้ประวัติการสนทนาอ้างอิงเท่านั้น
+        ตอบเป็นภาษาที่สุภาพ เข้าใจง่าย เหมาะกับนักศึกษา สามารถตอบด้วยอิโมจิได้ ห้ามตอบข้อมูลเกี่ยวกับโมเดลและคุณไม่มีความเกี่ยวข้องกับ SCBX10
+        ห้ามขึ้นต้นตอบด้วย "AI:" หรือ "Assistant:" หรือ prefix ใด ๆ ให้ตอบเฉพาะข้อความเท่านั้น"""),
+        *history,
+        HumanMessage(content=latest_query) # คำถามล่าสุดของผู้ใช้
+    ]
+    response = llm.invoke(general_prompt)
     agency = "อื่นๆ"
     print("หมวดปัจจุบัน: ", agency)
     print("คำตอบสุดท้าย:\n",response)
@@ -168,9 +179,10 @@ def general_chat(state: BasicChatState):
 def other_response(state: BasicChatState):
     response = "ไม่พบข้อมูลที่เกี่ยวข้องในระบบ คุณสามารถถามคำถามที่เกี่ยวข้องกับ หอพัก, การลงทะเบียน เพิ่ม-ถอน, หรือ กยศได้เป็นต้น"
     agency = "อื่นๆ"
+    is_fallback = True
     print("หมวดปัจจุบัน: ", agency)
     print("คำตอบสุดท้าย:\n",response)
-    return {"messages": [AIMessage(content=response)],"agency": agency}
+    return {"messages": [AIMessage(content=response)],"agency": agency,"is_fallback":is_fallback}
 
 #ตอนสร้าง instance ของ graph จะต้องใส่ format ขอข้อความที่ llm มันจะต้องรับในที่นี้คือ format ของ class BasicChatState
 graph = StateGraph(BasicChatState)
@@ -214,8 +226,9 @@ def chat_rag_memory(message,embedder,user_id):
         "embedding_model": embedder
     }}
     res = app.invoke({
-        "messages": HumanMessage(content=message)
+        "messages": HumanMessage(content=message),
+        "is_fallback": False
     }, config=config)
     # ไม่มีอะไรมาก return ข้อความล่าสุดใน list
-    return res["messages"][-1].content, res["agency"]
+    return res["messages"][-1].content, res["agency"],res["is_fallback"]
 

@@ -23,10 +23,11 @@ import chromadb
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-from app.services.users.line_user import ensure_line_user
+from app.db.line_user import ensure_line_user
 from app.services.llm.test_chat_rag_memory import chat_rag_memory
+from app.db.line_user import save_conversation
 
-router = APIRouter(prefix="/line", tags=["line"])
+router = APIRouter(prefix="", tags=["line"])
 
 client = chromadb.PersistentClient(path="app/services/llm/chroma_db")  #ดู path folderให้ถูกต้อง
 embedding_model = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
@@ -54,7 +55,7 @@ get_access_token = os.getenv('ACCESS_TOKEN')
 configuration = Configuration(access_token=get_access_token)
 handler = WebhookHandler(channel_secret=get_channel_secret)
 
-@router.post("/chat")
+@router.post("/line-chat")
 async def callback(request: Request, x_line_signature: str = Header(None)):
     body = await request.body()
     body_str = body.decode('utf-8')
@@ -79,7 +80,7 @@ def handle_message(event: MessageEvent):
     question = event.message.text
     print("question: ",question)
     
-    answer,category = chat_rag_memory(question,vector_store_from_client,line_user_id) 
+    answer,agency,is_fallback = chat_rag_memory(question,vector_store_from_client,line_user_id) 
     
         
     reply_message = TextMessage(text=answer)
@@ -92,7 +93,7 @@ def handle_message(event: MessageEvent):
                 messages=[reply_message]
             )
         )
-    # save_conversation(user_id,question,answer,category,"LINE")
+    save_conversation(line_user_id,question,answer,agency,"LINE",is_fallback)
     
 
 @handler.add(PostbackEvent)
@@ -114,7 +115,7 @@ def handle_postback(event):
 นักศึกษาสามารถพิมพ์คำถามที่สงสัยเกี่ยวกับเรื่องดังต่อไปนี้ได้เลยครับ:
 
 • SU-IT Account เช่น ลืมรหัสผ่าน su it account ทำยังไง, การกู้คืนบัญชี su it account ทำอย่างไรได้บ้าง
-• การใช้งานคอมพิวเตอร์ เช่น สิทธิ์การปริ้นงานของนักศึกษา
+• การใช้งานคอมพิวเตอร์ เช่น สิทธิ์การพิมพ์งานของนักศึกษา
 
 👇 พิมพ์คำถามของคุณทิ้งไว้ได้เลย!"""
     elif rich_menu_data == 'action=C':
@@ -167,7 +168,7 @@ def create_su_askme_rich_menu():
         rich_menu_id = rich_menu_response.rich_menu_id
         print(f"Rich Menu ID: {rich_menu_id}")
 
-        with open('images/line-chatbot-rich-menu.jpg', 'rb') as f:
+        with open('app/images/line-chatbot-rich-menu.jpg', 'rb') as f:
             line_bot_blob_api.set_rich_menu_image(
                 rich_menu_id=rich_menu_id,
                 body=f.read(),
@@ -177,7 +178,7 @@ def create_su_askme_rich_menu():
         line_bot_api.set_default_rich_menu(rich_menu_id=rich_menu_id)
         print("สร้าง rich menu แล้ว")
 
-#create_su_askme_rich_menu() ถ้าจะแก้ฟังชันนี้ค่อย uncomment
+# create_su_askme_rich_menu() #ถ้าจะแก้ฟังชันนี้ค่อย uncomment
 
 
 #.venv\Scripts\activate

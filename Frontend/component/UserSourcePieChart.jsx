@@ -2,14 +2,14 @@ import { PieChart, Pie, Cell, ResponsiveContainer,Legend} from 'recharts';
 
 const COLORS = ['#FF8042', '#0088FE'];
 
-function UserSourcePieChart() {
+function UserSourcePieChart({data}) {
     const sourceData = [
-        { title : "web", amount : 10 },
-        { title : "Line", amount : 60 }
+        { title : "Web", amount : data?.web_users_count || 1 },
+        { title : "Line", amount : data?.line_users_count || 1  }
     ];
     return (
         <div className="p-2 w-full h-[300px] rounded-md shadow-md bg-white">
-            <p className="p-2 text-3xl font-light-bold">{"Pie Chart"}</p>
+            <p className="p-2 text-xl font-light-bold text-gray-500">{"สัดส่วนผู้ใช้"}</p>
             
             <ResponsiveContainer width="100%" height="80%">
                 <PieChart>
@@ -31,10 +31,10 @@ function UserSourcePieChart() {
                             />
                         ))}
                     </Pie>
-                    <Legend // ป้าย แสดง line/web
+                    {/* <Legend // ป้าย แสดง line/web
                         layout="horizontal"
                         verticalAlign="bottom"
-                    />
+                    /> */}
                 </PieChart>
             </ResponsiveContainer>
         </div>
