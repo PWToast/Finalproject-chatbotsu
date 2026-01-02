@@ -2,30 +2,41 @@ import Navbar from '../component/navbar'
 import { useState } from 'react'
 import axios from 'axios'
 import { CiSettings } from "react-icons/ci";
+import { v4 as uuidv4 } from 'uuid';
 
 function Chatpage() {
   const [chatroom, setChatRoom] = useState([])
   const [messagestring, setMessageString] = useState([])
-  const [message, setMessage] = useState("")
-  
-  const createNewChatRoom = () => {
-    if(chatroom.length === 0){
-      setChatRoom(prev => [...prev, prev.length + 1])
-    }else{
-      setChatRoom(prev => [...prev, prev[prev.length-1] + 1])
-    }
+  const [inputmessage, setInputMessage] = useState("")
+  const [currentSession, setCurrentSession] = useState("")
+
+  const selectSession = (session) =>{
+    console.log("you now selected", session)
+    setCurrentSession(currentSession)
   }
 
-  const deleteChatRoom = (index) => {
-    setChatRoom(prev => prev.filter((_, i) => i !== index))
+  const createNewChatRoom = () => {
+    const newRoom ={
+      session_id: uuidv4()
+    }
+    setChatRoom(prev =>[...prev, newRoom])
+    console.log(newRoom.session_id)
+  }
+
+  const deleteChatRoom = (session_id) => {
+    console.log(session_id)
+    setChatRoom(prev =>
+      prev.filter(room => room.session_id !== session_id)
+    )
   }
 
   async function sendMessage (){
     try{
-      const buffermessage = message
-      setMessage('')
-      const res = await axios.post('http://localhost:7000/chat_rag_memory', {message: message})
+      const buffermessage = inputmessage
+      setInputMessage('')
+      const res = await axios.post('http://localhost:7000/chat_rag_memory', {message: inputmessage})
       setMessageString(prev => [...prev,{user_message:buffermessage, ai_message:res.data.response}])
+      
     }catch(error){
       alert("error", error)
     }
@@ -48,7 +59,7 @@ function Chatpage() {
               <div className='border-t border-black'></div>
               <div className='ml-9 h-140 w-50 flex flex-col gap-15 overflow-auto no-scrollbar'>
                 {chatroom.map((items, index) => (
-                  <div className='w-[90%] flex flex-row justify-between font-bold text-xl' key={index}>Chat {items} <span className='cursor-pointer text-red-500' onClick={() => deleteChatRoom(index)}> delete </span></div>
+                  <div className='w-[90%] flex flex-row justify-between font-bold text-xl cursor-pointer' key={index} onClick={() => selectSession(items.session_id)}>Chat <span className='cursor-pointer text-red-500' onClick={() => deleteChatRoom(items.session_id)}> delete </span></div>
                 ))}
               </div>
             </div>
@@ -90,8 +101,8 @@ function Chatpage() {
               <input
               className='w-[95%] h-full p-5 rounded-3xl outline-none'
               type = "text"
-              value={message}
-              onChange={(e)=> setMessage(e.target.value)}
+              value={inputmessage}
+              onChange={(e)=> setInputMessage(e.target.value)}
               placeholder='พิมพ์ลงในนี้!'
               >
               </input>
