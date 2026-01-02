@@ -28,7 +28,7 @@ def hello():
 @router.post("/chat_rag_memory")
 def llm_chat(item: Item):
     #ส่งคำถาม,ตัว embedding, user_id(คือthread_id)
-    answer,agency = chat_rag_memory(item.message,vector_store_from_client,"test_user_id")
+    answer,agency,is_fallback = chat_rag_memory(item.message,vector_store_from_client,"test_user_id")
     #เรียกฟังชันเก็บลง db ได้ตรงนี้
     #
     return {"response": answer}

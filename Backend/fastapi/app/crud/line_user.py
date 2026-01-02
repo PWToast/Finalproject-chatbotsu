@@ -1,4 +1,4 @@
-from app.db.mysql import get_connection
+from app.crud.mysql import get_connection
 from mysql.connector import Error
 import pymongo
 from datetime import datetime, timezone

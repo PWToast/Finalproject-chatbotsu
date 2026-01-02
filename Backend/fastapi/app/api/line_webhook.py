@@ -23,9 +23,9 @@ import chromadb
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-from app.db.line_user import ensure_line_user
+from app.crud.line_user import ensure_line_user
 from app.services.llm.test_chat_rag_memory import chat_rag_memory
-from app.db.line_user import save_conversation
+from app.crud.line_user import save_conversation
 
 router = APIRouter(prefix="", tags=["line"])
 
@@ -41,16 +41,6 @@ ENV_PATH = Path(__file__).resolve().parent / ".env"
 load_dotenv(dotenv_path=ENV_PATH, override=True)
 get_channel_secret = os.getenv('CHANNEL_SECRET')
 get_access_token = os.getenv('ACCESS_TOKEN')
-
-# def get_secret_value(secret_name, default=None):
-#     secret_path = f"/secrets/{secret_name}"
-#     if os.path.exists(secret_path):  
-#         with open(secret_path, "r") as f:
-#             return f.read().strip()
-#     return os.getenv(secret_name, default)
-
-# get_access_token = get_secret_value('ACCESS_TOKEN')
-# get_channel_secret = get_secret_value('CHANNEL_SECRET')
 
 configuration = Configuration(access_token=get_access_token)
 handler = WebhookHandler(channel_secret=get_channel_secret)

@@ -5,7 +5,6 @@ from uuid import uuid4
 from langchain_core.documents import Document
 import json
 from datetime import datetime
-import pymongo
 
 client = chromadb.PersistentClient(path="app/services/llm/chroma_db")  #ดู path folderให้ถูกต้อง
 collection = client.get_or_create_collection("chatbot_rag_documents")
