@@ -14,7 +14,7 @@ client = chromadb.PersistentClient(path="app/services/llm/chroma_db")  #ดู p
 embedding_model = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
 vector_store_from_client = Chroma(
     client=client,
-    collection_name="chatbot_rag_documents",
+    collection_name="rag_documents",
     embedding_function=embedding_model,
 )
 

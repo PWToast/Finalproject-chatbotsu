@@ -126,7 +126,7 @@ def rewrite_query(state: BasicChatState):
 def retrieve(state: BasicChatState,config):
     
     user_query = state["messages"][-1].content
-    print("user_query at retrieve: ",user_query)
+    # print("user_query at retrieve: ",user_query)
     vectordb = config.get("configurable", {}).get("embedding_model")
     results = vectordb.similarity_search_with_score(
         user_query, 
@@ -137,18 +137,20 @@ def retrieve(state: BasicChatState,config):
 
 def generate_response(state: BasicChatState):
 
-    #จัดรูปแบบ Context จากเอกสาร
-    context = "\n---\n".join([doc.page_content for doc, score in state["documents"]])
     
-    # for doc, score in state["documents"]:
-    #     print(f"Score (Distance): {score:.4f}")
-    #     print("-" * 20)
+    print("เนื้อหาที่ได้จากvectorDB:")
+    context = ""
+    for doc, score in state["documents"]:
+        print(f"\n{doc.page_content}")
+        print(f"score (Distance): {score:.4f}")
+        print("-" * 20)
+        #เก็บข้อความ
+        context += doc.page_content + "\n-----------"
 
-    print("เนื้อหาที่ได้จากvectorDB:\n",context)
     #ดึงประวัติการสนทนาทั้งหมด
     history = state["messages"][:-1] #ประวัติเก่า (ไม่รวมคำถามล่าสุด)
     latest_query = state["messages"][-1].content #คำถามล่าสุด
-    print("user_query at generate: ",latest_query)
+    # print("user_query at generate: ",latest_query)
     rag_prompt = [
         SystemMessage(content=f"""คุณเป็นผู้ช่วยของมหาวิทยาลัย ทำหน้าที่ตอบคำถามให้นักศึกษา 
         โดยใช้ข้อมูลจากเอกสารอ้างอิงที่ได้รับเท่านั้น โดยดูจากความเกี่ยวข้องกับคำถามมากที่สุด 
