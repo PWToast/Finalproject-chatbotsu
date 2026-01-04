@@ -95,36 +95,60 @@ def llm_decision(state: BasicChatState):
     print('ตัดสินใจ: ', result)
     return {"route_decision": result}
 
+def rewrite_query(state: BasicChatState):
+    all_conversation = "\n".join(msg.content for msg in state["messages"][:-1])#ยกเว้นคำถามล่าสุด
+    new_question = state["messages"][-1].content
+
+    #ถ้าไม่มีประวัติไม่ต้อง Rewrite
+    if not all_conversation:
+        return {"messages": state["messages"]}
+
+    rewrite_prompt = [
+        SystemMessage(content=f"""คุณคือผู้เชี่ยวชาญในการสร้าง 'คำถามภาษาไทย' ที่สมบูรณ์เพื่อใช้ค้นหาในฐานข้อมูล 
+คุณต้องเข้าใจว่าผู้ใช้ต้องการจะถามอะไร โดยพิจารณาจากประวัติการสนทนาและคำถามล่าสุดของผู้ใช้ 
+
+ประวัติการสนทนา:
+{all_conversation}
+
+**คำสั่งที่ต้องปฏิบัติตาม:** 
+1.ถ้าคำถามล่าสุดสมบูรณ์อยู่แล้ว ให้ตอบคำถามเดิมไม่ต้องแก้อะไร
+2.ถ้าคำถามล่าสุดมีการใช้คำหรือสรรนาม เช่น "แล้วต้อง", "ที่นั่น", "อันนั้น", "ราคาเท่าไหร่", "กี่วิชา", "กี่หน่วยกิต" หรือขาดความสมบูรณ์ของบริบท ให้สร้างคำถามใหม่ที่ทำให้รู้ว่าผู้ใช้ต้องการจะค้นหาอะไร
+3.ถ้าคำถามล่าสุดไม่สมบูรณ์ ให้ตอบเฉพาะ 'คำถาม' ที่ปรับปรุงแล้วเท่านั้น ห้ามอธิบายและห้ามใส่ prefix อื่นๆ"""),
+        HumanMessage(content=f"คำถามล่าสุด: {new_question}") # คำถามล่าสุดของผู้ใช้
+    ]#อาจต้องกำหนดสรรพนามเพิ่ม
+    rewritten_question = llm.invoke(rewrite_prompt).strip()
+    print("question: ",new_question)
+    print("rewrite: ",rewritten_question)
+    #แก้คำถามล่าสุดให้เป็นอันที่ rewrite
+    return {"messages": state["messages"][:-1] + [HumanMessage(content=rewritten_question)]}
+
 #Node นี้คือการดึง document จากข้อความผู้ใช้ เอาเฉพาะข้อความล่าสุดเท่านั้น
 def retrieve(state: BasicChatState,config):
-    """โหนดนี้ใช้ค้นหาเอกสารจาก Vectordb"""
     
-    # ดึงข้อความล่าสุด (คำถามของผู้ใช้)
-    # .content เพื่อให้ได้แค่ข้อความ string
     user_query = state["messages"][-1].content
+    print("user_query at retrieve: ",user_query)
     vectordb = config.get("configurable", {}).get("embedding_model")
-    # ทำการค้นหาใน Vectordb
-    # results มี format เป็น list ของ (document, score)
     results = vectordb.similarity_search_with_score(
         user_query, 
         k=3
     )
 
-    # ส่งผลลัพธ์การค้นหาไปอัปเดต State
     return {"documents": results}
 
-#Node นี้จะดำเนินหลังจาก retrive เสร็จจะสร้างคำตอบด้วยกระบวนการ Rag ปกติ
 def generate_response(state: BasicChatState):
-    """โหนดนี้ใช้ LLM สร้างคำตอบโดยอ้างอิงจากเอกสารที่ค้นเจอ"""
+
     #จัดรูปแบบ Context จากเอกสาร
     context = "\n---\n".join([doc.page_content for doc, score in state["documents"]])
+    
+    # for doc, score in state["documents"]:
+    #     print(f"Score (Distance): {score:.4f}")
+    #     print("-" * 20)
+
     print("เนื้อหาที่ได้จากvectorDB:\n",context)
     #ดึงประวัติการสนทนาทั้งหมด
-    history = state["messages"][:-1] # ประวัติเก่า (ไม่รวมคำถามล่าสุด)
-    latest_query = state["messages"][-1].content # คำถามล่าสุด
-    
-    #สร้าง Prompt สำหรับ RAG
-    #เราใช้ SystemMessage เพื่อให้ LLM รับรู้ถึงบริบท RAG
+    history = state["messages"][:-1] #ประวัติเก่า (ไม่รวมคำถามล่าสุด)
+    latest_query = state["messages"][-1].content #คำถามล่าสุด
+    print("user_query at generate: ",latest_query)
     rag_prompt = [
         SystemMessage(content=f"""คุณเป็นผู้ช่วยของมหาวิทยาลัย ทำหน้าที่ตอบคำถามให้นักศึกษา 
         โดยใช้ข้อมูลจากเอกสารอ้างอิงที่ได้รับเท่านั้น โดยดูจากความเกี่ยวข้องกับคำถามมากที่สุด 
@@ -139,11 +163,8 @@ def generate_response(state: BasicChatState):
         HumanMessage(content=latest_query) # คำถามล่าสุดของผู้ใช้
     ]
     # print("rag_prompt ",rag_prompt)
-    #Invoke LLM ด้วย Prompt ที่สร้างจาก RAG
-    
     response = llm.invoke(rag_prompt)
     # print("คำตอบที่ได้จาก LLM:\n",response)
-    # คืนคำตอบกลับไปอัปเดต State (ผ่าน add_messages)
     fallback_message = "Unknown"
     agency = state["agency"]
     is_fallback = False
@@ -155,7 +176,7 @@ def generate_response(state: BasicChatState):
     print("คำตอบสุดท้าย:\n",response)
     return {"messages": [AIMessage(content=response)],"agency": agency,"is_fallback":is_fallback}
 
-#Node นี้คือเส้นทางหากต้องการคุยทั่วไป แนะนำตัว หรือถามคำถามทั่วไป, การสนทนาต่อเนื่องหรือเกี่ยวกับประวัติแชท 
+#Node นี้คือเส้นทางหากต้องการคุยทั่วไป แนะนำตัว หรือถามคำถามทั่วไป, หรือเกี่ยวกับประวัติแชท 
 #ต้องถามให้รัดกุมนะรู้สึก model จะยังสับสนและแยกไม่ออกในบางที
 def general_chat(state: BasicChatState):
     #ตอบคำถามทั่วไป
@@ -184,7 +205,6 @@ def other_response(state: BasicChatState):
     print("คำตอบสุดท้าย:\n",response)
     return {"messages": [AIMessage(content=response)],"agency": agency,"is_fallback":is_fallback}
 
-#ตอนสร้าง instance ของ graph จะต้องใส่ format ขอข้อความที่ llm มันจะต้องรับในที่นี้คือ format ของ class BasicChatState
 graph = StateGraph(BasicChatState)
 
 graph.add_node("agency_check", agency_check) 
@@ -193,7 +213,7 @@ graph.add_node("retrieve", retrieve)
 graph.add_node("general_chat",general_chat)
 graph.add_node("generate", generate_response) 
 graph.add_node("other", other_response)
-
+graph.add_node("rewrite_query", rewrite_query)
 
 graph.set_entry_point("agency_check")
 graph.add_edge("agency_check", "llm_decision")
@@ -202,12 +222,13 @@ graph.add_conditional_edges(
     "llm_decision",
     get_route,
     {
-        "retrieve" : "retrieve",
+        "retrieve" : "rewrite_query",
         "general" : "general_chat",
         "other": "other"
     }
 )
 
+graph.add_edge("rewrite_query", "retrieve")
 graph.add_edge("retrieve", "generate")
 graph.add_edge("generate", END)
 graph.add_edge("general_chat",END)
@@ -229,6 +250,5 @@ def chat_rag_memory(message,embedder,user_id):
         "messages": HumanMessage(content=message),
         "is_fallback": False
     }, config=config)
-    # ไม่มีอะไรมาก return ข้อความล่าสุดใน list
-    return res["messages"][-1].content, res["agency"],res["is_fallback"]
 
+    return res["messages"][-1].content, res["agency"],res["is_fallback"]

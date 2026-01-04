@@ -86,11 +86,11 @@ app.post('/login', async (req, res) => {
             return false
         }
 
-        //หมดอายุใน 1 นาที
+        //หมดอายุใน 1 ชั่วโมง
         const token = jwt.sign({
             email
         }, secret, {
-            expiresIn: '1m'
+            expiresIn: '1h'
         })
 
         res.json({

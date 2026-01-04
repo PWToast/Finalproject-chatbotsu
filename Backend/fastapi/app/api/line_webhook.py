@@ -39,7 +39,9 @@ vector_store_from_client = Chroma(
 
 ENV_PATH = Path(__file__).resolve().parent / ".env"
 load_dotenv(dotenv_path=ENV_PATH, override=True)
+#ลายเซ็นที่ไลน์มอบให้เรา เพื่อบอกว่าข้อมูลที่ส่งมาหาบอทเรา มาจากไลน์จริงๆ
 get_channel_secret = os.getenv('CHANNEL_SECRET')
+#บัตรผ่านทางเผื่อดูว่ามีสิทธิ์ส่งข้อมูลไปหา lineผู้ใช้
 get_access_token = os.getenv('ACCESS_TOKEN')
 
 configuration = Configuration(access_token=get_access_token)
@@ -50,6 +52,7 @@ async def callback(request: Request, x_line_signature: str = Header(None)):
     body = await request.body()
     body_str = body.decode('utf-8')
     # print(body_str)
+    # print(x_line_signature)
     try:
         handler.handle(body_str, x_line_signature)
     except InvalidSignatureError:
