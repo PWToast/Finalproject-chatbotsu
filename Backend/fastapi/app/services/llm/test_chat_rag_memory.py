@@ -116,6 +116,7 @@ def rewrite_query(state: BasicChatState):
 3.ถ้าคำถามล่าสุดไม่สมบูรณ์ ให้ตอบเฉพาะ 'คำถาม' ที่ปรับปรุงแล้วเท่านั้น ห้ามอธิบายและห้ามใส่ prefix อื่นๆ"""),
         HumanMessage(content=f"คำถามล่าสุด: {new_question}") # คำถามล่าสุดของผู้ใช้
     ]#อาจต้องกำหนดสรรพนามเพิ่ม
+    # print("rewrite_prompt: ",rewrite_prompt)
     rewritten_question = llm.invoke(rewrite_prompt).strip()
     print("question: ",new_question)
     print("rewrite: ",rewritten_question)

@@ -78,7 +78,7 @@ def handle_message(event: MessageEvent):
         
     reply_message = TextMessage(text=answer)
 
-    with ApiClient(configuration) as api_client:
+    with ApiClient(configuration) as api_client:#เปิดการเชื่อมต่อ
         line_bot_api = MessagingApi(api_client)
         line_bot_api.reply_message(
             ReplyMessageRequest(
