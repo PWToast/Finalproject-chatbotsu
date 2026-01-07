@@ -5,8 +5,13 @@ from uuid import uuid4
 from langchain_core.documents import Document
 import json
 from datetime import datetime
+import os
 
-client = chromadb.PersistentClient(path="app/services/llm/chroma_db")  #ดู path folderให้ถูกต้อง
+current_dir = os.path.dirname(os.path.abspath(__file__))
+db_path = os.path.join(current_dir, "..", "services", "llm", "chroma_db")
+print(f"กำลังจะเก็บข้อมูลไว้ที่: {os.path.abspath(db_path)}")
+
+client = chromadb.PersistentClient(path=db_path)  #ดู path folderให้ถูกต้อง
 # collection = client.get_or_create_collection("chatbot_rag_documents") #อันเก่า L2
 collection = client.get_or_create_collection(
     name="rag_documents",

@@ -4,7 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from linebot.v3 import WebhookHandler
 from linebot.v3.exceptions import InvalidSignatureError
-from linebot.v3.webhooks import MessageEvent, TextMessageContent,PostbackEvent
+from linebot.v3.webhooks import MessageEvent, TextMessageContent,PostbackEvent,FollowEvent
 from linebot.v3.messaging import (
     ApiClient, 
     MessagingApi, 
@@ -23,7 +23,7 @@ import chromadb
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-from app.crud.line_user import ensure_line_user
+# from app.crud.line_user import ensure_line_user
 from app.services.llm.test_chat_rag_memory import chat_rag_memory
 from app.crud.line_user import save_conversation
 
@@ -65,11 +65,11 @@ async def callback(request: Request, x_line_signature: str = Header(None)):
 def handle_message(event: MessageEvent):
     line_user_id = event.source.user_id #ใช้สำหรับ thread_id
     # print("line_user_id: ",line_user_id)
-    created = ensure_line_user(line_user_id)#เช็คว่าผู้ใช้ใหม่ไหม
-    if created:
-        print("new line user:",line_user_id)
-    else:
-        print("old line user:",line_user_id)
+    # created = ensure_line_user(line_user_id)#เช็คว่าผู้ใช้ใหม่ไหม
+    # if created:
+    #     print("new line user:",line_user_id)
+    # else:
+    #     print("old line user:",line_user_id)
     question = event.message.text
     print("question: ",question)
     
@@ -90,36 +90,47 @@ def handle_message(event: MessageEvent):
     
 
 @handler.add(PostbackEvent)
-def handle_postback(event):
+def handle_postback(event):#กด richmenu
     rich_menu_data = event.postback.data
     if rich_menu_data == 'action=A':
-        reply_message = """💡 **แนะนำการถามคำถาม**
+        reply_message = """💡 **หัวข้อคำถามเพิ่มเติม**
 
-นักศึกษาสามารถพิมพ์คำถามที่สงสัยเกี่ยวกับเรื่องดังต่อไปนี้ได้เลยครับ:
+นักศึกษาสามารถพิมพ์คำถามที่สงสัยเกี่ยวกับเรื่องดังต่อไปนี้ได้เลยครับ
 
-• การลงทะเบียน เช่น ลงทะเบียนล่าช้าทำยังไง, ขั้นตอนการลงทะเบียน
-• การเพิ่มถอน เช่น ถอนรายวิชาติด W ทำยังไง, สาเหตุการลงทะเบียนเพิ่มถอนไม่ได้
-• การขอใบคำร้อง เช่น ขอใบลาออกได้ที่ไหน, ต้องการลาพักการศึกษาต้องทำยังไง
+• ขั้นตอนการลงทะเบียนเรียน 
+• การลงทะเบียนเรียน (ล่าช้า) 
+• การเพิ่มถอน เปลี่ยนกลุ่มเรียน 
+• การดูผลการลงทะเบียนเรียน 
+• ตรวจสอบภาระค่าใช้จ่าย 
+• การขอสำรองที่นั่งออนไลน์ 
+• คำร้องขอติด W ออนไลน์ 
+• ตรวจสอบคำร้อง 
+• Email แจ้งเตือนคำร้อง 
+• ใบคำร้องสำหรับนักศึกษาปริญญาตรี 
 
-👇 พิมพ์คำถามของคุณทิ้งไว้ได้เลย!"""
+👇 ลองพิมพ์คำถามของคุณทิ้งไว้ได้เลย!"""
     elif rich_menu_data == 'action=B':
-        reply_message = """💻 **แนะนำการถามคำถาม**
+        reply_message = """💻 **หัวข้อคำถามเพิ่มเติม**
 
-นักศึกษาสามารถพิมพ์คำถามที่สงสัยเกี่ยวกับเรื่องดังต่อไปนี้ได้เลยครับ:
+นักศึกษาสามารถพิมพ์คำถามที่สงสัยเกี่ยวกับเรื่องดังต่อไปนี้ได้เลยครับ
 
-• SU-IT Account เช่น ลืมรหัสผ่าน su it account ทำยังไง, การกู้คืนบัญชี su it account ทำอย่างไรได้บ้าง
-• การใช้งานคอมพิวเตอร์ เช่น สิทธิ์การพิมพ์งานของนักศึกษา
+• วิธีกู้คืน SU-IT Account 
+• วิธีลงทะเบียน SU-IT Account  
 
-👇 พิมพ์คำถามของคุณทิ้งไว้ได้เลย!"""
+👇 ลองพิมพ์คำถามของคุณทิ้งไว้ได้เลย!"""
     elif rich_menu_data == 'action=C':
-        reply_message = """🏢 **แนะนำการถามคำถาม**
+        reply_message = """🏢 **หัวข้อคำถามเพิ่มเติม**
 
-นักศึกษาสามารถพิมพ์คำถามที่สงสัยเกี่ยวกับเรื่องดังต่อไปนี้ได้เลยครับ:
+นักศึกษาสามารถพิมพ์คำถามที่สงสัยเกี่ยวกับเรื่องดังต่อไปนี้ได้เลยครับ
 
-• กยศ. เช่น ผู้กู้รายเก่าคืออะไร, สาขาที่เป็นความต้องการหลักคืออะไร, อยู่ปี4แล้วยังต้องเก็บชั่วโมงจิตอาสาไหม
-• หอพักนักศึกษา เช่น ข้อปฏิบัติของหอพัก, การเตรียมความพร้อมเข้าหอพักนักศึกษา
+• คุณสมบัติของผู้กู้ยืมกยศ.(กู้ยืมเพื่อการศึกษา) 
+• ประเภทของผู้กู้ยืมเงิน 
+• คุณสมบัติทั่วไปของนักศึกษาผู้กู้ยืมเงินกองทุน 
+• ลักษณะต้องห้ามของนักศึกษาผู้กู้ยืมเงินกองทุน 
+• คุณสมบัติเฉพาะของนักศึกษาผู้กู้ยืมเงินกองทุน ลักษณะที่ 1,2 และ 3
+• หอพักนักศึกษา
 
-👇 พิมพ์คำถามของคุณทิ้งไว้ได้เลย!"""
+👇 ลองพิมพ์คำถามของคุณทิ้งไว้ได้เลย!"""
     
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
@@ -127,6 +138,30 @@ def handle_postback(event):
             ReplyMessageRequest(
                 reply_token=event.reply_token,
                 messages=[TextMessage(text=reply_message)]
+            )
+        )
+
+@handler.add(FollowEvent)
+def handle_follow(event):#เพิ่มเพื่อนครั้งแรก
+    welcome_message = """สวัสดีครับ! ขอบคุณที่เพิ่มเพื่อนกับ SU AskMe FAQ นะครับ 🤖✨
+เราเป็นแชตบอตที่สร้างขึ้นเพื่อตอบคำถามที่พบบ่อยให้กับนักศึกษาภายในมหาวิทยาลัยศิลปากร
+โดยมีหัวข้อคำถามดังนี้ครับ
+
+• การลงทะเบียนเรียน 
+• การเพิ่มถอนรายวิชา 
+• เอกสารคำร้อง 
+• SU-IT Account
+• กยศ.
+• หอพัก
+
+หากต้องการดูหัวข้อคำถามเพิ่มเติมสามารถกดที่เมนูด้านล่างหรือพิมพ์คำถามของคุณได้เลยครับ! 👇"""
+    
+    with ApiClient(configuration) as api_client:
+        line_bot_api = MessagingApi(api_client)
+        line_bot_api.reply_message(
+            ReplyMessageRequest(
+                reply_token=event.reply_token,
+                messages=[TextMessage(text=welcome_message)]
             )
         )
 
