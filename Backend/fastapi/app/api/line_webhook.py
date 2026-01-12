@@ -73,8 +73,8 @@ def handle_message(event: MessageEvent):
     question = event.message.text
     print("question: ",question)
     
-    answer,agency,is_fallback = chat_rag_memory(question,vector_store_from_client,line_user_id) 
-    
+    response = chat_rag_memory(question,vector_store_from_client,line_user_id) 
+    answer = response["ai_message"]
         
     reply_message = TextMessage(text=answer)
 
@@ -86,7 +86,7 @@ def handle_message(event: MessageEvent):
                 messages=[reply_message]
             )
         )
-    save_conversation(line_user_id,question,answer,agency,"LINE",is_fallback)
+    save_conversation(line_user_id,"LINE",response)
     
 
 @handler.add(PostbackEvent)
