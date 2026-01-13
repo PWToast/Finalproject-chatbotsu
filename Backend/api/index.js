@@ -15,7 +15,7 @@ const secret = 'supersecret'
 const initMySQL = async () => {
     conn = await mysql.createConnection({
         host: 'localhost',
-        //port: 3307,
+        port: 3307,
         user: 'user1',
         password: 'mysql123456',
         database: 'my_db'
@@ -86,7 +86,7 @@ app.post('/login', async (req, res) => {
             return false
         }
 
-        //หมดอายุใน 1 นาที
+        //หมดอายุใน 1 ชั่วโมง
         const token = jwt.sign({
             email
         }, secret, {

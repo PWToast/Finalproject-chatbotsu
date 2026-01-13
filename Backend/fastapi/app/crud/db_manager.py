@@ -7,11 +7,16 @@ import json
 from datetime import datetime
 
 client = chromadb.PersistentClient(path="app/services/llm/chroma_db")  #ดู path folderให้ถูกต้อง
-collection = client.get_or_create_collection("chatbot_rag_documents")
+
+# collection = client.get_or_create_collection("chatbot_rag_documents") #อันเก่า L2
+collection = client.get_or_create_collection(
+    name="rag_documents",
+    metadata={"hnsw:space": "cosine"} 
+)#อันใหม่ ใช้cosine
 embedding_model = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
 vector_store_from_client = Chroma(
     client=client,
-    collection_name="chatbot_rag_documents",
+    collection_name="rag_documents",
     embedding_function=embedding_model,
 )
 
@@ -66,7 +71,8 @@ def delete_docs(vector_store_from_client):
 
     collection.delete(where={})
 
-# add_docs("docs-FAQ/....json",vector_store_from_client)
+
+# add_docs("docs-FAQ/กองกิจการนักศึกษา/....json",vector_store_from_client)
 # delete_docs(vector_store_from_client)
 # watch_collect()
 # show_all_docs()

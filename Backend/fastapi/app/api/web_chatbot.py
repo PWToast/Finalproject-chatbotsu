@@ -1,3 +1,4 @@
+
 from fastapi import APIRouter
 from pydantic import BaseModel
 
@@ -9,6 +10,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from app.services.llm.test_chat_rag_memory import chat_rag_memory
 from app.api.web_history import insert_chat, fetch_by_sessionId, Historyschema
 
+
 router = APIRouter(prefix="", tags=["chatbot"])
 
 client = chromadb.PersistentClient(path="app/services/llm/chroma_db")  #ดู path folderให้ถูกต้อง
@@ -16,6 +18,7 @@ embedding_model = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
 vector_store_from_client = Chroma(
     client=client,
     collection_name="chatbot_rag_documents",
+    collection_name="rag_documents",
     embedding_function=embedding_model,
 )
 
@@ -24,6 +27,7 @@ class Item(BaseModel):
     email: str
     session_id: str
 
+
 @router.get("/")
 def hello():
     return {"message": "hello"}
@@ -31,7 +35,11 @@ def hello():
 @router.post("/chat_rag_memory")
 def llm_chat(item: Item):
     #ส่งคำถาม,ตัว embedding, user_id(คือthread_id)
-    answer,agency,is_fallback = chat_rag_memory(item.message,vector_store_from_client,"test_user_id")
+    #answer,agency,is_fallback
+    response = chat_rag_memory(item.message,vector_store_from_client,"test_user_id")
+    answer = response["ai_message"]
+    agency = response["question_agency"]
+    is_fallback = response["is_fallback"]
     # ต้องรับ message, email(jwt), session_id(frontend) จาก api 
     message_to_database = Historyschema(
         email = item.email,
@@ -51,3 +59,4 @@ def llm_chat(item: Item):
 def fecthHistory(email: str, session_id: str):
     result = fetch_by_sessionId(email, session_id)
     return {"response" : result}
+
