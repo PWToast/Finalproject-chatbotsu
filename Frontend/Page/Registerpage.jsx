@@ -16,6 +16,8 @@ function Registerpage() {
   const [iconpassword, setIconPassword] = useState(false)
   const [iconconfirmpassword, setIconConfirmPassword] = useState(false)
 
+  const isFieldFull = username.trim() && email.trim() && password.trim() && confirmpassword.trim()
+
     async function handleSubmitFrom(){
         if (!username || !email || !password || !confirmpassword) {
         return alert("กรุณากรอกฟอร์มให้ครบ");
@@ -105,9 +107,12 @@ function Registerpage() {
                 ></input>
                 <button className="absolute self-center mt-68 ml-53 cursor-pointer" onClick={handlevisibleConfirmPassword}>{iconconfirmpassword ? <FiEye/> : <FiEyeOff/>}</button>
             </div>
-            <button className='bg-[#FFFFFF] hover:bg-[#007A6D] transition-colors duration-500 w-80 self-center mt-15 p-3 text-black/50 cursor-pointer' onClick={handleSubmitFrom}>Sign up</button>
+            {!isFieldFull &&
+            <button className='bg-[#FFFFFF] hover:bg-[#007A6D] transition-colors duration-500 w-80 self-center mt-15 p-3 text-black/50 cursor-pointer' onClick={handleSubmitFrom}>Sign up</button>}
+            {isFieldFull && 
+            <button className='bg-[#007A6D] transition-colors duration-500 w-80 self-center mt-15 p-3 text-black/50 cursor-pointer' onClick={handleSubmitFrom}>Sign up</button>}
             <div className="text-[12px] self-center mt-2">
-                <span>Have already an account?</span><span className='text-[#007A6D] cursor-pointer hover:text-[#006257]'><Link to="/"> Login here</Link></span>
+                <span>หากมีบัญชีอยู่แล้ว</span><span className='text-[#007A6D] cursor-pointer hover:text-[#006257]'><Link to="/"> เข้าสู่ระบบที่นี่</Link></span>
             </div>
         </div>
     </div>

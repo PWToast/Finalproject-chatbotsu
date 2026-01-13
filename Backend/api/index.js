@@ -90,7 +90,7 @@ app.post('/login', async (req, res) => {
         const token = jwt.sign({
             email
         }, secret, {
-            expiresIn: '1m'
+            expiresIn: '1h'
         })
 
         res.json({
@@ -166,4 +166,55 @@ app.get('/verify', verifyToken, (req, res) => {
     })
 
     console.log(`verify success welcome, ${email}`)
+})
+
+
+app.post('/createsession', async(req, res)=>{
+    try{
+        const {email, session, state} = req.body
+        console.log(email)
+        console.log(session)
+
+        const sql = "INSERT INTO session_users (email, session_id, state) VALUES (?, ?, ?)"
+        await conn.query(sql, [email, session, state])
+        res.json({
+            message: 'create session success!'
+        })
+    }catch(error){
+        res.status(500).json({
+            message: "error, something wrong!",
+            error: error.message
+        })
+    }
+})
+
+app.get('/getsession', async (req,res)=>{
+    try{
+        const email = req.query.email
+        const [results] = await conn.query('select session_id, state from session_users where email = ?', [email])
+        res.json(results)
+    }catch(error){
+        res.status(500).json({
+            message: "error, something wrong!",
+            error: error.message
+        })
+    }
+})
+
+app.delete('/deletesession' , async (req,res) =>{
+    try{
+        const session = req.query.session
+        const sql = "DELETE FROM session_users WHERE session_id = ?"
+        const [result] = await conn.query(sql, [session])
+        console.log('delete session success!')
+        res.json({
+            message:"delete session success!"
+        })
+    }catch(error){
+        console.log(error)
+        res.status(500).json({
+            message: "error, something wrong!",
+            error: error.message
+        })
+    }
 })

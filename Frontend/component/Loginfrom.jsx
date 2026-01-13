@@ -11,7 +11,8 @@ function Loginfrom() {
     const [typeinput, setTypeinput] = useState("password")
     const [password, setPassword] = useState("")
     const [icon, setIcon] = useState(false)
-
+    const isFieldFull = email.trim() && password.trim()
+    
     const handlevisiblepassword = () =>{
         if(typeinput ==='password'){
             setIcon(!icon)
@@ -64,10 +65,13 @@ function Loginfrom() {
                   <button className=" absolute self-end-safe mr-11 mt-38 cursor-pointer" onClick={handlevisiblepassword}>{icon ? <FiEye/> : <FiEyeOff/>}</button>
                 </div>
                 <div className='flex flex-col mb-8 w-100'>
-                  <span className='text-[#007A6D] self-end-safe mr-10 mb-1 text-[12px] cursor-pointer hover:text-[#006257]'>forget password?</span>
-                  <button className='bg-[#FFFFFF] hover:bg-[#007A6D] transition-colors duration-500 w-80 self-center p-3 mt-10 text-black/50 cursor-pointer' onClick={handleSubmitFrom}>Sign in</button>
+                  <span className='text-[#007A6D] self-end-safe mr-10 mb-1 text-[12px] cursor-pointer hover:text-[#006257]'>ลืมรหัสผ่าน?</span>
+                  {!isFieldFull &&
+                  <button className='bg-[#FFFFFF] hover:bg-[#007A6D] transition-colors duration-500 w-80 self-center mt-15 p-3 text-black/50 cursor-pointer' onClick={handleSubmitFrom}>Sign in</button>}
+                  {isFieldFull && 
+                  <button className='bg-[#007A6D] transition-colors duration-500 w-80 self-center mt-15 p-3 text-black/50 cursor-pointer' onClick={handleSubmitFrom}>Sign in</button>}
                   <div className='flex flex-row gap-2 self-center text-[12px] mt-1'>
-                    <span>No Account?</span><span className='text-[#007A6D] cursor-pointer hover:text-[#006257]'><Link to="/register">Register here</Link></span>
+                    <span>ยังไม่มีบัญชี?</span><span className='text-[#007A6D] cursor-pointer hover:text-[#006257]'><Link to="/register">ลงทะเบียน</Link></span>
                   </div>
                 </div>
               </div>

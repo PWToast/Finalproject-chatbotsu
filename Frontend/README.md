@@ -1,16 +1,18 @@
-# React + Vite
+# how to install
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+--- นัด ---
+หมายเหตุ: มีการเปลี่ยน port ตัวแรกจาก 3306 เป็น3307 ในไฟล์ docker-compose.yml
+มีการเพิ่ม port:3307 และเปลี่ยน user เป็น 'user1' ในไฟล์ index.js
 
-Currently, two official plugins are available:
+how to install ครั้งแรก
+new terminal > cd frontend > npm install > npm run dev
+new terminal > cd backend > docker compose up -d
+new terminal > cd backend/api > npm install > npx nodemon index.js
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+ครั้งต่อๆไป
+new terminal > cd frontend > npm run dev
+(เปิด docker desktop "backend")
+new terminal > cd backend/api > npx nodemon index.js
+new terminal > cd backend/fastapi > .venv\Scripts\activate > uvicorn app.main:app --reload
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+(ถ้าใช้ไลน์ด้วย) new terminal > รัน ngrok http 8000 เปลี่ยนลิ้งค์เอาลิ้งไปเปลี่ยนที่ developer console
