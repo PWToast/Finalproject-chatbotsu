@@ -9,17 +9,17 @@ function AdminSidebar() {
   // เพิ่มปุ่ม navตรงนี้
   const navItems = [
     { 
-      name: 'Dashboard', 
+      name: 'แดชบอร์ด', 
       icon: ComputerDesktopIcon,
       path: '/dashboard',
     },
     { 
-      name: 'Manage RAG Sources', 
+      name: 'จัดการแหล่งข้อมูล RAG', 
       icon: DocumentTextIcon,
       path: '/manage-rag-soures',  
     },
     { 
-      name: 'Conversation History', 
+      name: 'ประวัติการสนทนา', 
       icon: ChatBubbleLeftRightIcon,
       path: '/conversation-history', 
     },

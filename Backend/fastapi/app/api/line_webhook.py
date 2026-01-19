@@ -25,7 +25,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 # from app.crud.line_user import ensure_line_user
 from app.services.llm.test_chat_rag_memory import chat_rag_memory
-from app.crud.line_user import save_conversation
+from app.crud.update_history import save_conversation,update_daily_stats
 
 router = APIRouter(prefix="", tags=["line"])
 
@@ -65,7 +65,7 @@ async def callback(request: Request, x_line_signature: str = Header(None)):
 def handle_message(event: MessageEvent):
     line_user_id = event.source.user_id #ใช้สำหรับ thread_id
     # print("line_user_id: ",line_user_id)
-    # created = ensure_line_user(line_user_id)#เช็คว่าผู้ใช้ใหม่ไหม
+    # created = ensure_line_user(line_user_id)#เช็คว่าผู้ใช้ใหม่ไหม ถ้าใหม่อัปเดตเข้า Users
     # if created:
     #     print("new line user:",line_user_id)
     # else:
@@ -87,6 +87,7 @@ def handle_message(event: MessageEvent):
             )
         )
     save_conversation(line_user_id,"LINE",response)
+    update_daily_stats("LINE",response)
     
 
 @handler.add(PostbackEvent)
@@ -210,6 +211,7 @@ def create_su_askme_rich_menu():
 
 
 #.venv\Scripts\activate
-#uvicorn test_api:app --reload
+#uvicorn app.main:app --reload
 
-#ใช้ไลน์ รัน ngrok http 8000 เปลี่ยนลิ้งค์เอาลิ้งไปเปลี่ยนที่console
+#ถ้าใช้ไลน์ด้วยรัน ngrok http --url=suzan-uneloquent-grossly.ngrok-free.dev 8000
+#ไม่ต้องเปลี่ยนที่ line console แล้ว

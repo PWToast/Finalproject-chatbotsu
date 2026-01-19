@@ -1,35 +1,129 @@
 import Navbar from '../component/navbar'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { CiSettings } from "react-icons/ci";
+import { v4 as uuidv4 } from 'uuid';
+import { useAuth } from "../service/Auth"
+import { jwtDecode } from "jwt-decode";
 
 function Chatpage() {
+  const tokenString = localStorage.getItem('token')
+  const decoded = jwtDecode(tokenString)
+  const emailToken = decoded.email
+  useAuth()
+  const [inputmessage, setInputMessage] = useState("")
   const [chatroom, setChatRoom] = useState([])
-  const [messagestring, setMessageString] = useState([])
-  const [message, setMessage] = useState("")
-  
-  const createNewChatRoom = () => {
-    if(chatroom.length === 0){
-      setChatRoom(prev => [...prev, prev.length + 1])
-    }else{
-      setChatRoom(prev => [...prev, prev[prev.length-1] + 1])
-    }
+  const [currentSession, setCurrentSession] = useState(null)
+  const [currentmessages, setCurrentMessages] = useState([])
+
+  const selectSession = async (session_id) =>{
+    console.log("you now selected", session_id)
+    setCurrentSession(session_id)
+    const res = await axios.get(`http://localhost:8000/fetch/${emailToken}/${session_id}`)
+    console.log(res.data.response)
+    setCurrentMessages(res.data.response)
   }
 
-  const deleteChatRoom = (index) => {
-    setChatRoom(prev => prev.filter((_, i) => i !== index))
+  const createNewChatRoom = () => {
+    const newRoom ={
+      session_id: uuidv4(),
+      state: "empty",
+      message:[]
+    }
+    setChatRoom(prev =>[...prev, newRoom])
+    setCurrentSession(newRoom.session_id)
+    return newRoom.session_id
   }
+
+  const initialHistoryChat = async(currentSession)=>{
+    const selectedRoom = chatroom.find(room=> room.session_id === currentSession)
+    if (!selectedRoom) return
+    if(selectedRoom.state === "empty"){
+      setChatRoom(prev =>
+        prev.map(room =>
+          room.session_id === currentSession
+            ? { ...room, state: "active" } // เปลี่ยนแค่ state เป็น active แล้วอัพลง database
+            : room
+        )
+      )
+    }
+    try{
+      const tokenString = localStorage.getItem('token')
+      const decoded = jwtDecode(tokenString)
+      const email = decoded.email
+      const data ={
+        email,
+        session: currentSession,
+        state:"active"
+      }
+      await axios.post('http://localhost:3000/createsession',data)
+      console.log('db update succes!')
+    }catch(error){
+      alert("error", error)
+      console.log(error)
+    }
+  } 
+
+  const deleteChatRoom = async (session_id) => {
+    try{
+      const res = await axios.delete(`http://localhost:3000/deletesession?session=${session_id}`)
+      setChatRoom(prev => prev.filter(room => room.session_id !== session_id))
+      if (currentSession === session_id) {
+        setCurrentSession(null)
+        setCurrentMessages([])
+      }
+      console.log('delete success', session_id)
+    }catch(error){
+      console.error("Delete failed", error)
+    }
+      setCurrentSession(null)
+      console.log('delete success', session_id)
+    }
 
   async function sendMessage (){
     try{
-      const buffermessage = message
-      setMessage('')
-      const res = await axios.post('http://localhost:8000/chat_rag_memory', {message: message})
-      setMessageString(prev => [...prev,{user_message:buffermessage, ai_message:res.data.response}])
+      let session = currentSession
+      if(currentSession === null){
+        session = createNewChatRoom()
+        setCurrentSession(session)
+      }
+      const buffermessage = inputmessage
+      setInputMessage('')
+      const res = await axios.post('http://localhost:8000/chat_rag_memory', {message: inputmessage, email: emailToken, session_id:currentSession})
+      const newResponse = {
+        user_message:buffermessage, 
+        ai_message:res.data.response
+      }
+      setCurrentMessages(prev=>[...prev, newResponse])
+      const selectedRoom = chatroom.find(room => room.session_id === currentSession)
+      if (selectedRoom?.state === "empty") {
+        initialHistoryChat(currentSession)
+      }
     }catch(error){
       alert("error", error)
     }
   }
+
+  useEffect(()=>{
+    const fetchSessions = async () =>{
+      try{
+        const tokenString = localStorage.getItem('token')
+        const decoded = jwtDecode(tokenString)
+        const email = decoded.email
+        const res = await axios.get(`http://localhost:3000/getsession?email=${email}`)
+        console.log(res.data)
+        const sessionsWithMessage = res.data.map(session => ({
+          ...session,
+          message: []
+        }))
+        setChatRoom(sessionsWithMessage)
+      }catch(error){
+        alert("error cannot fetch session", error)
+        console.log(error)
+      }
+    }
+    fetchSessions()
+  },[])
 
   return (
     <>
@@ -48,7 +142,7 @@ function Chatpage() {
               <div className='border-t border-black'></div>
               <div className='ml-9 h-140 w-50 flex flex-col gap-15 overflow-auto no-scrollbar'>
                 {chatroom.map((items, index) => (
-                  <div className='w-[90%] flex flex-row justify-between font-bold text-xl' key={index}>Chat {items} <span className='cursor-pointer text-red-500' onClick={() => deleteChatRoom(index)}> delete </span></div>
+                  <div className='w-[90%] flex flex-row justify-between font-bold text-xl cursor-pointer' key={index} onClick={() => selectSession(items.session_id)}>Chat <span className='cursor-pointer text-red-500' onClick={() => deleteChatRoom(items.session_id)}> delete </span></div>
                 ))}
               </div>
             </div>
@@ -73,7 +167,7 @@ function Chatpage() {
           <div className=' border-2 border-solid rounded-xl flex flex-col h-215'>
 
             <div className='flex-1 overflow-auto no-scrollbar flex flex-col gap-2'>
-              {messagestring.map((items, index) => (
+              {currentmessages.map((items, index) => (
                 <div key={index} className='flex flex-col gap-2'>
                   <div className='max-w-150 self-end m-5 p-5 bg-[#D9D9D9] border border-transparent rounded-xl'>
                     {items.user_message}
@@ -90,12 +184,12 @@ function Chatpage() {
               <input
               className='w-[95%] h-full p-5 rounded-3xl outline-none'
               type = "text"
-              value={message}
-              onChange={(e)=> setMessage(e.target.value)}
-              placeholder='พิมพ์ลงในนี้!'
+              value={inputmessage}
+              onChange={(e)=> setInputMessage(e.target.value)}
+              placeholder='พิมพ์คำถามหรือข้อสงสัย...'
               >
               </input>
-              <span onClick={sendMessage}className=' h-full w-full cursor-pointer'>send</span>
+              <span onClick={()=> sendMessage()}className=' h-full w-full cursor-pointer'>ส่ง</span>
             </div>
           </div>
 
@@ -103,17 +197,25 @@ function Chatpage() {
           <div className='border-2 border-solid rounded-xl'>
             <div className='flex flex-col gap-10 p-5'>
               <span className='self-center text-2xl'>Suggestion</span>
-              <div className='flex flex-col border-2 border-solid border-gray-500 rounded-2xl p-3 '>
-                <span className='line-clamp-1'>DSA|SU กองกิจการนักศึกษา</span>
-                <span className='line-clamp-1 text-sm text-gray-500' title="กยศ หอพักนักศึกษา">กยศ หอพักนักศึกษา</span>
+              <div className='flex flex-col p-3 '>
+                <span className='line-clamp-1'>DSA SU กองกิจการนักศึกษา</span>
+                <ul className='list-disc ml-10'>
+                  <li><span className='line-clamp-1 text-sm text-gray-500' title="กยศ">กยศ</span></li>
+                  <li><span className='line-clamp-1 text-sm text-gray-500' title="หอพักนักศึกษา">หอพักนักศึกษา</span></li>
+                </ul>
               </div>
-              <div className='flex flex-col border-2 border-solid border-gray-500 rounded-2xl p-3'>
+              <div className='flex flex-col p-3'>
                 <span className='line-clamp-1'>กองบริหารงานวิชาการ</span>
-                <span className='line-clamp-1 text-sm text-gray-500' title="ลงทะเบียน เพิ่มถอน การยื่นใบคำร้อง">ลงทะเบียน เพิ่มถอน การยื่นใบคำร้อง</span>
+                <ul className='list-disc ml-10'>
+                  <li><span className='line-clamp-1 text-sm text-gray-500' title="ลงทะเบียน">ลงทะเบียน</span></li>
+                  <li><span className='line-clamp-1 text-sm text-gray-500' title="เพิ่มถอน">เพิ่มถอน</span></li>
+                  <li><span className='line-clamp-1 text-sm text-gray-500' title="การยื่นใบคำร้อง">การยื่นใบคำร้อง</span></li>
+                </ul>
               </div>
-              <div className='flex flex-col border-2 border-solid border-gray-500 rounded-2xl p-3'>
+              <div className='flex flex-col p-3 '>
                 <span className='line-clamp-1'>BDT.SU สำนักดิจิทัลเทคโนโลยี</span>
-                <span className='line-clamp-1 text-sm text-gray-500' title="กยศ หอพักนักศึกษา">กยศ หอพักนักศึกษา</span>
+                <ul className='list-disc ml-10'>
+                </ul>
               </div>
             </div>
           </div>

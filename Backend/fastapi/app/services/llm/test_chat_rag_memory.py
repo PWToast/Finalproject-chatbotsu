@@ -178,9 +178,9 @@ def generate_response(state: BasicChatState):
     # print("เนื้อหาที่ได้จากvectorDB:")
     context = ""
     for doc, score in state["documents"]:
-        print(f"\n{doc.page_content}")
-        print(f"score (Distance): {score:.4f}")
-        print("-" * 20)
+        # print(f"\n{doc.page_content}")
+        # print(f"score (Distance): {score:.4f}")
+        # print("-" * 20)
         #เก็บข้อความ
         context += doc.page_content + "\n-----------"
 
@@ -204,8 +204,7 @@ def generate_response(state: BasicChatState):
 2. ใช้ "ประวัติสนทนา" เพื่อทำความเข้าใจบริบทว่าปัจจุบันกำลังคุยเรื่องอะไร แต่ไม่ต้องนำมาปนเป็นเนื้อหาคำตอบหากไม่จำเป็น
 3. ถ้าหากเอกสารอ้างไม่มีข้อมูลที่เกี่ยวข้องกับคำถาม ให้ตอบแค่ข้อความนี้ 'Unknown'
 4. ห้ามขึ้นต้นตอบด้วย "AI:" หรือ "Assistant:" หรือ prefix ใด ๆ ให้ตอบเฉพาะข้อความเท่านั้น
-6. หากคำตอบมีลิ้งค์ url จงใส่ให้ถูกต้องตามเอกสารอ้างอิง
-                                            
+
 เอกสารอ้างอิง:
 {context}
 
@@ -250,7 +249,7 @@ def general_chat(state: BasicChatState):
 1. ตอบเป็นภาษาที่สุภาพ เข้าใจง่าย เหมาะกับนักศึกษา สามารถตอบด้วยอิโมจิได้ 
 2. ห้ามตอบข้อมูลที่เกี่ยวกับโมเดล Typhoon และคุณไม่มีความเกี่ยวข้องกับ SCBX10
 3. ห้ามขึ้นต้นคำตอบด้วย "AI:" หรือ "Assistant:" หรือ prefix ใด ๆ ให้ตอบเฉพาะข้อความเท่านั้น
-
+                      
 ประวัติสนทนา:
 {history}
 """),

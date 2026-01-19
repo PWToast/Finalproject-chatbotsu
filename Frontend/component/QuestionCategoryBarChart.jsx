@@ -1,17 +1,17 @@
 import { BarChart, Legend, XAxis, YAxis, CartesianGrid, 
     Tooltip, Bar, ResponsiveContainer,Cell } from 'recharts';
 
-function QuestionCategoryBarChart() {
+function QuestionCategoryBarChart({data}) {
     const categoryData = [
-        { category : "กองบริหารวิชาการ", amount : 10 },
-        { category : "สำนักดิจิทัล", amount : 20 },
-        { category : "กองกิจการนักศึกษา", amount : 5 },
-        { category : "อื่นๆ", amount : 1 }
+        { category : "กองบริหารวิชาการ", amount : data?.total_agencies["กองบริหารวิชาการ"] || 0 },
+        { category : "สำนักดิจิทัล", amount : data?.total_agencies["สำนักดิจิทัลเทคโนโลยี"] || 0 },
+        { category : "กองกิจการนักศึกษา", amount : data?.total_agencies["กองกิจการนักศึกษา"] || 0 },
+        { category : "อื่นๆ", amount : data?.total_agencies["อื่นๆ"] || 0 }
     ];
     const COLORS = ['#FF6B6B', '#4ECDC4', '#FFC33C', '#5B6B7C'];
     return (
-        <div className="p-2 w-full h-[300px] rounded-md shadow-md bg-white"> 
-            <p className="p-2 text-xl font-light-bold text-gray-500">{"ความถี่ของคำถามแต่ละหมวด"}
+        <div className="p-2 w-full h-[280px] rounded-md shadow-md bg-white"> 
+            <p className="p-1 text-xl font-light-bold text-gray-500">{"ความถี่ของคำถามแต่ละหมวด"}
                 <p className="text-sm font-light-bold text-gray-500">{"( โมเดลที่ใช้คัดแยกหมวดยังคงมีความคลาดเคลื่อนในบางกรณี )"}</p>
             </p>
             

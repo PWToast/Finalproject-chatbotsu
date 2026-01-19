@@ -8,29 +8,30 @@ import QuestionCategoryBarChart from '../component/QuestionCategoryBarChart';
 import UserTrendLineChart from '../component/UserTrendLineChart';
 
 function DashboardPage() {
-  const [overviewData, setOverviewData] = useState(null);
+  const [summaryData, setSummaryData] = useState(null);
+  useEffect(() => {
+    axios.get('http://localhost:8000/admin/summary')
+        .then(res => setSummaryData(res.data))
+        .catch(err => console.error("Error fetching summary:", err));
+    console.log(summaryData?.total_chat_web)    
+}, []);
   
-    useEffect(() => {
-      axios.get('http://localhost:8000/admin/overview').then(res => {
-      setOverviewData(res.data);
-    });
-    }, []);
   return (
     <div className="flex h-screen bg-[#E7E9EB]">
       <AdminSidebar />
       <div className="m-2 flex-1 overflow-y-auto">
-        <OverviewBoard data={overviewData}/>
+        <OverviewBoard data={summaryData}/>
         <div className="grid lg:grid-cols-2 gap-2">
           <div className='mt-2'>
-            <UserSourcePieChart data={overviewData}/>
+            <UserSourcePieChart data={summaryData}/>
           </div>
           <div className='mt-2'>
-            <QuestionCategoryBarChart/>
+            <QuestionCategoryBarChart data={summaryData}/>
           </div>
         </div>
         <div className="grid lg:grid-cols-1">
           <div className='mt-2'>
-            <UserTrendLineChart />
+            <UserTrendLineChart data={summaryData}/>
           </div>
         </div>
       </div>
