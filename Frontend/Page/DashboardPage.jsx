@@ -17,9 +17,9 @@ function DashboardPage() {
 }, []);
   
   return (
-    <div className="flex h-screen bg-[#E7E9EB]">
+    <div className="flex min-h-screen bg-[#E7E9EB]">
       <AdminSidebar />
-      <div className="m-2 flex-1 overflow-y-auto">
+      <main className="m-2 flex-1 overflow-y-auto">
         <OverviewBoard data={summaryData}/>
         <div className="grid lg:grid-cols-2 gap-2">
           <div className='mt-2'>
@@ -34,7 +34,7 @@ function DashboardPage() {
             <UserTrendLineChart data={summaryData}/>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

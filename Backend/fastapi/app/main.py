@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.web_chatbot import router as chatbot_router
 from app.api.line_webhook import router as line_router
 from app.api.web_dashboard import router as dashboard_router
+from app.api.web_conversation import router as conversation_router
 
 
 app = FastAPI()
@@ -19,6 +20,7 @@ app.add_middleware(
 app.include_router(chatbot_router)
 app.include_router(line_router)
 app.include_router(dashboard_router)
+app.include_router(conversation_router)
 
 #.venv\Scripts\activate
 #uvicorn app.main:app --reload

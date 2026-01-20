@@ -7,10 +7,6 @@ class StatsSummaryResponse(BaseModel):
     total_success: int  
     total_fallback: int
     total_agencies: Dict[str, int]
-
-from pydantic import BaseModel
-from typing import List
-
 class TrendData(BaseModel):
     label: str       # range 7 30 years
     web_count: int   # เส้นที่ 1

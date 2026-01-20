@@ -7,13 +7,13 @@ from pymongo import MongoClient
 from app.models.mongo_models import DailyStats
 from app.schemas.dashboard import StatsSummaryResponse,UserTrendResponse
 
-router = APIRouter()
+router = APIRouter(prefix="/admin", tags=["web_dashboard"])
 
 client = MongoClient("mongodb://localhost:27017/")
 db = client["chatbot_conversation"]
 collection = db["daily_stats"]
 
-@router.get("/admin/summary",response_model=StatsSummaryResponse)
+@router.get("/summary",response_model=StatsSummaryResponse)
 def get_stats_summary():
     pipeline = [
         {
@@ -56,7 +56,7 @@ def get_stats_summary():
         "total_agencies": total_agencies
     }
 
-@router.get("/admin/user-trend", response_model=UserTrendResponse)
+@router.get("/user-trend", response_model=UserTrendResponse)
 def get_user_trend(range: str = Query("7days")): #มี7วันล่าสุด,30วันล่าสุด,ปีนี้
     now = datetime.now()
     start_date = None

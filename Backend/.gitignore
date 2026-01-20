@@ -11,5 +11,3 @@ rag_evaluation_dataset.jsonl
 .venv
 
 chroma_db
-
-evaluation_results.csv
