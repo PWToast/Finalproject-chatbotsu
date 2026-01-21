@@ -34,7 +34,7 @@ function ChatHistoryPage() {
       <AdminSidebar />
       <main className="m-2 flex-1 overflow-y-auto">
         <div className="flex">
-          <div className="ml-auto py-1 flex items-center gap-2">
+          <div className="ml-auto py-2 flex items-center gap-2">
             <div>{"<"}</div>
             <div>{">"}</div>
             <select

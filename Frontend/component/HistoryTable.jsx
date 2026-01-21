@@ -11,101 +11,27 @@ function HistoryTable({ data }) {
   //       questionAgency: "อื่นๆ",
   //       platform: "LINE",
   //       statusFallback: false,
-  //     },
-  //     {
-  //       id: 2,
-  //       timestamp: "12-01-2026",
-  //       userMessage: "yahoo",
-  //       aiMessage: "hey",
-  //       questionAgency: "อื่นๆ",
-  //       platform: "WEB",
-  //       statusFallback: false,
-  //     },
-  //     {
-  //       id: 3,
-  //       timestamp: "12-01-2026",
-  //       userMessage: "asfdfaf",
-  //       aiMessage: "unknown",
-  //       questionAgency: "อื่นๆ",
-  //       platform: "LINE",
-  //       statusFallback: true,
-  //     },
-  //     {
-  //       id: 1,
-  //       timestamp: "12-01-2026",
-  //       userMessage: "hello",
-  //       aiMessage: "wassup",
-  //       questionAgency: "อื่นๆ",
-  //       platform: "LINE",
-  //       statusFallback: false,
-  //     },
-  //     {
-  //       id: 2,
-  //       timestamp: "12-01-2026",
-  //       userMessage: "yahoo",
-  //       aiMessage: "hey",
-  //       questionAgency: "อื่นๆ",
-  //       platform: "WEB",
-  //       statusFallback: false,
-  //     },
-  //     {
-  //       id: 3,
-  //       timestamp: "12-01-2026",
-  //       userMessage: "asfdfaf",
-  //       aiMessage: "unknown",
-  //       questionAgency: "อื่นๆ",
-  //       platform: "LINE",
-  //       statusFallback: true,
-  //     },
-  //     {
-  //       id: 1,
-  //       timestamp: "12-01-2026",
-  //       userMessage: "hello",
-  //       aiMessage: "wassup",
-  //       questionAgency: "อื่นๆ",
-  //       platform: "LINE",
-  //       statusFallback: false,
-  //     },
-  //     {
-  //       id: 2,
-  //       timestamp: "12-01-2026",
-  //       userMessage: "yahoo",
-  //       aiMessage: "hey",
-  //       questionAgency: "อื่นๆ",
-  //       platform: "WEB",
-  //       statusFallback: false,
-  //     },
-  //     {
-  //       id: 3,
-  //       timestamp: "12-01-2026",
-  //       userMessage: "asfdfaf",
-  //       aiMessage: "unknown",
-  //       questionAgency: "อื่นๆ",
-  //       platform: "LINE",
-  //       statusFallback: true,
-  //     },
-  //     {
-  //       id: 1,
-  //       timestamp: "12-01-2026",
-  //       userMessage: "hello",
-  //       aiMessage: "wassup",
-  //       questionAgency: "อื่นๆ",
-  //       platform: "LINE",
-  //       statusFallback: false,
-  //     },
+  //     }
   //   ];
+
+  const formatThaiDate = (raw) =>
+    raw
+      ? new Date(raw).toLocaleString("sv-SE", { timeZone: "Asia/Bangkok" })
+      : "-";
   return (
     <div className="overflow-hidden rounded-lg border border-gray-200 shadow-md">
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse bg-white text-left text-sm text-gray-500">
+        <table className="w-full border-collapse bg-white text-center text-sm font-light text-gray-500 table-fixed">
           <thead className="bg-[#007A6D]">
             <tr className="text-white">
-              <th className="px-3 py-3 border-r-1">Timestamp</th>
-              <th className="px-3 py-3 border-r-1">User Message</th>
-              <th className="px-3 py-3 border-r-1">AI Message</th>
-              <th className="px-3 py-3 border-r-1">Question Agency</th>
-              <th className="px-3 py-3 border-r-1">Platform</th>
-              <th className="px-3 py-3 border-r-1">Status (Fallback)</th>
+              <th className="w-[100px] px-3 py-3 border-r-1">วัน-เวลา</th>
+              <th className="w-[150px] px-3 py-3 border-r-1">คำถามจากผู้ใช้</th>
+              <th className="w-[150px] px-3 py-3 border-r-1">คำตอบจาก AI</th>
+              <th className="w-[80px] px-3 py-3 border-r-1">
+                หมวดที่เกี่ยวข้อง
+              </th>
+              <th className="w-[50px] px-3 py-3 border-r-1">ช่องทาง</th>
+              <th className="w-[50px] px-3 py-3 border-r-1">สถานะ fallback</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 border-t border-gray-100">
@@ -118,14 +44,17 @@ function HistoryTable({ data }) {
                     : "bg-white hover:bg-gray-50"
                 }`}
               >
-                <td className="px-6 py-4">{user.timestamp}</td>
-                <td className="px-6 py-4">
-                  {/* <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600">
-                  {user.role}
-                </span> */}
-                  {user.user_message}
+                <td className="px-6 py-4">{formatThaiDate(user.timestamp)}</td>
+                <td className="px-3 py-4">
+                  <div className="truncate w-full" title={user.user_message}>
+                    {user.user_message}
+                  </div>
                 </td>
-                <td className="px-6 py-4">{user.ai_message}</td>
+                <td className="px-3 py-4">
+                  <div className="truncate w-full" title={user.ai_message}>
+                    {user.ai_message}
+                  </div>
+                </td>
                 <td className="px-6 py-4">{user.question_agency}</td>
                 <td className="px-6 py-4">{user.platform}</td>
                 <td className="px-6 py-4">

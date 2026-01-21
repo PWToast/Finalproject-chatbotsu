@@ -10,6 +10,7 @@ def save_conversation(user_id,platform,response):
                "platform": platform,
                "timestamp": datetime.now(timezone.utc),
                "user_message": response["user_message"],
+               "rewritten_question": response["rewritten_question"],
                "ai_message": response["ai_message"], 
                "question_agency": response["question_agency"],
                "is_fallback": response["is_fallback"]

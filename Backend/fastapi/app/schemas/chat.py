@@ -9,7 +9,7 @@ class ConversationResponse(BaseModel):
     ai_message: str
     question_agency : str
     is_fallback: bool
-    rewrite_message: Optional[str] = None
+    rewritten_question: Optional[str] = None
 
 class ListConversationResponse(BaseModel):
     items: List[ConversationResponse]
