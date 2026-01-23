@@ -12,7 +12,6 @@ function ChatHistoryPage() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // ใส่ URL API ของคุณตรงนี้
         const response = await axios.get(
           `http://localhost:8000/admin/conversation?filter=${filter}`,
         );
