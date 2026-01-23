@@ -18,7 +18,7 @@ function Registerpage() {
 
   const isFieldFull = username.trim() && email.trim() && password.trim() && confirmpassword.trim()
 
-    async function handleSubmitFrom(){
+    async function handleSubmitFrom (){
         if (!username || !email || !password || !confirmpassword) {
         return alert("กรุณากรอกฟอร์มให้ครบ");
         }
