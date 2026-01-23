@@ -10,7 +10,7 @@ load_dotenv()
 
 client = MongoClient("mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.5.10")
 db = client["mydb"]
-collection = db["web_chat_history"]
+collection = db["chat_history"]
 
 class Historyschema(BaseModel):
     email: str

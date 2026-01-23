@@ -18,7 +18,6 @@ embedding_model = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
 vector_store_from_client = Chroma(
     client=client,
     collection_name="chatbot_rag_documents",
-    collection_name="rag_documents",
     embedding_function=embedding_model,
 )
 
@@ -36,7 +35,7 @@ def hello():
 def llm_chat(item: Item):
     #ส่งคำถาม,ตัว embedding, user_id(คือthread_id)
     #answer,agency,is_fallback
-    response = chat_rag_memory(item.message,vector_store_from_client,"test_user_id")
+    response = chat_rag_memory(item.message,vector_store_from_client, item.session_id)
     answer = response["ai_message"]
     agency = response["question_agency"]
     is_fallback = response["is_fallback"]

@@ -11,6 +11,7 @@ function Chatpage() {
   const decoded = jwtDecode(tokenString)
   const emailToken = decoded.email
   useAuth()
+
   const [inputmessage, setInputMessage] = useState("")
   const [chatroom, setChatRoom] = useState([])
   const [currentSession, setCurrentSession] = useState(null)
@@ -35,18 +36,20 @@ function Chatpage() {
     return newRoom.session_id
   }
 
-  const initialHistoryChat = async(currentSession)=>{
-    const selectedRoom = chatroom.find(room=> room.session_id === currentSession)
-    if (!selectedRoom) return
-    if(selectedRoom.state === "empty"){
-      setChatRoom(prev =>
-        prev.map(room =>
-          room.session_id === currentSession
-            ? { ...room, state: "active" } // เปลี่ยนแค่ state เป็น active แล้วอัพลง database
-            : room
-        )
-      )
+  const initialHistoryChat = async(currentSession, isNewRoom = false)=>{
+    //isNewRoom ค่า default คือ false
+    if (!isNewRoom) {
+      const selectedRoom = chatroom.find(room=> room.session_id === currentSession)
+      // ถ้าหาไม่เจอ หรือสถานะไม่ใช่ empty ให้จบการทำงาน
+      if (!selectedRoom || selectedRoom.state !== "empty") return
     }
+    setChatRoom(prev =>
+      prev.map(room =>
+        room.session_id === currentSession
+          ? { ...room, state: "active" } // เปลี่ยนแค่ state เป็น active แล้วอัพลง database
+          : room
+      )
+    )
     try{
       const tokenString = localStorage.getItem('token')
       const decoded = jwtDecode(tokenString)
@@ -64,6 +67,40 @@ function Chatpage() {
     }
   } 
 
+  async function sendMessage (){
+    try{
+      let sessionToUse = currentSession
+      let isNewSession = false
+
+      if(currentSession === null){
+        sessionToUse = createNewChatRoom()
+        setCurrentSession(sessionToUse)
+        isNewSession = true
+      }
+
+      const buffermessage = inputmessage
+      setInputMessage('')
+
+      const res = await axios.post('http://localhost:8000/chat_rag_memory', {message: inputmessage, email: emailToken, session_id:sessionToUse})
+      const newResponse = {
+        user_message:buffermessage, 
+        ai_message:res.data.response
+      }
+
+      setCurrentMessages(prev=>[...prev, newResponse])
+
+      if (isNewSession) {
+         // ถ้าเป็นห้องใหม่ ส่ง true ไปบอกให้ข้ามการเช็ค state
+         initialHistoryChat(sessionToUse, true) 
+      } else {
+         // ถ้าเป็นห้องเก่า ให้ทำงานตามปกติ (ไม่ต้องส่ง true)
+         initialHistoryChat(sessionToUse)
+      }
+    }catch(error){
+      alert("error", error)
+    }
+  }
+
   const deleteChatRoom = async (session_id) => {
     try{
       const res = await axios.delete(`http://localhost:3000/deletesession?session=${session_id}`)
@@ -76,32 +113,8 @@ function Chatpage() {
     }catch(error){
       console.error("Delete failed", error)
     }
-      setCurrentSession(null)
-      console.log('delete success', session_id)
-    }
-
-  async function sendMessage (){
-    try{
-      let session = currentSession
-      if(currentSession === null){
-        session = createNewChatRoom()
-        setCurrentSession(session)
-      }
-      const buffermessage = inputmessage
-      setInputMessage('')
-      const res = await axios.post('http://localhost:8000/chat_rag_memory', {message: inputmessage, email: emailToken, session_id:currentSession})
-      const newResponse = {
-        user_message:buffermessage, 
-        ai_message:res.data.response
-      }
-      setCurrentMessages(prev=>[...prev, newResponse])
-      const selectedRoom = chatroom.find(room => room.session_id === currentSession)
-      if (selectedRoom?.state === "empty") {
-        initialHistoryChat(currentSession)
-      }
-    }catch(error){
-      alert("error", error)
-    }
+    setCurrentSession(null)
+    console.log('delete success', session_id)
   }
 
   useEffect(()=>{
@@ -142,7 +155,7 @@ function Chatpage() {
               <div className='border-t border-black'></div>
               <div className='ml-9 h-140 w-50 flex flex-col gap-15 overflow-auto no-scrollbar'>
                 {chatroom.map((items, index) => (
-                  <div className='w-[90%] flex flex-row justify-between font-bold text-xl cursor-pointer' key={index} onClick={() => selectSession(items.session_id)}>Chat <span className='cursor-pointer text-red-500' onClick={() => deleteChatRoom(items.session_id)}> delete </span></div>
+                  <div className='w-[90%] flex flex-row justify-between font-bold text-xl cursor-pointer hover:bg-[#007A6D]' key={index} onClick={() => selectSession(items.session_id)}>Chat <span className='cursor-pointer text-red-500' onClick={() => deleteChatRoom(items.session_id)}> delete </span></div>
                 ))}
               </div>
             </div>

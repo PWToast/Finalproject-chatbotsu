@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.web_chatbot import router as chatbot_router
-from app.api.line_webhook import router as line_router
+from app.api.file_upload import router as file_router
+#from app.api.line_webhook import router as line_router
 
 
 app = FastAPI()
@@ -16,6 +17,7 @@ app.add_middleware(
 )
 
 app.include_router(chatbot_router)
+app.include_router(file_router)
 #app.include_router(line_router)
 
 #.venv\Scripts\activate
