@@ -35,7 +35,7 @@ def hello():
 def llm_chat(item: Item):
     #ส่งคำถาม,ตัว embedding, user_id(คือthread_id)
     #answer,agency,is_fallback
-    response = chat_rag_memory(item.message,vector_store_from_client,item.session_id)
+    response = chat_rag_memory(item.message,vector_store_from_client, item.session_id)
     answer = response["ai_message"]
     agency = response["question_agency"]
     is_fallback = response["is_fallback"]
