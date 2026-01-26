@@ -1,6 +1,7 @@
 import pymongo
 from datetime import datetime, timezone, timedelta
 import math
+from app.schemas.chat import QueryFilters
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["chatbot_conversation"]
@@ -73,34 +74,34 @@ def update_daily_stats(platform,response):
     )
     print("updated")
 
-def get_conversations(agency, platform, is_fallback, time_range,sortDate, page):
+def get_conversations(filters: QueryFilters):
     collection = mydb["chat_history"]
     query = {}
 
-    if agency:
-        query["question_agency"] = agency 
-    if platform:
-        query["platform"] = platform
-    if is_fallback == "true":
+    if filters.agency:
+        query["question_agency"] = filters.agency 
+    if filters.platform:
+        query["platform"] = filters.platform
+    if filters.statusFallback == "true":
         query["is_fallback"] = True
-    elif is_fallback == "false":
+    elif filters.statusFallback == "false":
         query["is_fallback"] = False
 
-    if time_range and str(time_range).isdigit():  
-        days = int(time_range)
+    if filters.timeRange and str(filters.timeRange).isdigit():  
+        days = int(filters.timeRange)
     else:
         days = 7
     start_date = datetime.now(timezone.utc) - timedelta(days=days)
     query["timestamp"] = {"$gte": start_date}
 
-    if sortDate == "new":
+    if filters.sortDate == "new":
         sort = -1
     else:
         sort = 1
 
 
     page_size = 10
-    skip_value = (page - 1) * page_size
+    skip_value = (filters.page - 1) * page_size
 
     count = collection.count_documents(query)
     total_pages = math.ceil(count / page_size)

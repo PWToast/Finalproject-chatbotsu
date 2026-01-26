@@ -9,7 +9,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 from app.services.llm.test_chat_rag_memory import chat_rag_memory
 from app.api.web_history import insert_chat, fetch_by_sessionId, Historyschema
-from app.crud.update_history import update_daily_stats
+from app.crud.conversation import update_daily_stats
 
 router = APIRouter(prefix="", tags=["chatbot"])
 
@@ -43,7 +43,7 @@ def llm_chat(item: Item):
     message_to_database = Historyschema(
         email = item.email,
         session_id = item.session_id,
-        platform = "web",
+        platform = "Website",
         timestamp = datetime.now(timezone.utc),
         user_message = item.message,
         ai_message = answer,

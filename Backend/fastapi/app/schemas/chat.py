@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel,Field
 from typing import Dict, List,Optional
 from datetime import datetime
 
@@ -14,3 +14,14 @@ class ConversationResponse(BaseModel):
 class ListConversationResponse(BaseModel):
     items: List[ConversationResponse]
     total_pages: int
+
+class QueryFilters(BaseModel):
+    agency: Optional[str] = None
+    platform: Optional[str] = None
+    statusFallback: Optional[str] = None
+    timeRange: str = "7"
+    sortDate: str = "new"
+    page: int = Field(default=1, ge=1)
+
+    class Config:
+        populate_by_name = True
