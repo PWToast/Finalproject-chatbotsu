@@ -9,7 +9,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 
 from app.services.llm.test_chat_rag_memory import chat_rag_memory
 from app.api.web_history import insert_chat, fetch_by_sessionId, Historyschema
-
+from app.crud.update_history import update_daily_stats
 
 router = APIRouter(prefix="", tags=["chatbot"])
 
@@ -51,6 +51,7 @@ def llm_chat(item: Item):
         is_fallback = is_fallback
     )
     insert_chat(message_to_database)
+    update_daily_stats("WEB",response)
     #เรียกฟังชันเก็บลง db ได้ตรงนี้
     return {"response": answer}
 

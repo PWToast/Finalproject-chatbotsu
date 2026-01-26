@@ -13,3 +13,4 @@ class ConversationResponse(BaseModel):
 
 class ListConversationResponse(BaseModel):
     items: List[ConversationResponse]
+    total_pages: int

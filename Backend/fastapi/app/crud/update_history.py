@@ -1,11 +1,12 @@
 import pymongo
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+import math
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["chatbot_conversation"]
 
 def save_conversation(user_id,platform,response):
-    mycol = mydb["chat_history"]
+    collection = mydb["chat_history"]
     mydict = { "user_id": user_id,
                "platform": platform,
                "timestamp": datetime.now(timezone.utc),
@@ -16,10 +17,10 @@ def save_conversation(user_id,platform,response):
                "is_fallback": response["is_fallback"]
             }#เว็บมี session_id กับ message_idด้วย
     print(mydict)
-    mycol.insert_one(mydict)
+    collection.insert_one(mydict)
 
 def update_daily_stats(platform,response):
-    mycol = mydb["daily_stats"]
+    collection = mydb["daily_stats"]
     today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     inc_data = {}
     if platform.lower() == "line":
@@ -58,7 +59,7 @@ def update_daily_stats(platform,response):
     for name, value in agencies_default.items():
         set_default_log[f"agencies.{name}"] = value
     
-    mycol.update_one(
+    collection.update_one(
         {"date": today},
         {
             "$inc": {
@@ -71,3 +72,59 @@ def update_daily_stats(platform,response):
         upsert=True
     )
     print("updated")
+
+def get_conversations(agency, platform, is_fallback, time_range,sortDate, page):
+    collection = mydb["chat_history"]
+    query = {}
+
+    if agency:
+        query["question_agency"] = agency 
+    if platform:
+        query["platform"] = platform
+    if is_fallback == "true":
+        query["is_fallback"] = True
+    elif is_fallback == "false":
+        query["is_fallback"] = False
+
+    if time_range and str(time_range).isdigit():  
+        days = int(time_range)
+    else:
+        days = 7
+    start_date = datetime.now(timezone.utc) - timedelta(days=days)
+    query["timestamp"] = {"$gte": start_date}
+
+    if sortDate == "new":
+        sort = -1
+    else:
+        sort = 1
+
+
+    page_size = 10
+    skip_value = (page - 1) * page_size
+
+    count = collection.count_documents(query)
+    total_pages = math.ceil(count / page_size)
+    # print(f"Total docs: {count}")
+
+    pipeline = [
+        { "$match": query },
+        { "$sort": { "timestamp": sort } },#-1ใหม่ไปเก่า ,1 เก่าไปใหม่
+        { "$skip": skip_value },#ข้ามตามจำนวนรายการแรกที่หาเจอ
+        { "$limit": page_size },#ดึง10อัน
+        { "$project": {
+                "_id": 0,
+                "user_message": 1,
+                "ai_message": 1,
+                "timestamp": { 
+                    "$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": "$timestamp" } 
+                },
+                "platform": 1,
+                "question_agency": 1,
+                "rewritten_question": 1,
+                "is_fallback": 1
+            }
+        }
+    ]
+    results = list(collection.aggregate(pipeline))
+    # print(results)
+    return results,total_pages
