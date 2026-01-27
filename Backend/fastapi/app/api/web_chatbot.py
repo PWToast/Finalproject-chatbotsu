@@ -39,6 +39,7 @@ def llm_chat(item: Item):
     answer = response["ai_message"]
     agency = response["question_agency"]
     is_fallback = response["is_fallback"]
+    rewritten_question = response["rewritten_question"]
     # ต้องรับ message, email(jwt), session_id(frontend) จาก api 
     message_to_database = Historyschema(
         email = item.email,
@@ -48,7 +49,8 @@ def llm_chat(item: Item):
         user_message = item.message,
         ai_message = answer,
         question_agency = agency,
-        is_fallback = is_fallback
+        is_fallback = is_fallback,
+        rewritten_question=rewritten_question
     )
     insert_chat(message_to_database)
     update_daily_stats("WEB",response)

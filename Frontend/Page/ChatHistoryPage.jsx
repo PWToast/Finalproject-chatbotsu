@@ -2,12 +2,15 @@ import { useEffect, useState } from "react";
 import AdminSidebar from "../component/AdminSidebar";
 import HistoryTable from "../component/HistoryTable";
 import axios from "axios";
+import HistoryChatModal from "../component/HistoryChatModal";
 
 function ChatHistoryPage() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalPages, setTotalPages] = useState(1);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
   const [filters, setFilters] = useState({
     agency: "",
     platform: "",
@@ -16,12 +19,14 @@ function ChatHistoryPage() {
     sortDate: "new",
     page: 1,
   });
-  const changePage = (direction) => {
+
+  const handleChangePage = (direction) => {
     setFilters((prev) => ({
       ...prev,
       page: direction === "next" ? prev.page + 1 : Math.max(1, prev.page - 1),
     }));
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -54,6 +59,12 @@ function ChatHistoryPage() {
 
     fetchData();
   }, [filters]);
+
+  const handleRowClick = (rowData) => {
+    setSelectedRow(rowData);
+    console.log(selectedRow);
+    setIsOpen(true);
+  };
   return (
     <div className="flex min-h-screen bg-[#E7E9EB]">
       <AdminSidebar />
@@ -64,7 +75,7 @@ function ChatHistoryPage() {
           <div className="flex items-center justify-end gap-2 border-b md:border-none pb-3 md:pb-0">
             <div className="flex items-center gap-2">
               <button
-                onClick={() => changePage("prev")}
+                onClick={() => handleChangePage("prev")}
                 disabled={filters.page === 1 || loading}
                 className={`px-3 py-1 rounded border ${
                   filters.page === 1
@@ -78,7 +89,7 @@ function ChatHistoryPage() {
                 หน้า {filters.page}
               </span>
               <button
-                onClick={() => changePage("next")}
+                onClick={() => handleChangePage("next")}
                 disabled={filters.page >= totalPages || loading}
                 className={`px-3 py-1 rounded border ${
                   filters.page >= totalPages
@@ -173,7 +184,16 @@ function ChatHistoryPage() {
               กำลังโหลดข้อมูล...
             </div>
           ) : (
-            <HistoryTable data={data} />
+            <HistoryTable data={data} handleRowClick={handleRowClick} />
+          )}
+        </div>
+        <div>
+          {isOpen && selectedRow && (
+            <HistoryChatModal
+              data={selectedRow}
+              isOpen={isOpen}
+              onClose={() => setIsOpen(false)}
+            />
           )}
         </div>
       </main>

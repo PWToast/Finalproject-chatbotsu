@@ -21,6 +21,7 @@ class Historyschema(BaseModel):
     ai_message: str
     question_agency: str
     is_fallback: bool
+    rewritten_question: str 
 
 #@router.post("/insertchat")
 def insert_chat(schema: Historyschema):
