@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from pydantic import BaseModel
 from fastapi import APIRouter
 from dotenv import load_dotenv
-
+from app.models.mongo_models import Historyschema
 router = APIRouter(prefix="", tags=["web_history"])
 
 load_dotenv()
@@ -12,15 +12,6 @@ client = MongoClient("mongodb://127.0.0.1:27017/?directConnection=true&serverSel
 db = client["mydb"]
 collection = db["chat_history"]
 
-class Historyschema(BaseModel):
-    email: str
-    session_id: str
-    platform: str
-    timestamp: datetime
-    user_message: str
-    ai_message: str
-    question_agency: str
-    is_fallback: bool
 
 #@router.post("/insertchat")
 def insert_chat(schema: Historyschema):

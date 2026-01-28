@@ -1,15 +1,48 @@
 from fastapi import APIRouter, File, UploadFile, HTTPException
+from pydantic import BaseModel
 from typing import List
 import shutil
 import os
-
+from app.schemas.upload import FormToSend
+from app.crud.db_manager import add_docs, get_all_docs, delete_docs
 router = APIRouter(prefix="", tags=["file_upload"])
+
 
 @router.get("/filetest")
 async def file_test():
     return {"message": "hello this is file_upload api test"}
 
-@router.post("/upload")
+@router.get("/getalldocs")
+async def get_all_documents():
+    data = get_all_docs()
+    return {"docs":data}
+
+
+@router.delete("/deletedocs/{item_id}")
+async def delete_docuemnt(item_id: str):
+    try:
+        delete_docs(item_id)
+        return {"message":"delete success"}
+    except Exception as e:
+        raise Exception("error cannot delete",e)
+    
+@router.post("/textupload")
+async def text_upload(form: FormToSend):
+    form = {
+        "content":form.content,
+        "metadata":{
+            "topic": form.metadata.topic,
+            "category": form.metadata.category,
+            "agency": form.metadata.agency,
+            "source": form.metadata.source,
+            "added_at": form.metadata.added_at,
+        }
+    }
+    add_docs([form])
+    print(form)
+    return form
+
+@router.post("/fileupload")
 #ในฟังก์ชัน upload_file ตรง fileupload: UploadFile คำว่า "fileupload" คือ key และต้องใส่ชื่อให้ตรงตอนส่ง request หรือยิง api
 async def upload_files(fileupload: List[UploadFile]):
     upload_dir = "uploads"

@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.web_chatbot import router as chatbot_router
 from app.api.web_dashboard import router as dashboard_router
 from app.api.web_conversation import router as conversation_router
-from app.api.file_upload import router as file_router
+from app.api.insert_and_delete_docs import router as file_router
 
 #from app.api.line_webhook import router as line_router
 
