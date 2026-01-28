@@ -1,7 +1,7 @@
 from typing import Optional
 from datetime import datetime, date
 from beanie import Document
-from pydantic import Field
+from pydantic import Field, BaseModel
 from typing import Dict
 
 class ChatHistory(Document):
@@ -31,3 +31,15 @@ class DailyStats(Document):
 
     class Settings:
         name = "daily_stats"
+
+
+class Historyschema(BaseModel):
+    email: str
+    session_id: str
+    platform: str
+    timestamp: datetime
+    user_message: str
+    ai_message: str
+    question_agency: str
+    is_fallback: bool
+    rewritten_question: str

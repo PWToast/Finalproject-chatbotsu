@@ -9,7 +9,7 @@ import os
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.join(current_dir, "..", "services", "llm", "chroma_db")
-print(f"กำลังจะเก็บข้อมูลไว้ที่: {os.path.abspath(db_path)}")
+#print(f"กำลังจะเก็บข้อมูลไว้ที่: {os.path.abspath(db_path)}")
 
 client = chromadb.PersistentClient(path=db_path)  #ดู path folderให้ถูกต้อง
 # collection = client.get_or_create_collection("chatbot_rag_documents") #อันเก่า L2
@@ -31,10 +31,32 @@ def watch_collect():
     for col in all_collections:
         print(f"- ชื่อ: {col.name}")
 
-def add_docs(path,vector_store_from_client):
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+# def add_docs(path,vector_store_from_client):
+#     with open(path, "r", encoding="utf-8") as f:
+#         data = json.load(f)
 
+#     documents = []
+
+#     for i,item in enumerate(data, start=1):
+#         # now = datetime.now()
+#         # formatted = now.strftime("%d/%m/%Y %H:%M")
+#         doc = Document(
+#             page_content=item["content"],
+#             metadata=item["metadata"]
+#         )
+#         documents.append(doc)
+
+#     for doc in documents:
+#         print(doc.page_content)
+#         print(doc.metadata)
+#         print("-"*30)
+
+#     uuids = [str(uuid4()) for _ in range(len(documents))]
+#     vector_store_from_client.add_documents(documents=documents, ids=uuids)
+#     print("add completed")
+
+def add_docs(data):
+    print("test test")
     documents = []
 
     for i,item in enumerate(data, start=1):
@@ -50,10 +72,11 @@ def add_docs(path,vector_store_from_client):
         print(doc.page_content)
         print(doc.metadata)
         print("-"*30)
-
+    
     uuids = [str(uuid4()) for _ in range(len(documents))]
     vector_store_from_client.add_documents(documents=documents, ids=uuids)
     print("add completed")
+    #show_all_docs()
 
 def show_all_docs():
     print("Collection name:", collection.name)
@@ -66,14 +89,28 @@ def show_all_docs():
         print(f"Content: {content}")
         print(f"Metadata: {metadata}")
         print("-" * 30)
+    
+def get_all_docs():
+    results = collection.get()
+    formatted_docs = []
 
-def delete_docs(vector_store_from_client):
+    if results["ids"]:
+        # ใช้ zip เพื่อจับคู่ id, content, metadata ของแต่ละรายการเข้าด้วยกัน
+        for doc_id, content, metadata in zip(results["ids"], results["documents"], results["metadatas"]):
+            formatted_docs.append({
+                "id": doc_id,
+                "content": content,
+                "metadata": metadata
+            })
+    return formatted_docs
+
+def delete_docs(uuid):
     # uuids_to_delete = [
     #     "1fd8ecfe-3b21-4899-a775-27e71f865e75"
     # ]
     # vector_store_from_client.delete(ids=uuids_to_delete)
 
-    collection.delete(where={})
+    collection.delete(ids=[uuid])
 
 
 # add_docs("docs-FAQ/กองกิจการนักศึกษา/....json",vector_store_from_client)

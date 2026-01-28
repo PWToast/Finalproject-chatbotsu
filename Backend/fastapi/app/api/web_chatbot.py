@@ -8,7 +8,7 @@ from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
 from app.services.llm.test_chat_rag_memory import chat_rag_memory
-from app.api.web_history import insert_chat, fetch_by_sessionId, Historyschema
+from app.crud.web_history import insert_chat, fetch_by_sessionId, Historyschema
 from app.crud.conversation import update_daily_stats
 
 router = APIRouter(prefix="", tags=["chatbot"])
@@ -53,7 +53,7 @@ def llm_chat(item: Item):
         rewritten_question=rewritten_question
     )
     insert_chat(message_to_database)
-    update_daily_stats("WEB",response)
+    update_daily_stats("WEB", response)
     #เรียกฟังชันเก็บลง db ได้ตรงนี้
     return {"response": answer}
 

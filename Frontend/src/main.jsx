@@ -9,6 +9,7 @@ import Chatpage from '../Page/Chatpage.jsx'
 import DashboardPage from '../Page/DashboardPage.jsx'
 import ChatHistoryPage from '../Page/ChatHistoryPage.jsx'
 import ManageDataPage from '../Page/ManageDataPage.jsx'
+import ViewDocsPage from '../Page/ViewDocsPage.jsx'
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
   {
     path: 'conversation-history',
     element:<ChatHistoryPage/>
+  },
+  {
+    path:'view-docs-page',
+    element:<ViewDocsPage/>
   }
 ])
 

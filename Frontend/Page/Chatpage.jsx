@@ -5,8 +5,12 @@ import { CiSettings } from "react-icons/ci";
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "../service/Auth";
 import { jwtDecode } from "jwt-decode";
+import { Navigate, useNavigate } from "react-router-dom";
+import LogOutModal from "../component/LogOutModal";
 
 function Chatpage() {
+  const [IsModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
   const tokenString = localStorage.getItem("token");
   const decoded = jwtDecode(tokenString);
   const emailToken = decoded.email;
@@ -16,6 +20,13 @@ function Chatpage() {
   const [chatroom, setChatRoom] = useState([]);
   const [currentSession, setCurrentSession] = useState(null);
   const [currentmessages, setCurrentMessages] = useState([]);
+
+  const handleLogoutConfirm = () => {
+    localStorage.removeItem("token");
+    console.log("ออกจากระบบแล้ว!");
+    setIsModalOpen(false);
+    navigate("/");
+  };
 
   const selectSession = async (session_id) => {
     console.log("you now selected", session_id);
@@ -189,11 +200,13 @@ function Chatpage() {
                 </div>
               </div>
               <div className="flex flex-col gap-5 ml-10 mb-5">
-                <div className=" flex flex-row w-[90%] h-12 p-1 border border-solid rounded-full border-gray-500">
+                <div className=" flex flex-row w-[90%] h-12 p-1 border border-solid rounded-full border-gray-500 cursor-pointer">
                   <div className="h-10 w-10 bg-[#BEAEAE] rounded-full mr-2">
                     <CiSettings className="h-8 w-8 mt-1 ml-1" />
                   </div>
-                  <div className="mt-2">Settings</div>
+                  <button onClick={() => {setIsModalOpen(true)}} className="cursor-pointer">
+                    ออกจากระบบ
+                  </button>
                 </div>
                 <div className=" w-[90%] h-12 p-1 border border-solid rounded-full border-gray-500">
                   <div className="mt-2 ml-5">Profile</div>
@@ -297,6 +310,11 @@ function Chatpage() {
             </div>
           </div>
         </div>
+        <LogOutModal
+          isModalOpen={IsModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleLogoutConfirm}
+        />
       </div>
     </>
   );
