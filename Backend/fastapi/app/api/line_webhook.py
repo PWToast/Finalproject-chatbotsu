@@ -23,9 +23,15 @@
 # from langchain_chroma import Chroma
 # from langchain_huggingface import HuggingFaceEmbeddings
 
+<<<<<<< HEAD
 # # from app.crud.line_user import ensure_line_user
 # from app.services.llm.test_chat_rag_memory import chat_rag_memory
 # from app.crud.update_history import save_conversation,update_daily_stats
+=======
+# from app.crud.line_user import ensure_line_user
+from app.services.llm.test_chat_rag_memory import chat_rag_memory
+from app.crud.conversation import save_conversation,update_daily_stats
+>>>>>>> e6baab00c80fe02fa99cb554bd969320ecb4e155
 
 # router = APIRouter(prefix="", tags=["line"])
 

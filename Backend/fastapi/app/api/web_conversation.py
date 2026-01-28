@@ -1,44 +1,11 @@
-from fastapi import APIRouter, Query
-from datetime import datetime
-from collections import defaultdict
-from datetime import datetime, timedelta
-from pymongo import MongoClient
-
-from app.schemas.chat import ListConversationResponse
+from fastapi import APIRouter,Depends
+from typing import Annotated
+from app.schemas.chat import ListConversationResponse,QueryFilters
+from app.crud.conversation import get_conversations
 
 router = APIRouter(prefix="/admin", tags=["web_conversation"])
 
-client = MongoClient("mongodb://localhost:27017/")
-db = client["chatbot_conversation"]
-collection = db["chat_history"]
-
 @router.get("/conversation",response_model=ListConversationResponse)
-def get_conversation(filter: str = Query("กองบริหารวิชาการ"),page: int = Query(default=1, ge=1) ):
-    page_size = 10
-    skip_value = (page - 1) * page_size
-
-    pipeline = [
-        { "$match": { "question_agency": filter } },
-        { "$sort": { "timestamp": -1 } },#-1ใหม่ไปเก่า ,1 เก่าไปใหม่
-
-        { "$skip": skip_value },#ข้ามตามจำนวนรายการแรกที่หาเจอ
-        
-        { "$limit": page_size },#ดึง10อัน
-        {
-            "$project": {
-                "_id": 0,
-                "user_message": 1,
-                "ai_message": 1,
-                "timestamp": { 
-                    "$dateToString": { "format": "%Y-%m-%dT%H:%M:%SZ", "date": "$timestamp" } 
-                },
-                "platform": 1,
-                "question_agency": 1,
-                "rewritten_question": 1,
-                "is_fallback": 1
-            }
-        }
-    ]
-    results = list(collection.aggregate(pipeline))
-    print(results)
-    return {"items":results}
+def get_conversation(filters: Annotated[QueryFilters, Depends()]):
+    results,total_pages = get_conversations(filters)
+    return {"items":results, "total_pages":total_pages}

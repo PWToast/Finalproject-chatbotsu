@@ -7,10 +7,12 @@ import {
   Bars3Icon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import LogOutModal from "./LogOutModal";
 function AdminSidebar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   const navItems = [
     { name: "แดชบอร์ด", icon: ComputerDesktopIcon, path: "/dashboard" },
@@ -24,13 +26,18 @@ function AdminSidebar() {
       icon: ChatBubbleLeftRightIcon,
       path: "/conversation-history",
     },
-    { name: "ออกจากระบบ", icon: PowerIcon, path: "/" },
+    { name: "ออกจากระบบ", icon: PowerIcon, path: true },
   ];
-
+  const handleLogoutConfirm = () => {
+    localStorage.removeItem("token");
+    console.log("ออกจากระบบแล้ว!");
+    setIsModalOpen(false);
+    navigate("/");
+  };
   return (
     <>
       <button
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-[#007A6D] text-white rounded-md"
+        className="lg:hidden fixed top-4 left-4 border-1 z-50 p-2 bg-[#007A6D] text-white rounded-md"
         onClick={() => setIsOpen(!isOpen)}
       >
         {isOpen ? (
@@ -60,6 +67,21 @@ function AdminSidebar() {
         <nav className="flex-1 px-4 py-4 space-y-3">
           {navItems.map((item) => {
             const Icon = item.icon;
+            if (item.name === "ออกจากระบบ") {
+              return (
+                <button
+                  key={item.name}
+                  onClick={() => {
+                    // setIsOpen(false); // ปิด Sidebar มือถือ
+                    setIsModalOpen(true);
+                  }}
+                  className="w-full flex items-center p-3 rounded-lg text-lg font-light hover:bg-teal-600 transition"
+                >
+                  <Icon className="w-6 h-6 mr-3" />
+                  {item.name}
+                </button>
+              );
+            }
             return (
               <Link
                 key={item.name}
@@ -74,6 +96,11 @@ function AdminSidebar() {
           })}
         </nav>
       </div>
+      <LogOutModal
+        isModalOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleLogoutConfirm}
+      />
     </>
   );
 }
