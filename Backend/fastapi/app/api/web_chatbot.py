@@ -7,11 +7,9 @@ from datetime import datetime, timezone
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-from app.crud.update_history import update_daily_stats
-
 from app.services.llm.test_chat_rag_memory import chat_rag_memory
 from app.crud.web_history import insert_chat, fetch_by_sessionId, Historyschema
-
+from app.crud.conversation import update_daily_stats
 
 router = APIRouter(prefix="", tags=["chatbot"])
 
@@ -41,16 +39,18 @@ def llm_chat(item: Item):
     answer = response["ai_message"]
     agency = response["question_agency"]
     is_fallback = response["is_fallback"]
+    rewritten_question = response["rewritten_question"]
     # ต้องรับ message, email(jwt), session_id(frontend) จาก api 
     message_to_database = Historyschema(
         email = item.email,
         session_id = item.session_id,
-        platform = "web",
+        platform = "Website",
         timestamp = datetime.now(timezone.utc),
         user_message = item.message,
         ai_message = answer,
         question_agency = agency,
-        is_fallback = is_fallback
+        is_fallback = is_fallback,
+        rewritten_question=rewritten_question
     )
     insert_chat(message_to_database)
     update_daily_stats("WEB", response)

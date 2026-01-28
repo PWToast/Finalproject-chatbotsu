@@ -1,6 +1,6 @@
 import React from "react";
 
-function HistoryTable({ data }) {
+function HistoryTable({ data, handleRowClick }) {
   //ใส่ prop { data }
   //   const data = [
   //     {
@@ -31,13 +31,14 @@ function HistoryTable({ data }) {
                 หมวดที่เกี่ยวข้อง
               </th>
               <th className="w-[50px] px-3 py-3 border-r-1">ช่องทาง</th>
-              <th className="w-[50px] px-3 py-3 border-r-1">สถานะ fallback</th>
+              <th className="w-[50px] px-3 py-3 border-r-1">สถานะการตอบกลับ</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 border-t border-gray-100">
             {data.map((user, index) => (
               <tr
                 key={index}
+                onClick={() => handleRowClick(user)}
                 className={`transition-colors ${
                   user.is_fallback
                     ? "bg-yellow-50 hover:bg-yellow-100"
@@ -59,9 +60,9 @@ function HistoryTable({ data }) {
                 <td className="px-6 py-4">{user.platform}</td>
                 <td className="px-6 py-4">
                   {user.is_fallback ? (
-                    <span className="text-black-500">true</span>
+                    <span className="text-black-500">ตอบไม่ได้</span>
                   ) : (
-                    <span className="text-black-500">false</span>
+                    <span className="text-black-500">ตอบได้</span>
                   )}
                 </td>
                 {/* <td className="px-6 py-4">
