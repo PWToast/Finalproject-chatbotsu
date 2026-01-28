@@ -11,6 +11,7 @@ function ChatHistoryPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
+
   const [filters, setFilters] = useState({
     agency: "",
     platform: "",
@@ -65,13 +66,12 @@ function ChatHistoryPage() {
     console.log(selectedRow);
     setIsOpen(true);
   };
+
   return (
     <div className="flex min-h-screen bg-[#E7E9EB]">
       <AdminSidebar />
       <main className="m-2 flex-1 overflow-y-auto">
-        {/* Container หลักสำหรับ Filter และ Pagination */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-end gap-4 bg-white p-3 rounded-lg shadow-sm mb-3">
-          {/* ส่วน Pagination: อยู่ซ้ายบนในจอใหญ่ อยู่บนสุดในจอมือถือ */}
           <div className="flex items-center justify-end gap-2 border-b md:border-none pb-3 md:pb-0">
             <div className="flex items-center gap-2">
               <button
