@@ -1,18 +1,25 @@
-mysql_data/
-
-node_modules/
-
-.env
-
-test/
-
-rag_evaluation_dataset.jsonl
-
-.venv
-
-chroma_db
-
+# 1. Python (FastAPI)
 __pycache__/
 *.pyc
+.venv/
+.env
 
+# 2. Database & Vector DB (ChromaDB / MySQL)
+# ใส่ / ต่อท้ายโฟลเดอร์เพื่อให้ Git มั่นใจว่ายกเว้นทั้งโฟลเดอร์
+chroma_db/
+mysql_data/
 *.sqlite3
+
+# 3. Node.js (React / Dashboard)
+node_modules/
+.eslintcache
+build/
+dist/
+
+# 4. Data & Evaluations
+rag_evaluation_dataset.jsonl
+test/
+
+# 5. OS files
+.DS_Store
+Thumbs.db
