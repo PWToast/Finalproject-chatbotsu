@@ -1,7 +1,7 @@
 import Navbar from "../component/navbar";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { CiSettings } from "react-icons/ci";
+import { CiLogout } from "react-icons/ci";
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "../service/Auth";
 import { jwtDecode } from "jwt-decode";
@@ -71,10 +71,10 @@ function Chatpage() {
       const email = decoded.email;
       const data = {
         email,
-        session: currentSession,
+        session_id: currentSession,
         state: "active",
       };
-      await axios.post("http://localhost:3000/createsession", data);
+      await axios.post("http://localhost:8000/createsession", data);
       console.log("db update succes!");
     } catch (error) {
       alert("error", error);
@@ -122,34 +122,30 @@ function Chatpage() {
 
   const deleteChatRoom = async (session_id) => {
     try {
-      const res = await axios.delete(
-        `http://localhost:3000/deletesession?session=${session_id}`,
-      );
+      const res = await axios.delete(`http://localhost:8000/deletesession/${session_id}`)
       setChatRoom((prev) =>
         prev.filter((room) => room.session_id !== session_id),
-      );
+      )
       if (currentSession === session_id) {
         setCurrentSession(null);
         setCurrentMessages([]);
       }
-      console.log("delete success", session_id);
+      console.log("delete success", session_id)
     } catch (error) {
-      console.error("Delete failed", error);
+      console.error("Delete failed", error)
     }
-    setCurrentSession(null);
+    setCurrentSession(null)
     console.log("delete success", session_id);
-  };
+  }
 
   useEffect(() => {
     const fetchSessions = async () => {
       try {
-        const tokenString = localStorage.getItem("token");
-        const decoded = jwtDecode(tokenString);
-        const email = decoded.email;
-        const res = await axios.get(
-          `http://localhost:3000/getsession?email=${email}`,
-        );
-        console.log(res.data);
+        const tokenString = localStorage.getItem("token")
+        const decoded = jwtDecode(tokenString)
+        const email = decoded.email
+        const res = await axios.get(`http://localhost:8000/getsession/${email}`)
+        console.log(res.data)
         const sessionsWithMessage = res.data.map((session) => ({
           ...session,
           message: [],
@@ -187,13 +183,9 @@ function Chatpage() {
                       key={index}
                       onClick={() => selectSession(items.session_id)}
                     >
-                      Chat{" "}
-                      <span
-                        className="cursor-pointer text-red-500"
-                        onClick={() => deleteChatRoom(items.session_id)}
-                      >
-                        {" "}
-                        delete{" "}
+                      Chat
+                      <span className="cursor-pointer text-red-500" onClick={() => deleteChatRoom(items.session_id)}>
+                        delete
                       </span>
                     </div>
                   ))}
@@ -202,7 +194,7 @@ function Chatpage() {
               <div className="flex flex-col gap-5 ml-10 mb-5">
                 <div className=" flex flex-row w-[90%] h-12 p-1 border border-solid rounded-full border-gray-500 cursor-pointer">
                   <div className="h-10 w-10 bg-[#BEAEAE] rounded-full mr-2">
-                    <CiSettings className="h-8 w-8 mt-1 ml-1" />
+                    <CiLogout className="h-8 w-8 mt-1 ml-1" />
                   </div>
                   <button onClick={() => {setIsModalOpen(true)}} className="cursor-pointer">
                     ออกจากระบบ
@@ -248,63 +240,40 @@ function Chatpage() {
 
             {/*ส่วนที่ 3 ส่วนของ Suggestion ไม่มีอะไร กดอะไรไม่ได้*/}
             <div className="border-2 border-solid rounded-xl">
-              <div className="flex flex-col gap-10 p-5">
+              <div className="flex flex-col gap-3 p-5">
                 <span className="self-center text-2xl">Suggestion</span>
                 <div className="flex flex-col p-3 ">
-                  <span className="line-clamp-1">DSA SU กองกิจการนักศึกษา</span>
+                  <span className="line-clamp-1">กองบริหารงานวิชาการ</span>
                   <ul className="list-disc ml-10">
-                    <li>
-                      <span
-                        className="line-clamp-1 text-sm text-gray-500"
-                        title="กยศ"
-                      >
-                        กยศ
-                      </span>
-                    </li>
-                    <li>
-                      <span
-                        className="line-clamp-1 text-sm text-gray-500"
-                        title="หอพักนักศึกษา"
-                      >
-                        หอพักนักศึกษา
-                      </span>
-                    </li>
+                    <li><span className="line-clamp-1 text-sm text-gray-500" title="ขั้นตอนการลงทะเบียนเรียน">ขั้นตอนการลงทะเบียนเรียน </span></li>
+                    <li><span className="line-clamp-1 text-sm text-gray-500" title="การลงทะเบียนเรียน (ล่าช้า)">การลงทะเบียนเรียน (ล่าช้า)</span></li>
+                    <li><span className="line-clamp-1 text-sm text-gray-500" title="การเพิ่มถอน เปลี่ยนกลุ่มเรียน">การเพิ่มถอน เปลี่ยนกลุ่มเรียน</span></li>
+                    <li><span className="line-clamp-1 text-sm text-gray-500" title="การดูผลการลงทะเบียนเรียน">การดูผลการลงทะเบียนเรียน</span></li>
+                    <li><span className="line-clamp-1 text-sm text-gray-500" title="ตรวจสอบภาระค่าใช้จ่าย">ตรวจสอบภาระค่าใช้จ่าย</span></li>
+                    <li><span className="line-clamp-1 text-sm text-gray-500" title="การขอสำรองที่นั่งออนไลน์">การขอสำรองที่นั่งออนไลน์</span></li>
+                    <li><span className="line-clamp-1 text-sm text-gray-500" title="คำร้องขอติด W ออนไลน์">คำร้องขอติด W ออนไลน์</span></li>
+                    <li><span className="line-clamp-1 text-sm text-gray-500" title="ตรวจสอบคำร้อง">ตรวจสอบคำร้อง</span></li>
+                    <li><span className="line-clamp-1 text-sm text-gray-500" title="Email แจ้งเตือนคำร้อง">Email แจ้งเตือนคำร้อง</span></li>
+                    <li><span className="text-sm text-gray-500" title="ใบคำร้องสำหรับนักศึกษาปริญญาตรี">ใบคำร้องสำหรับนักศึกษาปริญญาตรี</span></li>
                   </ul>
                 </div>
                 <div className="flex flex-col p-3">
-                  <span className="line-clamp-1">กองบริหารงานวิชาการ</span>
+                  <span className="line-clamp-1">DSA SU กองกิจการนักศึกษา</span>
                   <ul className="list-disc ml-10">
-                    <li>
-                      <span
-                        className="line-clamp-1 text-sm text-gray-500"
-                        title="ลงทะเบียน"
-                      >
-                        ลงทะเบียน
-                      </span>
-                    </li>
-                    <li>
-                      <span
-                        className="line-clamp-1 text-sm text-gray-500"
-                        title="เพิ่มถอน"
-                      >
-                        เพิ่มถอน
-                      </span>
-                    </li>
-                    <li>
-                      <span
-                        className="line-clamp-1 text-sm text-gray-500"
-                        title="การยื่นใบคำร้อง"
-                      >
-                        การยื่นใบคำร้อง
-                      </span>
-                    </li>
+                    <li><span className="text-sm text-gray-500" title="คุณสมบัติของผู้กู้ยืมกยศ.(กู้ยืมเพื่อการศึกษา)">คุณสมบัติของผู้กู้ยืมกยศ.(กู้ยืมเพื่อการศึกษา) </span></li>
+                    <li><span className="line-clamp-1 text-sm text-gray-500" title="ประเภทของผู้กู้ยืมเงิน ">ประเภทของผู้กู้ยืมเงิน</span></li>
+                    <li><span className="text-sm text-gray-500" title="คุณสมบัติทั่วไปของนักศึกษาผู้กู้ยืมเงินกองทุน">คุณสมบัติทั่วไปของนักศึกษาผู้กู้ยืมเงินกองทุน</span></li>
+                    <li><span className="text-sm text-gray-500" title="ลักษณะต้องห้ามของนักศึกษาผู้กู้ยืมเงินกองทุน ">ลักษณะต้องห้ามของนักศึกษาผู้กู้ยืมเงินกองทุน</span></li>
+                    <li><span className="text-sm text-gray-500" title="คุณสมบัติเฉพาะของนักศึกษาผู้กู้ยืมเงินกองทุน ลักษณะที่ 1,2 และ 3">คุณสมบัติเฉพาะของนักศึกษาผู้กู้ยืมเงินกองทุน ลักษณะที่ 1,2 และ 3</span></li>
+                    <li><span className="line-clamp-1 text-sm text-gray-500" title="หอพักนักศึกษา">หอพักนักศึกษา</span></li>
                   </ul>
                 </div>
                 <div className="flex flex-col p-3 ">
-                  <span className="line-clamp-1">
-                    BDT.SU สำนักดิจิทัลเทคโนโลยี
-                  </span>
-                  <ul className="list-disc ml-10"></ul>
+                  <span className="line-clamp-1">BDT.SU สำนักดิจิทัลเทคโนโลยี</span>
+                  <ul className="list-disc ml-10">
+                    <li><span className="line-clamp-1 text-sm text-gray-500" title="วิธีกู้คืน SU-IT Account">วิธีกู้คืน SU-IT Account</span></li>
+                    <li><span className="text-sm text-gray-500" title="วิธีลงทะเบียน SU-IT Account"> วิธีลงทะเบียน SU-IT Account</span></li>
+                  </ul>
                 </div>
               </div>
             </div>
