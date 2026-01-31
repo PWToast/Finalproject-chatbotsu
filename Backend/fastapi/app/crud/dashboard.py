@@ -1,6 +1,8 @@
 import pymongo
 from datetime import datetime, timedelta
-
+from app.models.mysql_models import User
+from .database import SessionLocal
+from sqlalchemy import func
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["chatbot_conversation"]
 
@@ -37,6 +39,17 @@ def get_summary():
         for agency, count in day.get("agencies", {}).items():
             total_agencies[agency] = total_agencies.get(agency, 0) + count
     
+
+    # sql
+    #นับแยก platform
+    stats = db.query(
+        User.platform, 
+        func.count(User.id).label('count')
+    ).group_by(User.platform).all()
+
+    platform_stats = {row.platform: row.count for row in stats}
+    #นับรวม
+    total_users = db.query(func.count(User.id)).scalar()
     return {
         "total_chat_web": summary.get("total_chat_web", 0),
         "total_chat_line": summary.get("total_chat_line", 0),
