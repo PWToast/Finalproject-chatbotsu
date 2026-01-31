@@ -3,8 +3,10 @@ import AdminSidebar from "../component/AdminSidebar";
 import HistoryTable from "../component/HistoryTable";
 import axios from "axios";
 import HistoryChatModal from "../component/HistoryChatModal";
+import { useAuth } from "../service/Auth";
 
 function ChatHistoryPage() {
+  useAuth("admin"); //auth
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -33,6 +35,7 @@ function ChatHistoryPage() {
       try {
         setLoading(true);
         console.log(filters);
+        const token = localStorage.getItem("token"); //auth
         const response = await axios.get(
           `http://localhost:8000/admin/conversation`,
           {
@@ -43,6 +46,10 @@ function ChatHistoryPage() {
               timeRange: filters.timeRange,
               sortDate: filters.sortDate,
               page: filters.page,
+            },
+            headers: {
+              //auth
+              Authorization: `Bearer ${token}`,
             },
           },
         );

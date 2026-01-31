@@ -1,29 +1,30 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, APIRouter,status
 from fastapi.security import OAuth2PasswordBearer
-from app.models.mysql_models import Base,User, Session_Users
+from app.models.mysql_models import User, Session_Users
 import bcrypt
 import jwt
 from datetime import datetime, timedelta, timezone
 from app.schemas.user import UserCreated, UserResponse, Userlogin, LoginResponse, SessionCreated
+from app.crud.database import get_db
+
 router = APIRouter(prefix="", tags=["auth"])
 #อย่าลืมเปลี่ยน port 3306 หรือ 3307ถ้ารันไม่ได้
-DATABASE_URL = "mysql+pymysql://user1:mysql123456@localhost:3307/my_db"
+# DATABASE_URL = "mysql+pymysql://user1:mysql123456@localhost:3307/my_db"
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base.metadata.create_all(bind=engine)
+# engine = create_engine(DATABASE_URL)
+# SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Base.metadata.create_all(bind=engine)
 
 SECRET_KEY = "your_secret_key"
 ALGORITHM = "HS256"
 
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+# def get_db():
+#     db = SessionLocal()
+#     try:
+#         yield db
+#     finally:
+#         db.close()
 
 @router.post("/register", response_model=UserResponse)
 async def register(item: UserCreated, db: Session = Depends(get_db)):
@@ -74,8 +75,7 @@ async def login(item: Userlogin, db: Session = Depends(get_db)):
     }
     # sign jwt ที่ใส่ email ,role,และอายุ 60นาทีเข้าไป
     token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
-    print(f"ไม่มี. value {user.role}")
-    print(f"มี.value {user.role.value}")
+    # print(f"มี.value {user.role.value}")
     return {
         "message": "login success",
         "username": user.username,
@@ -102,17 +102,27 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         
         email: str = payload.get("email") # หรือ sub ตามที่คุณ set ตอน login
-        
+        role: str = payload.get("role")
         if email is None:
             raise credentials_exception
-            
+        if role is None:
+            raise credentials_exception    
         # Express: req.user = user
         # FastAPI: return ค่าที่ต้องการให้ฟังก์ชันปลายทางใช้
-        return {"email": email} 
+        return {"email": email, "role": role} 
         
     except jwt.PyJWTError: # ดัก Error ของ PyJWT
         raise credentials_exception
     
+def admin_required(current_user: dict = Depends(get_current_user)):
+    # ตรวจสอบว่า Role ในฐานข้อมูลเป็น 'admin' หรือไม่ ใช้สำหรับแอดมิน
+    if current_user["role"] != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Forbidden: คุณไม่มีสิทธิ์เข้าถึงส่วนนี้ เฉพาะแอดมินเท่านั้น"
+        )
+    return current_user
+
 @router.get("/verify")
 def verify_token_route(current_user: dict = Depends(get_current_user)):
     # ตรงนี้จะทำงานได้ก็ต่อเมื่อ get_current_user ทำงานสำเร็จเท่านั้น
@@ -121,7 +131,8 @@ def verify_token_route(current_user: dict = Depends(get_current_user)):
     email = current_user["email"]
     
     return {
-        "message": f"verify success welcome, {email}"
+        "message": f"verify success welcome, {email}",
+        "role": current_user["role"]
     }
 
 @router.post("/createsession")

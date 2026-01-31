@@ -6,15 +6,25 @@ import OverviewBoard from "../component/OverviewBoard";
 import UserSourcePieChart from "../component/UserSourcePieChart";
 import QuestionCategoryBarChart from "../component/QuestionCategoryBarChart";
 import UserTrendLineChart from "../component/UserTrendLineChart";
+import { useAuth } from "../service/Auth";
 
 function DashboardPage() {
+  useAuth("admin"); //auth
   const [summaryData, setSummaryData] = useState(null);
   useEffect(() => {
+    const token = localStorage.getItem("token"); //auth
     axios
-      .get("http://localhost:8000/admin/summary")
-      .then((res) => setSummaryData(res.data))
+      .get("http://localhost:8000/admin/summary", {
+        headers: {
+          //auth
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        console.log("Raw Data from API:", res.data);
+        setSummaryData(res.data);
+      })
       .catch((err) => console.error("Error fetching summary:", err));
-    console.log(summaryData?.total_chat_web);
   }, []);
   return (
     <div className="flex min-h-screen bg-[#E7E9EB]">

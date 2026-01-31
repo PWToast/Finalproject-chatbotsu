@@ -10,7 +10,6 @@ import DashboardPage from "../Page/DashboardPage.jsx";
 import ChatHistoryPage from "../Page/ChatHistoryPage.jsx";
 import ManageDataPage from "../Page/ManageDataPage.jsx";
 import ViewDocsPage from "../Page/ViewDocsPage.jsx";
-import ProtectedRoute from "../component/ProtectedRoute.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -26,43 +25,23 @@ const router = createBrowserRouter([
   },
   {
     path: "chat",
-    element: (
-      <ProtectedRoute allowedRoles={["user", "admin"]}>
-        <Chatpage />
-      </ProtectedRoute>
-    ),
+    element: <Chatpage />,
   },
   {
     path: "dashboard",
-    element: (
-      <ProtectedRoute allowedRoles={["admin"]}>
-        <DashboardPage />
-      </ProtectedRoute>
-    ),
+    element: <DashboardPage />,
   },
   {
     path: "manage-rag-soures",
-    element: (
-      <ProtectedRoute allowedRoles={["admin"]}>
-        <ManageDataPage />
-      </ProtectedRoute>
-    ),
+    element: <ManageDataPage />,
   },
   {
     path: "conversation-history",
-    element: (
-      <ProtectedRoute allowedRoles={["admin"]}>
-        <ChatHistoryPage />,
-      </ProtectedRoute>
-    ),
+    element: <ChatHistoryPage />,
   },
   {
     path: "view-docs-page",
-    element: (
-      <ProtectedRoute allowedRoles={["admin"]}>
-        <ViewDocsPage />,
-      </ProtectedRoute>
-    ),
+    element: <ViewDocsPage />,
   },
 ]);
 
