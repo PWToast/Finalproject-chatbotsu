@@ -32,7 +32,7 @@ function Loginfrom() {
             const res = await Loginapi(User)
             alert('login success!')
             localStorage.setItem('token', res.data.token)
-            return navigate("/home")
+            return navigate("/chat")
         }catch(error){
             console.log(error.response?.data || error.message)
             alert("something wrong!")

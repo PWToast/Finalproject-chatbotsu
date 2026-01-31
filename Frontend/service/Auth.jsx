@@ -17,7 +17,7 @@ export const useAuth = () => {
       }
 
       try{
-        const res = await axios.get('http://localhost:3000/verify',{
+        const res = await axios.get('http://localhost:8000/verify',{
           headers:{
             'Authorization' : `Bearer ${token}`
           }
