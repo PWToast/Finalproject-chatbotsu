@@ -1,6 +1,8 @@
 import pymongo
 from datetime import datetime, timedelta
-
+from app.models.mysql_models import User
+from .database import SessionLocal
+from sqlalchemy import func
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["chatbot_conversation"]
 
@@ -37,12 +39,30 @@ def get_summary():
         for agency, count in day.get("agencies", {}).items():
             total_agencies[agency] = total_agencies.get(agency, 0) + count
     
+
+    # sql
+    
+    try:
+        db = SessionLocal()
+        #นับแยก platform
+        stats = db.query(User.platform, func.count(User.user_id).label('count')).group_by(User.platform).all()    
+        platform_stats = {row.platform: row.count for row in stats}
+        #นับรวม
+        total_users = db.query(func.count(User.user_id)).scalar()
+    finally:
+        db.close()
+    print(f"total: {total_users}")
+    print(f"web: {platform_stats.get("web",0)}")
+    print(f"line: {platform_stats.get("line",0)}")
     return {
         "total_chat_web": summary.get("total_chat_web", 0),
         "total_chat_line": summary.get("total_chat_line", 0),
         "total_success": summary.get("total_success", 0),
         "total_fallback": summary.get("total_fallback", 0),
-        "total_agencies": total_agencies
+        "total_agencies": total_agencies,
+        "total_users": total_users,
+        "total_web_users": platform_stats.get("web",0),
+        "total_line_users": platform_stats.get("line",0)
     }
 
 def get_user_trend(range):

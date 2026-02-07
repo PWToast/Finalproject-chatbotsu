@@ -15,8 +15,14 @@ function UserTrendLineChart() {
   const [data, setData] = useState([]);
   const [timeRange, setTimeRange] = useState("7days");
   useEffect(() => {
+    const token = localStorage.getItem("token"); //auth
     axios
-      .get(`http://localhost:8000/admin/user-trend?range=${timeRange}`)
+      .get(`http://localhost:8000/admin/user-trend?range=${timeRange}`, {
+        headers: {
+          //auth
+          Authorization: `Bearer ${token}`, // แนบไปตามกติกา oauth2_scheme ของหลังบ้าน
+        },
+      })
       .then((res) => setData(res.data.data))
       .catch((err) => console.error(err));
     console.log(data);

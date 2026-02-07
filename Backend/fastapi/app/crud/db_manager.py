@@ -146,7 +146,7 @@ def query_by_text(text):
     query_vector = embedding_model.embed_query(text)
     #.query กับ .get ให้ return มา format ไม่เหมือนกันเลยต้องเปลี่ยนวิธีการ mapping ก่อนจะส่งออกให้ api
     results = collection.query(
-        n_results= 3,
+        n_results= 10,
         query_embeddings= [query_vector]
     )
     formatted_docs = []

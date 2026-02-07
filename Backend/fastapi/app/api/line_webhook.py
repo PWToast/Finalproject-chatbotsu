@@ -23,10 +23,9 @@
 # from langchain_chroma import Chroma
 # from langchain_huggingface import HuggingFaceEmbeddings
 
-
-# from app.crud.line_user import ensure_line_user
-#from app.services.llm.test_chat_rag_memory import chat_rag_memory
-#from app.crud.conversation import save_conversation,update_daily_stats
+# from app.services.llm.test_chat_rag_memory import chat_rag_memory
+# from app.crud.conversation import save_conversation,update_daily_stats
+# from app.crud.user import is_new_line_user
 
 # router = APIRouter(prefix="", tags=["line"])
 
@@ -65,12 +64,6 @@
 # @handler.add(MessageEvent, message=TextMessageContent)
 # def handle_message(event: MessageEvent):
 #     line_user_id = event.source.user_id #ใช้สำหรับ thread_id
-#     # print("line_user_id: ",line_user_id)
-#     # created = ensure_line_user(line_user_id)#เช็คว่าผู้ใช้ใหม่ไหม ถ้าใหม่อัปเดตเข้า Users
-#     # if created:
-#     #     print("new line user:",line_user_id)
-#     # else:
-#     #     print("old line user:",line_user_id)
 #     question = event.message.text
 #     print("question: ",question)
     
@@ -145,6 +138,13 @@
 
 # @handler.add(FollowEvent)
 # def handle_follow(event):#เพิ่มเพื่อนครั้งแรก
+#     line_user_id = event.source.user_id
+#     created = is_new_line_user(line_user_id)#เช็คว่าผู้ใช้ใหม่ไหม ถ้าใหม่อัปเดตเข้า table Users
+#     if created:
+#         print("new line user:",line_user_id)
+#     else:
+#         print("old line user:",line_user_id)
+    
 #     welcome_message = """สวัสดีครับ! ขอบคุณที่เพิ่มเพื่อนกับ SU AskMe FAQ นะครับ 🤖✨
 # เราเป็นแชตบอตที่สร้างขึ้นเพื่อตอบคำถามที่พบบ่อยให้กับนักศึกษาภายในมหาวิทยาลัยศิลปากร
 # โดยมีหัวข้อคำถามดังนี้ครับ

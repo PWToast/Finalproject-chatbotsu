@@ -59,9 +59,10 @@ class UserResponse(BaseModel):
     class Config:
         from_attribute = True
 
-class LoginRespone(BaseModel):
+class LoginResponse(BaseModel):
     message: str
     username: str
     email: str
+    role: str
     token:str
 

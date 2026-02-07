@@ -7,6 +7,9 @@ class StatsSummaryResponse(BaseModel):
     total_success: int  
     total_fallback: int
     total_agencies: Dict[str, int]
+    total_users: int
+    total_web_users: int
+    total_line_users: int
 class TrendData(BaseModel):
     label: str       # range 7 30 years
     web_count: int   # เส้นที่ 1

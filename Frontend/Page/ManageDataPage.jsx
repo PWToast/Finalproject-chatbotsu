@@ -2,8 +2,11 @@ import Adminsidebar from "../component/AdminSidebar";
 import { LuHardDriveUpload } from "react-icons/lu";
 import { IoSearch } from "react-icons/io5";
 import { useState, useRef, Activity } from "react";
+import { useAuth } from "../service/Auth";
 import axios from 'axios'
 function ManageDataPage() {
+  const token = localStorage.getItem("token")
+  useAuth("admin")
   const [activeTab, setActiveTab] = useState('uploadfile')
   const fileInputRef = useRef(null)
   const contentFileRef = useRef(null)
@@ -72,7 +75,8 @@ function ManageDataPage() {
         const res = await axios.post('http://localhost:8000/upload', formData,{
           //บอก labelของข้อมูลผ่าน header เฉยๆ
           headder:{
-            'Content-Type' : 'multipart/form-data'
+            'Content-Type' : 'multipart/form-data',
+            Authorization: `Bearer ${token}`,
           }
         })
       }
@@ -109,7 +113,11 @@ function ManageDataPage() {
       }
     }
     try{
-      const res = await axios.post("http://localhost:8000/textupload", form_to_send)
+      const res = await axios.post("http://localhost:8000/textupload", form_to_send,{
+        headers:{
+          Authorization: `Bearer ${token}`,
+        }
+      })
     }catch(error){
       console.log("something wrong", error)
     }
@@ -223,7 +231,7 @@ function ManageDataPage() {
                   <select name="agency" className="w-full md:w-64 shadow-xl p-2 rounded-md" value={agency} onChange={(e)=>setAgency(e.target.value)}>
                     <option value="กองบริหารวิชาการ">กองบริหารวิชาการ</option>
                     <option value="กองกิจการนักศึกษา">กองกิจการนักศึกษา</option>
-                    <option value="สำนักดิจิทัลเทคโนโลยี">สำนักดิจิทัลเทคโนโลยี</option>
+                    <option value="สำนักดิจิทัล">สำนักดิจิทัล</option>
                   </select>
                 </div>
 

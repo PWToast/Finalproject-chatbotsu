@@ -3,8 +3,10 @@ import axios from 'axios'
 import { useState, useEffect } from "react"
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import ViewDataModal from "../component/ViewDataModal"
-
+import { useAuth } from "../service/Auth";
 function ViewDocsPage() {
+  const token = localStorage.getItem("token")
+  useAuth("admin")
   const [data, setData] = useState([])
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [showVieweModal, setShowViewModal] = useState(false)
@@ -13,10 +15,14 @@ function ViewDocsPage() {
   const [selectagency, setSelectAgency] = useState("")
   const [selectcategory, setSelectCategory] = useState("")
   const [querytext, setQueryText] = useState("")
-
   const fetchData = async ()=>{
     try{
-      const res = await axios.get('http://localhost:8000/getalldocs')
+      const res = await axios.get('http://localhost:8000/getalldocs',{
+        headers: {
+        //auth
+        Authorization: `Bearer ${token}`,
+        },
+      })
       setData(res.data.docs)
       setDataToShow(res.data.docs)
     }catch(error){
@@ -32,7 +38,12 @@ function ViewDocsPage() {
       return
     
     const agencyToSend = selectagency
-    const res = await axios.get(`http://localhost:8000/querybyagency/${agencyToSend}`)
+    const res = await axios.get(`http://localhost:8000/querybyagency/${agencyToSend}`,{
+      headers: {
+        //auth
+        Authorization: `Bearer ${token}`,
+      },
+    })
     setDataToShow(res.data.response)
   }
   useEffect(()=>{
@@ -42,7 +53,12 @@ function ViewDocsPage() {
   const handleSearchByText = async () => {
     const textToSend = querytext
     console.log(textToSend)
-    const res = await axios.get(`http://localhost:8000/querybytext/${querytext}`)
+    const res = await axios.get(`http://localhost:8000/querybytext/${querytext}`,{
+      headers: {
+        //auth
+        Authorization: `Bearer ${token}`,
+      },
+    })
     console.log(res.data)
     setDataToShow(res.data)
   }
@@ -95,7 +111,12 @@ function ViewDocsPage() {
     if (!deleteId) return
     try{
       const id = deleteId
-      const res = await axios.delete(`http://localhost:8000/deletedocs/${id}`)
+      const res = await axios.delete(`http://localhost:8000/deletedocs/${id}`,{
+        headers: {
+        //auth
+        Authorization: `Bearer ${token}`,
+        },
+      })
       setShowDeleteModal(false)
       fetchData()
       alert("delete success")
