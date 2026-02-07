@@ -4,7 +4,7 @@ from typing import List
 import shutil
 import os
 from app.schemas.upload import FormToSend
-from app.crud.db_manager import add_docs, get_all_docs, delete_docs
+from app.crud.db_manager import add_docs, get_all_docs, delete_docs, query_by_agency, query_by_category, query_by_text
 router = APIRouter(prefix="", tags=["file_upload"])
 
 
@@ -17,6 +17,20 @@ async def get_all_documents():
     data = get_all_docs()
     return {"docs":data}
 
+@router.get("/querybyagency/{item}")
+async def query_by_agency_name(item: str):
+    response = query_by_agency(item)
+    return {"response": response}
+
+@router.get("/querybycategory/{item}")
+async def query_by_category_name(item: str):
+    response = query_by_category(item)
+    return {"response": response}
+
+@router.get("/querybytext/{item}")
+async def query_by_text_field(item: str):
+    response = query_by_text(item)
+    return response
 
 @router.delete("/deletedocs/{item_id}")
 async def delete_docuemnt(item_id: str):

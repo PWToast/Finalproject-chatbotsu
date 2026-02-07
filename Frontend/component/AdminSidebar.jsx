@@ -17,9 +17,14 @@ function AdminSidebar() {
   const navItems = [
     { name: "แดชบอร์ด", icon: ComputerDesktopIcon, path: "/dashboard" },
     {
-      name: "จัดการแหล่งข้อมูล RAG",
+      name: "เพิ่มข้อมูล RAG",
       icon: DocumentTextIcon,
       path: "/manage-rag-soures",
+    },
+    {
+      name: "จัดการข้อมูล RAG",
+      icon: DocumentTextIcon,
+      path: "/view-docs-page"
     },
     {
       name: "ประวัติการสนทนา",

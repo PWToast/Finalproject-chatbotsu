@@ -223,7 +223,7 @@ function ManageDataPage() {
                   <select name="agency" className="w-full md:w-64 shadow-xl p-2 rounded-md" value={agency} onChange={(e)=>setAgency(e.target.value)}>
                     <option value="กองบริหารวิชาการ">กองบริหารวิชาการ</option>
                     <option value="กองกิจการนักศึกษา">กองกิจการนักศึกษา</option>
-                    <option value="สำนักดิจิทัล">สำนักดิจิทัล</option>
+                    <option value="สำนักดิจิทัลเทคโนโลยี">สำนักดิจิทัลเทคโนโลยี</option>
                   </select>
                 </div>
 

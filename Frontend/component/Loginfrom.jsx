@@ -65,7 +65,6 @@ function Loginfrom() {
                   <button className=" absolute self-end-safe mr-11 mt-38 cursor-pointer" onClick={handlevisiblepassword}>{icon ? <FiEye/> : <FiEyeOff/>}</button>
                 </div>
                 <div className='flex flex-col mb-8 w-100'>
-                  <span className='text-[#007A6D] self-end-safe mr-10 mb-1 text-[12px] cursor-pointer hover:text-[#006257]'>ลืมรหัสผ่าน?</span>
                   {!isFieldFull &&
                   <button className='bg-[#FFFFFF] hover:bg-[#007A6D] transition-colors duration-500 w-80 self-center mt-15 p-3 text-black/50 cursor-pointer' onClick={handleSubmitFrom}>Sign in</button>}
                   {isFieldFull && 

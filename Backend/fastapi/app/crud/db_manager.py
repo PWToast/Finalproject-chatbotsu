@@ -112,9 +112,55 @@ def delete_docs(uuid):
 
     collection.delete(ids=[uuid])
 
+def query_by_agency(agency_name):
+    #กองบริหารวิชาการ, สำนักดิจิทัลเทคโนโลยี, กองกิจการนักศึกษา
+    results = collection.get(
+        where={"agency": agency_name}
+    )
+    formatted_docs = []
+    if results["ids"]:
+        for doc_id, content, metadata in zip(results["ids"], results["documents"], results["metadatas"]):
+            formatted_docs.append({
+                "id": doc_id,
+                "content": content,
+                "metadata": metadata
+            })
+    return formatted_docs
+
+def query_by_category(category_name):
+    #Reg, บริการคอมพิวเตอร์, กองทุนเงินให้กู้ยืมเพื่อการศึกษา, หอพัก
+    results = collection.get(
+        where={"category": category_name}
+    )
+    formatted_docs = []
+    if results["ids"]:
+        for doc_id, content, metadata in zip(results["ids"], results["documents"], results["metadatas"]):
+            formatted_docs.append({
+                "id": doc_id,
+                "content": content,
+                "metadata": metadata
+            })
+    return formatted_docs
+
+def query_by_text(text):
+    query_vector = embedding_model.embed_query(text)
+    #.query กับ .get ให้ return มา format ไม่เหมือนกันเลยต้องเปลี่ยนวิธีการ mapping ก่อนจะส่งออกให้ api
+    results = collection.query(
+        n_results= 3,
+        query_embeddings= [query_vector]
+    )
+    formatted_docs = []
+    if results["ids"] and results["ids"][0]: 
+        
+        for doc_id, content, metadata in zip(results["ids"][0], results["documents"][0], results["metadatas"][0]):
+            formatted_docs.append({
+                "id": doc_id,
+                "content": content,
+                "metadata": metadata
+            })
+    return formatted_docs
 
 # add_docs("docs-FAQ/กองกิจการนักศึกษา/....json",vector_store_from_client)
 # delete_docs(vector_store_from_client)
 # watch_collect()
-# show_all_docs()
 
