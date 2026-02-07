@@ -19,7 +19,6 @@ dist/
 # 4. Data & Evaluations
 rag_evaluation_dataset.jsonl
 test/
-
 # 5. OS files
 .DS_Store
 Thumbs.db
