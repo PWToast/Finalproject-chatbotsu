@@ -1,5 +1,6 @@
 # 1. Python (FastAPI)
 __pycache__/
+app/__pycache__
 *.pyc
 .venv/
 .env

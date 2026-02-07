@@ -1,5 +1,5 @@
 import Navbar from "../component/navbar";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { CiLogout } from "react-icons/ci";
 import { v4 as uuidv4 } from "uuid";
@@ -7,56 +7,72 @@ import { useAuth } from "../service/Auth";
 import { jwtDecode } from "jwt-decode";
 import { Navigate, useNavigate } from "react-router-dom";
 import LogOutModal from "../component/LogOutModal";
+import { RiDeleteBin6Fill } from "react-icons/ri";
 
 function Chatpage() {
-  const [IsModalOpen, setIsModalOpen] = useState(false);
-  const navigate = useNavigate();
-  const tokenString = localStorage.getItem("token");
-  const decoded = jwtDecode(tokenString);
-  const emailToken = decoded.email;
-  useAuth();
+  const [IsModalOpen, setIsModalOpen] = useState(false)
+  const navigate = useNavigate()
+  const tokenString = localStorage.getItem("token")
+  const decoded = jwtDecode(tokenString)
+  const emailToken = decoded.email
+  useAuth()
 
-  const [inputmessage, setInputMessage] = useState("");
-  const [chatroom, setChatRoom] = useState([]);
-  const [currentSession, setCurrentSession] = useState(null);
-  const [currentmessages, setCurrentMessages] = useState([]);
+  const [inputmessage, setInputMessage] = useState("")
+  const [chatroom, setChatRoom] = useState([])
+  const [currentSession, setCurrentSession] = useState(null)
+  const [currentmessages, setCurrentMessages] = useState([])
+  const messagesEndRef = useRef(null)
+
+  //เอาไว้ให้ uxui ดู smooth เมื่อคุยแล้วให้ scroll เลื่อนลงมายังข้อความล่าสุด
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  }
+  useEffect(() => {
+    scrollToBottom()
+  }, [currentmessages])
 
   const handleLogoutConfirm = () => {
-    localStorage.removeItem("token");
-    console.log("ออกจากระบบแล้ว!");
-    setIsModalOpen(false);
-    navigate("/");
-  };
+    localStorage.removeItem("token")
+    console.log("ออกจากระบบแล้ว!")
+    setIsModalOpen(false)
+    navigate("/")
+  }
 
   const selectSession = async (session_id) => {
-    console.log("you now selected", session_id);
-    setCurrentSession(session_id);
+    console.log("you now selected", session_id)
+    setChatRoom((prev) => prev.map((room) => ({...room,
+        // ถ้า session_id ตรงกันให้เป็น true ถ้าไม่ตรงให้เป็น false
+        isSelect: room.session_id === session_id 
+      }))
+    )
+    setCurrentSession(session_id)
     const res = await axios.get(
       `http://localhost:8000/fetch/${emailToken}/${session_id}`,
-    );
-    console.log(res.data.response);
-    setCurrentMessages(res.data.response);
-  };
+    )
+    console.log(res.data.response)
+    setCurrentMessages(res.data.response)
+  }
 
   const createNewChatRoom = () => {
     const newRoom = {
       session_id: uuidv4(),
       state: "empty",
       message: [],
-    };
-    setChatRoom((prev) => [...prev, newRoom]);
-    setCurrentSession(newRoom.session_id);
-    return newRoom.session_id;
-  };
+      isSelect: false
+    }
+    setChatRoom((prev) => [...prev, newRoom])
+    setCurrentSession(newRoom.session_id)
+    return newRoom.session_id
+  }
 
   const initialHistoryChat = async (currentSession, isNewRoom = false) => {
     //isNewRoom ค่า default คือ false
     if (!isNewRoom) {
       const selectedRoom = chatroom.find(
         (room) => room.session_id === currentSession,
-      );
+      )
       // ถ้าหาไม่เจอ หรือสถานะไม่ใช่ empty ให้จบการทำงาน
-      if (!selectedRoom || selectedRoom.state !== "empty") return;
+      if (!selectedRoom || selectedRoom.state !== "empty") return
     }
     setChatRoom((prev) =>
       prev.map((room) =>
@@ -64,78 +80,87 @@ function Chatpage() {
           ? { ...room, state: "active" } // เปลี่ยนแค่ state เป็น active แล้วอัพลง database
           : room,
       ),
-    );
+    )
     try {
-      const tokenString = localStorage.getItem("token");
-      const decoded = jwtDecode(tokenString);
-      const email = decoded.email;
+      const tokenString = localStorage.getItem("token")
+      const decoded = jwtDecode(tokenString)
+      const email = decoded.email
       const data = {
         email,
         session_id: currentSession,
         state: "active",
-      };
-      await axios.post("http://localhost:8000/createsession", data);
-      console.log("db update succes!");
+      }
+      await axios.post("http://localhost:8000/createsession", data)
+      console.log("db update succes!")
     } catch (error) {
-      alert("error", error);
-      console.log(error);
+      alert("error", error)
+      console.log(error)
     }
-  };
+  }
 
   async function sendMessage() {
     try {
-      let sessionToUse = currentSession;
-      let isNewSession = false;
+      let sessionToUse = currentSession
+      let isNewSession = false
 
       if (currentSession === null) {
-        sessionToUse = createNewChatRoom();
-        setCurrentSession(sessionToUse);
-        isNewSession = true;
+        sessionToUse = createNewChatRoom()
+        setCurrentSession(sessionToUse)
+        isNewSession = true
       }
 
-      const buffermessage = inputmessage;
-      setInputMessage("");
+      const buffermessage = inputmessage
+      setInputMessage("")
 
       const res = await axios.post("http://localhost:8000/chat_rag_memory", {
         message: inputmessage,
         email: emailToken,
         session_id: sessionToUse,
-      });
+      })
       const newResponse = {
         user_message: buffermessage,
         ai_message: res.data.response,
-      };
+      }
 
-      setCurrentMessages((prev) => [...prev, newResponse]);
+      setCurrentMessages((prev) => [...prev, newResponse])
 
       if (isNewSession) {
         // ถ้าเป็นห้องใหม่ ส่ง true ไปบอกให้ข้ามการเช็ค state
-        initialHistoryChat(sessionToUse, true);
+        initialHistoryChat(sessionToUse, true)
       } else {
         // ถ้าเป็นห้องเก่า ให้ทำงานตามปกติ (ไม่ต้องส่ง true)
-        initialHistoryChat(sessionToUse);
+        initialHistoryChat(sessionToUse)
       }
     } catch (error) {
-      alert("error", error);
+      alert("error", error)
     }
   }
 
   const deleteChatRoom = async (session_id) => {
-    try {
-      const res = await axios.delete(`http://localhost:8000/deletesession/${session_id}`)
-      setChatRoom((prev) =>
-        prev.filter((room) => room.session_id !== session_id),
-      )
+    const roomToDelete = chatroom.find((room) => room.session_id === session_id)
+
+    if (!roomToDelete) return
+    //เอาไว้ลบ chatroom ที่ไม่ได้เก็บลง database จะได้แสดงผลทันทีในหน้า ui
+    const removeRoomFromUI = () => {
+      setChatRoom((prev) => prev.filter((room) => room.session_id !== session_id))
       if (currentSession === session_id) {
-        setCurrentSession(null);
-        setCurrentMessages([]);
+        setCurrentSession(null)
+        setCurrentMessages([])
       }
-      console.log("delete success", session_id)
+    }
+    if (roomToDelete.state === "empty") {
+      removeRoomFromUI()
+      return
+    }
+    try {
+      await axios.delete(`http://localhost:8000/deletesession/${session_id}`)
+      // ลบสำเร็จ ค่อยมาลบใน UI
+      removeRoomFromUI()
+      console.log("Delete success from DB", session_id)
     } catch (error) {
       console.error("Delete failed", error)
+      alert("ลบข้อมูลผิดพลาด")
     }
-    setCurrentSession(null)
-    console.log("delete success", session_id);
   }
 
   useEffect(() => {
@@ -149,15 +174,15 @@ function Chatpage() {
         const sessionsWithMessage = res.data.map((session) => ({
           ...session,
           message: [],
-        }));
-        setChatRoom(sessionsWithMessage);
+        }))
+        setChatRoom(sessionsWithMessage)
       } catch (error) {
-        alert("error cannot fetch session", error);
-        console.log(error);
+        alert("error cannot fetch session", error)
+        console.log(error)
       }
-    };
-    fetchSessions();
-  }, []);
+    }
+    fetchSessions()
+  }, [])
 
   return (
     <>
@@ -167,7 +192,7 @@ function Chatpage() {
           {/*มี 3 ส่วน โดยแบ่ง 15 65 15*/}
           <div className="grid grid-cols-[15%_65%_15%] gap-4 h-full w-full">
             {/*อันนี้คือส่วนของbar ของ chatroom*/}
-            <div className="border border-transparent rounded-xl bg-[#D9D9D9]">
+            <div className="border border-transparent rounded-xl bg-[#D9D9D9] h-215">
               <div className="flex flex-col gap-5 p-5">
                 <div
                   className="self-center w-[90%] p-5 border border-transparent bg-[#007A6D] rounded-full text-center text-xl cursor-pointer"
@@ -176,17 +201,27 @@ function Chatpage() {
                   + New Chat
                 </div>
                 <div className="border-t border-black"></div>
-                <div className="ml-9 h-140 w-50 flex flex-col gap-15 overflow-auto no-scrollbar">
+                <div className=" h-140 w-full flex flex-col gap-5 overflow-auto no-scrollbar">
                   {chatroom.map((items, index) => (
-                    <div
-                      className="w-[90%] flex flex-row justify-between font-bold text-xl cursor-pointer hover:bg-[#007A6D]"
-                      key={index}
-                      onClick={() => selectSession(items.session_id)}
-                    >
-                      Chat
-                      <span className="cursor-pointer text-red-500" onClick={() => deleteChatRoom(items.session_id)}>
-                        delete
-                      </span>
+                    <div className="flex flex-col">
+                      <div
+                        className={`h-10 flex flex-row items-center justify-between font-bold text-xl cursor-pointer rounded-4xl p-5 transition-all ${
+                          items.isSelect 
+                            ? 'bg-[#00897B] text-white' // สีเมื่อถูกเลือก
+                            : ' hover:bg-[#FFFBDE]' // สีปกติ
+                        }`}
+                        key={index}
+                        onClick={() => selectSession(items.session_id)}
+                      >
+                        <span>Chat</span>
+                        <div class={`cursor-pointer rounded-full p-3 transition-colors 
+                          ${items.isSelect 
+                          ? "hover:bg-white/20 text-teal-100 hover:text-white" 
+                          : "hover:bg-red-100 text-red-500"
+                          }`} onClick={(e) => {e.stopPropagation();deleteChatRoom(items.session_id)}}>
+                            <RiDeleteBin6Fill className="w-6 h-6" />
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -219,6 +254,7 @@ function Chatpage() {
                     </div>
                   </div>
                 ))}
+                <div ref={messagesEndRef}/>
               </div>
 
               <div className="bg-[#D9D9D9] rounded-3xl self-center w-[90%] h-[70px] mb-3">
@@ -227,6 +263,11 @@ function Chatpage() {
                   type="text"
                   value={inputmessage}
                   onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyDown={(e)=> {
+                    if (e.key === "Enter"){
+                      sendMessage()
+                    }
+                  }}
                   placeholder="พิมพ์คำถามหรือข้อสงสัย..."
                 ></input>
                 <span
@@ -239,7 +280,7 @@ function Chatpage() {
             </div>
 
             {/*ส่วนที่ 3 ส่วนของ Suggestion ไม่มีอะไร กดอะไรไม่ได้*/}
-            <div className="border-2 border-solid rounded-xl">
+            <div className="border-2 border-solid rounded-xl h-215 overflow-auto no-scrollbar">
               <div className="flex flex-col gap-3 p-5">
                 <span className="self-center text-2xl">Suggestion</span>
                 <div className="flex flex-col p-3 ">
