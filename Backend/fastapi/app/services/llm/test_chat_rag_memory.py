@@ -71,7 +71,6 @@ def llm_decision(state: BasicChatState):
     
 1. **retrieve**: ถ้าคำถามล่าสุดเป็นคำถาม 'ใหม่' หรือ 'โดดเดี่ยว' ที่ไม่ต้องการบริบทใดๆ แต่ต้องการข้อมูลจากฐานความรู้
 2. **general**: ถ้าคำถามล่าสุดเป็นคำถาม 'ทักทาย' หรือ 'พูดคุยทั่วไป' อยู่ในขอบเขตที่เชี่ยวชาญ ซึ่งรวมถึงคำถามประเภท 'การจัดการบริบท/การทบทวนบทสนทนา/ถามข้อมูลแชทบอท' เช่น 'เมื่อกี้ถามอะไรไปบ้าง', 'คุณตอบว่าอะไรนะ', 'คุณเป็นใคร'
-3. **other**: เลือกคำนี้ **ถ้าคำถามไม่เข้าข่ายทั้ง 'retrieve' และ 'general' เลย หรือ คำถามที่ไม่เกี่ยวข้องกับขอบเขตความเชี่ยวชาญ
                   
 **กฎที่ต้องปฏิบัติตามอย่างเคร่งครัด:**
 * **ห้ามตอบคำถามอื่นใดนอกจากคำสั่งเดียวที่เลือกจาก 3 ตัวเลือกข้างต้น (retrieve, general, other)**
@@ -81,10 +80,7 @@ def llm_decision(state: BasicChatState):
 retrieve
     
 ตัวอย่างการตอบที่ถูกต้อง:
-general
-
-ตัวอย่างการตอบที่ถูกต้อง:
-other             
+general         
 
 **ประวัติการสนทนา:**
 {history}                 
@@ -93,9 +89,9 @@ other
 ]
     # print(decision_prompt)
     route = llm.invoke(decision_prompt).strip()
-    if route not in ["retrieve","general","other"]:
+    if route not in ["retrieve","general"]:
         # print("not in any route")
-        route = "other"
+        route = "general"
     # print('ตัดสินใจ: ', route)
     return {"route_decision": route}
 
@@ -243,12 +239,15 @@ def general_chat(state: BasicChatState):
 
     user_question = state["rewritten_question"]
     general_prompt = [
-        SystemMessage(content=f"""คุณเป็นผู้ช่วยตอบคำถามทั่วไปให้กับนักศึกษา ชื่อว่า "SU AskMe FAQ" เรียกแทนตัวเองว่า "น้องบอท" คุณมีหน้าตอบคำถามทั่วไปให้นักศึกษาโดยใช้ "ประวัติสนทนา" อ้างอิงเท่านั้น
+        SystemMessage(content=f"""คุณคือ "น้องบอท" ผู้ช่วยตอบคำถามทั่วไปของ "SU AskMe FAQ" สำหรับนักศึกษามหาวิทยาลัยศิลปากร
 
-**หลักการทำงาน:**
-1. ตอบเป็นภาษาที่สุภาพ เข้าใจง่าย เหมาะกับนักศึกษา สามารถตอบด้วยอิโมจิได้ 
-2. ห้ามตอบข้อมูลที่เกี่ยวกับโมเดล Typhoon และคุณไม่มีความเกี่ยวข้องกับ SCBX10
-3. ห้ามขึ้นต้นคำตอบด้วย "AI:" หรือ "Assistant:" หรือ prefix ใด ๆ ให้ตอบเฉพาะข้อความเท่านั้น
+**ข้อกำหนดในการตอบ:**
+1. **ขอบเขตความรู้:** ตอบได้เฉพาะการทักทาย (เช่น สวัสดี, บาย), การทวนคำถามของผู้ใช้, และการชี้แจงหน้าที่ของตัวเองเท่านั้น
+2. **ห้ามตอบข้อมูลข้อเท็จจริงภายนอก:** - ห้ามตอบเรื่อง วันที่, เวลา, สภาพอากาศ, ข่าวสาร หรือเหตุการณ์ปัจจุบันเด็ดขาด (ให้ตอบว่า "Unknown")
+   - ห้ามตอบคำถามเชิงวิชาการ วิธีการทำสิ่งของอันตราย (เช่น นิวเคลียร์, อาวุธ) หรือเรื่องผิดกฎหมาย
+3. **การปฏิเสธอย่างสุภาพ:** หากผู้ใช้ถามนอกเหนือจากการทักทายหรือเรื่องที่น้องบอทตอบไม่ได้ ให้ตอบว่า "Unknown"
+4. **ตัวตน:** ห้ามกล่าวถึงโมเดล Typhoon, SCBX10 หรือเบื้องหลังทางเทคนิคเด็ดขาด
+5. **รูปแบบ:** ห้ามขึ้นต้นตอบด้วย "AI:" หรือ "Assistant:" หรือ prefix ใด ๆ ให้ตอบเฉพาะข้อความเท่านั้น
                       
 ประวัติสนทนา:
 {history}
@@ -258,16 +257,11 @@ def general_chat(state: BasicChatState):
     # print(general_prompt)
     response = llm.invoke(general_prompt)
     agency = "อื่นๆ"
-    # print("หมวดปัจจุบัน: ", agency)
-    # print(f"คำตอบสุดท้าย:\n{response}\n")
-    return {"messages": [AIMessage(content=response)],"agency": agency}
-
-#nodeนี้คือเส้นทางสุดท้ายถ้าหาก model เลือกไม่ถูกว่าจะตอบในเส้นทางไหน แต่พวกคำถาม คำถามทั่วไป, การสนทนาต่อเนื่อง, หรือคำถามเกี่ยวกับประวัติการสนทนา 
-#ต้องถามให้รัดกุมนะรู้สึก model จะยังสับสนและแยกไม่ออกอาจทำให้หล่นในช่องนี้ได้
-def other_response(state: BasicChatState):
-    response = "ขออภัยครับ ผมยังไม่มีข้อมูลในส่วนนี้ คุณสามารถลองสอบถามเรื่อง การลงทะเบียน, เพิ่ม-ถอน, บริการคอมพิวเตอร์, กยศ. หรือเรื่องหอพัก แทนได้นะครับ หากมีข้อสงสัยอื่นเพิ่มเติม พิมพ์ถามใหม่ได้เลยครับ"
-    agency = "อื่นๆ"
-    is_fallback = True
+    fallback_message = "Unknown"
+    is_fallback = False
+    if response == fallback_message:
+        response = "ขออภัยครับ ผมยังไม่มีข้อมูลในส่วนนี้ คุณสามารถลองสอบถามเรื่อง การลงทะเบียน, เพิ่ม-ถอน, บริการคอมพิวเตอร์, กยศ. หรือเรื่องหอพัก แทนได้นะครับ หากมีข้อสงสัยอื่นเพิ่มเติม พิมพ์ถามใหม่ได้เลยครับ"
+        is_fallback = True
     # print("หมวดปัจจุบัน: ", agency)
     # print(f"คำตอบสุดท้าย:\n{response}\n")
     return {"messages": [AIMessage(content=response)],"agency": agency,"is_fallback":is_fallback}
@@ -279,7 +273,6 @@ graph.add_node("llm_decision", llm_decision)
 graph.add_node("retrieve", retrieve)
 graph.add_node("general_chat",general_chat)
 graph.add_node("generate", generate_response) 
-graph.add_node("other", other_response)
 graph.add_node("rewrite_query", rewrite_query)
 
 graph.set_entry_point("rewrite_query")
@@ -292,14 +285,12 @@ graph.add_conditional_edges(
     {
         "retrieve" : "retrieve",
         "general" : "general_chat",
-        "other": "other"
     }
 )
 
 graph.add_edge("retrieve", "generate")
 graph.add_edge("generate", END)
 graph.add_edge("general_chat",END)
-graph.add_edge("other", END)
 
 app = graph.compile(checkpointer=memory)
 

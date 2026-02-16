@@ -6,6 +6,7 @@ import {
   PowerIcon,
   Bars3Icon,
   XMarkIcon,
+  PencilSquareIcon,
 } from "@heroicons/react/24/outline";
 import { Link, useNavigate } from "react-router-dom";
 import LogOutModal from "./LogOutModal";
@@ -24,12 +25,17 @@ function AdminSidebar() {
     {
       name: "จัดการข้อมูล RAG",
       icon: DocumentTextIcon,
-      path: "/view-docs-page"
+      path: "/view-docs-page",
     },
     {
       name: "ประวัติการสนทนา",
       icon: ChatBubbleLeftRightIcon,
       path: "/conversation-history",
+    },
+    {
+      name: "แก้ไข prompt",
+      icon: PencilSquareIcon,
+      path: "/edit-prompt",
     },
     { name: "ออกจากระบบ", icon: PowerIcon, path: true },
   ];

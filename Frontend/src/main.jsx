@@ -10,6 +10,7 @@ import DashboardPage from "../Page/DashboardPage.jsx";
 import ChatHistoryPage from "../Page/ChatHistoryPage.jsx";
 import ManageDataPage from "../Page/ManageDataPage.jsx";
 import ViewDocsPage from "../Page/ViewDocsPage.jsx";
+import EditPromptPage from "../Page/EditPromptPage.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
   {
     path: "view-docs-page",
     element: <ViewDocsPage />,
+  },
+  {
+    path: "edit-prompt",
+    element: <EditPromptPage />,
   },
 ]);
 
