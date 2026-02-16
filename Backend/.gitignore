@@ -23,3 +23,7 @@ test/
 # 5. OS files
 .DS_Store
 Thumbs.db
+
+test_chat_rag_memory copy.py
+
+Backend/fastapi/app/services/llm/chroma_db/
