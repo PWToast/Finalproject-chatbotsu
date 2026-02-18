@@ -4,7 +4,15 @@ import AdminSidebar from "../component/AdminSidebar";
 import PromptSection from "../component/PromptSection";
 import ConfirmPromptModal from "../component/ConfirmPromptModal";
 import { useAuth } from "../service/Auth";
-// กำหนด URL ของ API (ปรับตามจริง)
+
+const NODE_VARIABLES = {
+  //ใช้เช็คตัวแปรที่ต้องมีทุกครั้งตอนอัปเดต prompt
+  decision: ["{history}", "{user_question}"],
+  rewrite: ["{history}", "{user_question}"],
+  rag: ["{context}", "{history}", "{user_question}"],
+  general: ["{history}", "{user_question}"],
+  agency_check: ["{user_question}"],
+};
 
 function EditPromptPage() {
   useAuth("admin"); //auth
@@ -47,10 +55,25 @@ function EditPromptPage() {
   }, [selectedNode]);
 
   const openModal = (type) => {
+    if (type === "save") {
+      // ตรวจตัวแปรก่อน ถ้าไม่ผ่านไม่ต้องเปิด modal
+      if (!validateVariables()) return;
+    }
     setModalType(type);
     setShowModal(true);
   };
+  const validateVariables = () => {
+    const requiredVars = NODE_VARIABLES[selectedNode] || [];
+    const fullText = systemContent + humanContent; // รวมpromptแล้วเช็คทีเดียว
 
+    const missingVars = requiredVars.filter((v) => !fullText.includes(v));
+
+    if (missingVars.length > 0) {
+      alert(`เกิดข้อผิดพลาด! คุณลืมใส่ตัวแปรสำคัญ: ${missingVars.join(", ")}`);
+      return false;
+    }
+    return true;
+  };
   const handleConfirm = async () => {
     const token = localStorage.getItem("token"); // ดึง token เตรียมไว้
     try {
@@ -112,11 +135,34 @@ function EditPromptPage() {
               <option value="rewrite">การเกลาคำถาม (Rewrite)</option>
               <option value="rag">การสืบค้นข้อมูล (RAG)</option>
               <option value="general">การสนทนาทั่วไป (General)</option>
+              <option value="agency_check">การระบุหมวดคำถาม (Agency)</option>
             </select>
           </div>
         </div>
 
         <div className="bg-white rounded-lg shadow flex-1 flex flex-col overflow-hidden min-h-0 relative">
+          <div className="px-4 py-2 bg-slate-50 border-b flex items-center gap-3">
+            <span className="text-xs font-bold text-gray-500 uppercase">
+              ตัวแปรที่จำเป็นต้องใส่ลงใน prompt:
+            </span>
+            <div className="flex gap-2">
+              {NODE_VARIABLES[selectedNode]?.map((v) => {
+                const isPresent = (systemContent + humanContent).includes(v);
+                return (
+                  <span
+                    key={v}
+                    className={`px-2 py-1 rounded-md text-[10px] font-bold border transition-all ${
+                      isPresent
+                        ? "bg-green-50 text-green-600 border-green-200"
+                        : "bg-red-50 text-red-500 border-red-200 animate-pulse"
+                    }`}
+                  >
+                    {v} {isPresent ? "✓" : "✗"}
+                  </span>
+                );
+              })}
+            </div>
+          </div>
           {/* แสดง Loading Overlay ขณะโหลดข้อมูล */}
           {loading && (
             <div className="absolute inset-0 bg-white/50 z-10 flex items-center justify-center">
