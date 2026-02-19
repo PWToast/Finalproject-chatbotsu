@@ -27,7 +27,7 @@ class BasicChatState(TypedDict):
     is_fallback: bool 
 
 def get_route(state: BasicChatState):
-    route = state.get("route_decision", "other")
+    route = state.get("route_decision", "general")
     return route
 
 def agency_check(state: BasicChatState):#อาจจะต้องไปใส่ทีหลัง เพราะมีการ rewrite
@@ -134,7 +134,7 @@ def generate_response(state: BasicChatState):
         # print("-" * 20)
         #เก็บข้อความ
         context += doc.page_content + "\n-----------"
-
+    print("context:", context)
     recent_messages = state["messages"][-7:-1] #เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
     # print(f"recent_messages:\n{recent_messages}")
     

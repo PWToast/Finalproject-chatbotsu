@@ -58,6 +58,7 @@ def watch_collect():
 def add_docs(data):
     print("test test")
     documents = []
+    
 
     for i,item in enumerate(data, start=1):
         # now = datetime.now()
