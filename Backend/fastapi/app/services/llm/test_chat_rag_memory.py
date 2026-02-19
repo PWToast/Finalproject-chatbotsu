@@ -18,6 +18,7 @@ memory = MemorySaver()
 #     collection_name="rag_documents",#เปลี่ยนชื่อ collectionให้ถูกต้อง
 #     embedding_function=embedding_model,
 # )
+
 class BasicChatState(TypedDict):
     messages: Annotated[list, add_messages]
     rewritten_question: str
