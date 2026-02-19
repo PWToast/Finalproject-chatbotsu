@@ -17,6 +17,11 @@ async def get_all_documents(current_admin: dict = Depends(admin_required)):
     data = get_all_docs()
     return {"docs":data}
 
+@router.get("/getalldocs2")
+async def get_all_documents():
+    data = get_all_docs()
+    return {"docs":data}
+
 @router.get("/querybyagency/{item}")
 async def query_by_agency_name(item: str,current_admin: dict = Depends(admin_required)):
     response = query_by_agency(item)

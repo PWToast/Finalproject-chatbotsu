@@ -11,7 +11,8 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 db_path = os.path.join(current_dir, "..", "services", "llm", "chroma_db")
 #print(f"กำลังจะเก็บข้อมูลไว้ที่: {os.path.abspath(db_path)}")
 
-client = chromadb.PersistentClient(path=db_path)  #ดู path folderให้ถูกต้อง
+#client = chromadb.PersistentClient(path=db_path)  #ดู path folderให้ถูกต้อง
+client = chromadb.HttpClient(host="localhost", port=4000)
 # collection = client.get_or_create_collection("chatbot_rag_documents") #อันเก่า L2
 collection = client.get_or_create_collection(
     name="rag_documents",
