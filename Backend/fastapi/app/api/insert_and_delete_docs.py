@@ -8,7 +8,6 @@ from app.crud.db_manager import add_docs, get_all_docs, delete_docs, query_by_ag
 from app.api.auth import admin_required
 router = APIRouter(prefix="", tags=["file_upload"])
 
-
 @router.get("/filetest")
 async def file_test(current_admin: dict = Depends(admin_required)):
     return {"message": "hello this is file_upload api test"}

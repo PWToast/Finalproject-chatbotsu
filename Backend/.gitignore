@@ -1,5 +1,6 @@
 # 1. Python (FastAPI)
 __pycache__/
+app/__pycache__
 *.pyc
 .venv/
 .env
@@ -22,3 +23,9 @@ test/
 # 5. OS files
 .DS_Store
 Thumbs.db
+
+test_chat_rag_memory copy.py
+
+Backend/fastapi/app/services/llm/chroma_db/
+Backend/fastapi/app/services/llm/test_chat_rag_memory_original.py
+Backend/fastapi/app/services/llm/chroma_db/chroma.sqlite3

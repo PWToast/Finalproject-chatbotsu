@@ -21,7 +21,7 @@ function HistoryTable({ data, handleRowClick }) {
   return (
     <div className="overflow-hidden rounded-lg border border-gray-200 shadow-md">
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse bg-white text-center text-sm font-light text-gray-500 table-fixed">
+        <table className="w-full border-collapse bg-white text-start text-sm font-light text-gray-500 table-fixed">
           <thead className="bg-[#007A6D]">
             <tr className="text-white">
               <th className="w-[100px] px-3 py-3 border-r-1">วัน-เวลา</th>
