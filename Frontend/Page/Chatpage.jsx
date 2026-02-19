@@ -15,6 +15,7 @@ function Chatpage() {
   const tokenString = localStorage.getItem("token")
   const decoded = jwtDecode(tokenString)
   const emailToken = decoded.email
+  const usernameToshow = decoded.username
   useAuth()
 
   const [inputmessage, setInputMessage] = useState("")
@@ -236,7 +237,7 @@ function Chatpage() {
                   </button>
                 </div>
                 <div className=" w-[90%] h-12 p-1 border border-solid rounded-full border-gray-500">
-                  <div className="mt-2 ml-5">Profile</div>
+                  <div className="mt-2 ml-5">{usernameToshow}</div>
                 </div>
               </div>
             </div>

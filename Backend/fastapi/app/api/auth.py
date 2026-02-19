@@ -70,6 +70,7 @@ async def login(item: Userlogin, db: Session = Depends(get_db)):
     expire = datetime.now(timezone.utc) + timedelta(minutes=60)
     payload ={
         "email": user.email,
+        "username": user.username,
         "role": user.role,
         "exp": expire
     }
