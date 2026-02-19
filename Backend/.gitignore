@@ -28,3 +28,4 @@ test_chat_rag_memory copy.py
 
 Backend/fastapi/app/services/llm/chroma_db/
 Backend/fastapi/app/services/llm/test_chat_rag_memory_original.py
+Backend/fastapi/app/services/llm/chroma_db/chroma.sqlite3

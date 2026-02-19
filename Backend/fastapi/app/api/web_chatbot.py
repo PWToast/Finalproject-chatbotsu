@@ -13,11 +13,12 @@ from app.crud.conversation import update_daily_stats
 
 router = APIRouter(prefix="", tags=["chatbot"])
 
-client = chromadb.PersistentClient(path="app/services/llm/chroma_db")  #ดู path folderให้ถูกต้อง
+#client = chromadb.PersistentClient(path="app/services/llm/chroma_db")  #ดู path folderให้ถูกต้อง
+client = chromadb.HttpClient(host="localhost", port=4000)
 embedding_model = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
 vector_store_from_client = Chroma(
     client=client,
-    collection_name="chatbot_rag_documents",
+    collection_name="rag_documents",
     embedding_function=embedding_model,
 )
 
