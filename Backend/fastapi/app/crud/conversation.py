@@ -2,8 +2,12 @@ import pymongo
 from datetime import datetime, timezone, timedelta
 import math
 from app.schemas.chat import QueryFilters
-
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+import os
+from dotenv import load_dotenv
+load_dotenv()
+Mongo_host = os.getenv("MONGO_URL")
+#myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+myclient = pymongo.MongoClient(Mongo_host)
 mydb = myclient["chatbot_conversation"]
 
 def save_conversation(user_id,platform,response):

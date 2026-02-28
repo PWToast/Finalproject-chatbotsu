@@ -164,5 +164,4 @@ def query_by_text(text):
 
 # add_docs("docs-FAQ/กองกิจการนักศึกษา/....json",vector_store_from_client)
 # delete_docs(vector_store_from_client)
-# watch_collect()
 
