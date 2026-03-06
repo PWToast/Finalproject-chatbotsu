@@ -4,7 +4,7 @@ function Navbar() {
     <div className="bg-[#007A6D] h-12 w-screen top-0 absolute">
         <div className=" flex flex-row justify-start gap-4 ml-1 p-2">
             <span>
-                Placeholder
+  
             </span>
         </div>
     </div>
