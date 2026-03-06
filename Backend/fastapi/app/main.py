@@ -34,6 +34,6 @@ app.include_router(prompt_router)
 #ถ้าใช้ไลน์ด้วยรัน ngrok http --url=suzan-uneloquent-grossly.ngrok-free.dev 8000
 #ไม่ต้องเปลี่ยนที่ line console แล้ว
 
-#chroma run --path backend/fastapi/app/services/llm/chroma_db --host localhost --port 4000
+#chroma run --path Backend/fastapi/app/services/llm/chroma_db --host localhost --port 4000
 #run chroma บน port 4000 
 
