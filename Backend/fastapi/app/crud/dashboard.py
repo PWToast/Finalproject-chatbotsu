@@ -3,7 +3,13 @@ from datetime import datetime, timedelta
 from app.models.mysql_models import User
 from .database import SessionLocal
 from sqlalchemy import func
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+Mongo_host = os.getenv("MONGO_URL")
+#myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+myclient = pymongo.MongoClient(Mongo_host)
 mydb = myclient["chatbot_conversation"]
 
 def get_summary():
