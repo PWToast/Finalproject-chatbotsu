@@ -80,16 +80,17 @@ def add_docs(path,vector_store_from_client):
 #     #show_all_docs()
 
 def show_all_docs():
-    print("Collection name:", collection.name)
-    print("Number of documents:", collection.count())
-    # print("Metadata fields:", collection.get()["metadatas"]) 
-
+     
     documents = collection.get()
     for doc_id, content, metadata in zip(documents["ids"], documents["documents"], documents["metadatas"]):
         print(f"ID: {doc_id}")
         print(f"Content: {content}")
         print(f"Metadata: {metadata}")
         print("-" * 30)
+    
+    print("Collection name:", collection.name)
+    print("Number of documents:", collection.count())
+    # print("Metadata fields:", collection.get()["metadatas"])
     
 def get_all_docs():
     results = collection.get()
@@ -161,7 +162,13 @@ def query_by_text(text):
             })
     return formatted_docs
 
+<<<<<<< HEAD
 # add_docs("Backend/fastapi/app/services/llm/docs-FAQ/รวมไฟล์ json.json",vector_store_from_client)
 # delete_docs(vector_store_from_client)
 # show_all_docs()
 
+=======
+# add_docs("Backend/fastapi/app/services/llm/docs-FAQ/...json",vector_store_from_client)
+# delete_docs(vector_store_from_client)
+# show_all_docs()
+>>>>>>> dashboard
