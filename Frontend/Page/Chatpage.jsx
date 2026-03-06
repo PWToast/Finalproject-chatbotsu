@@ -1,4 +1,4 @@
-import Navbar from "../component/navbar";
+import Navbar from "/component/navbar";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { CiLogout } from "react-icons/ci";
@@ -189,11 +189,11 @@ function Chatpage() {
     <>
       <div className="flex flex-col h-screen">
         <Navbar />
-        <div className="pl-10 pt-15 pb-5 w-full">
+        <div className="pt-15 pb-5 w-full">
           {/*มี 3 ส่วน โดยแบ่ง 15 65 15*/}
           <div className="grid grid-cols-[15%_65%_15%] gap-4 h-full w-full">
             {/*อันนี้คือส่วนของbar ของ chatroom*/}
-            <div className="border border-transparent rounded-xl bg-[#D9D9D9] h-215">
+            <div className="border border-transparent rounded-r-xl bg-[#D9D9D9] h-215 w-80">
               <div className="flex flex-col gap-5 p-5">
                 <div
                   className="self-center w-[90%] p-5 border border-transparent bg-[#007A6D] rounded-full text-center text-xl cursor-pointer"
@@ -243,7 +243,7 @@ function Chatpage() {
             </div>
 
             {/*อันนี้คือส่วนที่ 2 ของหน้าจอหลักห้องคุย*/}
-            <div className=" border-2 border-solid rounded-xl flex flex-col h-215">
+            <div className=" border-2 border-solid rounded-xl flex flex-col h-215 ml-10">
               <div className="flex-1 overflow-auto no-scrollbar flex flex-col gap-2">
                 {currentmessages.map((items, index) => (
                   <div key={index} className="flex flex-col gap-2">
