@@ -32,32 +32,10 @@ def watch_collect():
     for col in all_collections:
         print(f"- ชื่อ: {col.name}")
 
-def add_docs(path,vector_store_from_client):
-    with open(path, "r", encoding="utf-8") as f:
-        data = json.load(f)
+# def add_docs(path,vector_store_from_client):
+#     with open(path, "r", encoding="utf-8") as f:
+#         data = json.load(f)
 
-    documents = []
-
-    for i,item in enumerate(data, start=1):
-        # now = datetime.now()
-        # formatted = now.strftime("%d/%m/%Y %H:%M")
-        doc = Document(
-            page_content=item["content"],
-            metadata=item["metadata"]
-        )
-        documents.append(doc)
-
-    for doc in documents:
-        print(doc.page_content)
-        print(doc.metadata)
-        print("-"*30)
-
-    uuids = [str(uuid4()) for _ in range(len(documents))]
-    vector_store_from_client.add_documents(documents=documents, ids=uuids)
-    print("add completed")
-
-# def add_docs(data):
-#     print("test test")
 #     documents = []
 
 #     for i,item in enumerate(data, start=1):
@@ -73,11 +51,33 @@ def add_docs(path,vector_store_from_client):
 #         print(doc.page_content)
 #         print(doc.metadata)
 #         print("-"*30)
-    
+
 #     uuids = [str(uuid4()) for _ in range(len(documents))]
 #     vector_store_from_client.add_documents(documents=documents, ids=uuids)
 #     print("add completed")
-#     #show_all_docs()
+
+def add_docs(data):
+    print("test test")
+    documents = []
+
+    for i,item in enumerate(data, start=1):
+        # now = datetime.now()
+        # formatted = now.strftime("%d/%m/%Y %H:%M")
+        doc = Document(
+            page_content=item["content"],
+            metadata=item["metadata"]
+        )
+        documents.append(doc)
+
+    for doc in documents:
+        print(doc.page_content)
+        print(doc.metadata)
+        print("-"*30)
+    
+    uuids = [str(uuid4()) for _ in range(len(documents))]
+    vector_store_from_client.add_documents(documents=documents, ids=uuids)
+    print("add completed")
+    #show_all_docs()
 
 def show_all_docs():
      
