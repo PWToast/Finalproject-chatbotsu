@@ -1,7 +1,12 @@
 from pymongo import MongoClient
 from app.config.prompt import DEFAULT_PROMPTS
+import os
+from dotenv import load_dotenv
 
-client = MongoClient("mongodb://localhost:27017/")
+load_dotenv()
+Mongo_host = os.getenv("MONGO_URL")
+#client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient(Mongo_host)
 db = client["chatbot_conversation"]
 collection = db["prompts"]
 

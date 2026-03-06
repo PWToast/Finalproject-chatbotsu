@@ -2,14 +2,16 @@ from datetime import datetime
 from pymongo import MongoClient
 from pydantic import BaseModel
 from fastapi import APIRouter
+import os
 from dotenv import load_dotenv
 from app.models.mongo_models import Historyschema
 import pymongo
 router = APIRouter(prefix="", tags=["web_history"])
 
 load_dotenv()
-
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+#mongo = "mongodb://localhost:27017/"
+Mongo_host = os.getenv("MONGO_URL")
+myclient = pymongo.MongoClient(Mongo_host)
 db = myclient["chatbot_conversation"]
 collection = db["chat_history"]
 
