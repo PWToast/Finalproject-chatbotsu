@@ -10,7 +10,7 @@ load_dotenv()
 MYSQL_host_3306 = os.getenv("MYSQL_URL_3306")
 MYSQL_host_3307 = os.getenv("MYSQL_URL_3307")
 
-engine = create_engine(MYSQL_host_3306)
+engine = create_engine(MYSQL_host_3307)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base.metadata.create_all(bind=engine)
 
