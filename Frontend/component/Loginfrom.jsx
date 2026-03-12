@@ -61,7 +61,7 @@ function Loginfrom() {
         <div className="h-90 w-100 bg-[#D9D9D9] border border-transparent rounded-xl shadow-xl/30">
           <div className="h-75 flex flex-col justify-between">
             <div className="flex flex-col">
-              <span className="mt-3 ml-5 mb-2">Email</span>
+              <span className="mt-3 ml-5 mb-2">อีเมล</span>
               <input
                 className="bg-[#FFFFFF] p-2 w-80 self-center border border-transparent rounded-md"
                 type="email"
@@ -69,7 +69,7 @@ function Loginfrom() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <span className="mt-5 ml-5 mb-2">Password</span>
+              <span className="mt-5 ml-5 mb-2">รหัสผ่าน</span>
               <input
                 className="bg-[#FFFFFF] p-2 w-80 self-center border border-transparent rounded-md"
                 type={typeinput}
@@ -90,7 +90,7 @@ function Loginfrom() {
                   className="bg-[#FFFFFF] hover:bg-[#007A6D] transition-colors duration-500 w-80 self-center mt-15 p-3 text-black/50 cursor-pointer"
                   onClick={handleSubmitFrom}
                 >
-                  Sign in
+                  เข้าสู่ระบบ
                 </button>
               )}
               {isFieldFull && (
@@ -98,7 +98,7 @@ function Loginfrom() {
                   className="bg-[#007A6D] transition-colors duration-500 w-80 self-center mt-15 p-3 text-black/50 cursor-pointer"
                   onClick={handleSubmitFrom}
                 >
-                  Sign in
+                  เข้าสู่ระบบ
                 </button>
               )}
               <div className="flex flex-row gap-2 self-center text-[12px] mt-1">

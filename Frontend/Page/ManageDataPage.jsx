@@ -147,18 +147,52 @@ function ManageDataPage() {
 
           <div className="flex flex-col w-full">
             <div className="flex justify-center">
-              <div className="overflow-hidden w-70 bg-[#007A6D] m-5 rounded-2xl grid grid-cols-2 divide-x-2 divide divide-black-500">
-                <button onClick={()=>setActiveTab('uploadfile')} className=" cursor-pointer self-center p-5 
-                active:bg-teal-600 focus:bg-teal-600 hover:bg-teal-600 text-white
-                ">อัพโหลดไฟล์</button>
-                <button onClick={()=>setActiveTab('formfield') } className=" cursor-pointer self-center p-5
-                active:bg-teal-600 focus:bg-teal-600 hover:bg-teal-600 text-white
-                ">กรอกฟอร์ม</button>
-              </div>
+              <div className="flex flex-col items-center justify-center w-full p-4 mt-5">
+                <div className="flex flex-col w-full max-w-2xl gap-6"> 
+                  <div className="flex flex-col w-full"> 
+                    <p className="font-semibold mb-1">เนื้อหา</p>
+                    <textarea className="bg-white w-full h-25 shadow-xl p-2 rounded-md" name="content" value={content} onChange={(e)=>setContent(e.target.value)}/>
+                    <div className="mt-2 max-w-90 cursor-pointer px-8 py-3 rounded-2xl hover:bg-[#007A6D] hover:text-white" onClick={()=>contentFileRef.current.click()}>
+                      <span>{contentfilename}</span>
+                      <input type="file" className="hidden" accept=".txt" onChange={handlefileuploadtocontentform} ref={contentFileRef}/>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col w-full"> 
+                    <p className="font-semibold mb-1">หัวข้อ</p>
+                    <textarea className="bg-white w-full h-25 shadow-xl p-2 rounded-md" name="topic" value={topic} onChange={(e)=>setTopic(e.target.value)}/>
+                  </div>
+
+                  <div className="flex flex-col w-full"> 
+                    <p className="font-semibold mb-1">ประเภทของเนื้อหา</p>
+                    <textarea className="bg-white w-full h-25 shadow-xl p-2 rounded-md" name="topic" value={category} onChange={(e)=>setCategory(e.target.value)}/>
+                  </div>
+
+                  <div className="flex flex-col w-full">
+                    <p className="font-semibold mb-1">หน่วยงานที่เกี่ยวข้อง</p>
+                    <select name="agency" className="w-full md:w-64 shadow-xl p-2 rounded-md" value={agency} onChange={(e)=>setAgency(e.target.value)}>
+                      <option value="กองบริหารวิชาการ">กองบริหารวิชาการ</option>
+                      <option value="กองกิจการนักศึกษา">กองกิจการนักศึกษา</option>
+                      <option value="สำนักดิจิทัล">สำนักดิจิทัล</option>
+                    </select>
+                  </div>
+
+                  <div className="flex flex-col w-full"> 
+                    <p className="font-semibold mb-1">แหล่งที่มา</p>
+                    <textarea className="bg-white w-full h-25 shadow-xl p-2 rounded-md" name="source" value={source} onChange={(e)=>setSource(e.target.value)}/>
+                  </div>
+
+                  <div className="flex justify-center mt-4">
+                    <button className="bg-[#007A6D] hover:bg-teal-600 cursor-pointer text-white px-8 py-3 rounded-2xl transition-all" onClick={handlesubmitTextForm}>
+                      ยืนยัน
+                    </button>
+                  </div>
+                </div>
+            </div>
             </div>
 
           </div>
-          <Activity mode ={activeTab ==='uploadfile' ? 'visible' : 'hidden'}>
+          {/* <Activity mode ={activeTab ==='uploadfile' ? 'visible' : 'hidden'}>
             <div
             className="flex flex-col w-full h-110 items-center border-2 border-dashed"
             onDragOver={handleDragOver}
@@ -200,9 +234,9 @@ function ManageDataPage() {
           </div>
           <button className="bg-[#EE4B2B] hover:bg-red-600 cursor-pointer text-white px-8 py-3 m-5 rounded-2xl" onClick={clearFileUploadForm}>ยกเลิกและล้างฟอร์ม</button>
           <button className="bg-[#007A6D] hover:bg-teal-600 cursor-pointer text-white px-8 py-3 m-5 rounded-2xl" onClick={handlesubmitFileUpload}>ยืนยัน</button>
-          </Activity>
+          </Activity> */}
 
-          <Activity mode ={activeTab ==='formfield' ? 'visible' : 'hidden'}>
+          {/* <Activity mode ={activeTab ==='formfield' ? 'visible' : 'hidden'}>
             <div className="flex flex-col items-center justify-center w-full p-4">
   
               <div className="flex flex-col w-full max-w-2xl gap-6"> 
@@ -248,7 +282,7 @@ function ManageDataPage() {
 
               </div>
             </div>
-          </Activity>
+          </Activity> */}
 
         </main>
       </div>

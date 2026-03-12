@@ -191,9 +191,9 @@ function Chatpage() {
         <Navbar />
         <div className="pt-15 pb-5 w-full">
           {/*มี 3 ส่วน โดยแบ่ง 15 65 15*/}
-          <div className="grid grid-cols-[15%_65%_15%] gap-4 h-full w-full">
+          <div className="grid grid-cols-[15%_65%_17%] gap-4 h-full w-full">
             {/*อันนี้คือส่วนของbar ของ chatroom*/}
-            <div className="border border-transparent rounded-r-xl bg-[#D9D9D9] h-215 w-80">
+            <div className="border border-transparent rounded-r-xl bg-[#D9D9D9] h-215 w-20%">
               <div className="flex flex-col gap-5 p-5">
                 <div
                   className="self-center w-[90%] p-5 border border-transparent bg-[#007A6D] rounded-full text-center text-xl cursor-pointer"
@@ -281,43 +281,45 @@ function Chatpage() {
             </div>
 
             {/*ส่วนที่ 3 ส่วนของ Suggestion ไม่มีอะไร กดอะไรไม่ได้*/}
-            <div className="border-2 border-solid rounded-xl h-215 overflow-auto no-scrollbar">
-              <div className="flex flex-col gap-3 p-5">
-                <span className="self-center text-2xl">Suggestion</span>
-                <div className="flex flex-col p-3 ">
-                  <span className="line-clamp-1">กองบริหารงานวิชาการ</span>
-                  <ul className="list-disc ml-10">
-                    <li><span className="line-clamp-1 text-sm text-gray-500" title="ขั้นตอนการลงทะเบียนเรียน">ขั้นตอนการลงทะเบียนเรียน </span></li>
-                    <li><span className="line-clamp-1 text-sm text-gray-500" title="การลงทะเบียนเรียน (ล่าช้า)">การลงทะเบียนเรียน (ล่าช้า)</span></li>
-                    <li><span className="line-clamp-1 text-sm text-gray-500" title="การเพิ่มถอน เปลี่ยนกลุ่มเรียน">การเพิ่มถอน เปลี่ยนกลุ่มเรียน</span></li>
-                    <li><span className="line-clamp-1 text-sm text-gray-500" title="การดูผลการลงทะเบียนเรียน">การดูผลการลงทะเบียนเรียน</span></li>
-                    <li><span className="line-clamp-1 text-sm text-gray-500" title="ตรวจสอบภาระค่าใช้จ่าย">ตรวจสอบภาระค่าใช้จ่าย</span></li>
-                    <li><span className="line-clamp-1 text-sm text-gray-500" title="การขอสำรองที่นั่งออนไลน์">การขอสำรองที่นั่งออนไลน์</span></li>
-                    <li><span className="line-clamp-1 text-sm text-gray-500" title="คำร้องขอติด W ออนไลน์">คำร้องขอติด W ออนไลน์</span></li>
-                    <li><span className="line-clamp-1 text-sm text-gray-500" title="ตรวจสอบคำร้อง">ตรวจสอบคำร้อง</span></li>
-                    <li><span className="line-clamp-1 text-sm text-gray-500" title="Email แจ้งเตือนคำร้อง">Email แจ้งเตือนคำร้อง</span></li>
-                    <li><span className="text-sm text-gray-500" title="ใบคำร้องสำหรับนักศึกษาปริญญาตรี">ใบคำร้องสำหรับนักศึกษาปริญญาตรี</span></li>
-                  </ul>
+            <div className="">
+                <div className="border-2 border-solid rounded-xl h-215 overflow-auto no-scrollbar">
+                  <div className="flex flex-col gap-3 p-5">
+                    <span className="self-center text-2xl">Suggestion</span>
+                    <div className="flex flex-col p-3 ">
+                      <span className="line-clamp-1">กองบริหารงานวิชาการ</span>
+                      <ul className="list-disc ml-10">
+                        <li><span className="line-clamp-1 text-sm text-gray-500" title="ขั้นตอนการลงทะเบียนเรียน">ขั้นตอนการลงทะเบียนเรียน </span></li>
+                        <li><span className="line-clamp-1 text-sm text-gray-500" title="การลงทะเบียนเรียน (ล่าช้า)">การลงทะเบียนเรียน (ล่าช้า)</span></li>
+                        <li><span className="line-clamp-1 text-sm text-gray-500" title="การเพิ่มถอน เปลี่ยนกลุ่มเรียน">การเพิ่มถอน เปลี่ยนกลุ่มเรียน</span></li>
+                        <li><span className="line-clamp-1 text-sm text-gray-500" title="การดูผลการลงทะเบียนเรียน">การดูผลการลงทะเบียนเรียน</span></li>
+                        <li><span className="line-clamp-1 text-sm text-gray-500" title="ตรวจสอบภาระค่าใช้จ่าย">ตรวจสอบภาระค่าใช้จ่าย</span></li>
+                        <li><span className="line-clamp-1 text-sm text-gray-500" title="การขอสำรองที่นั่งออนไลน์">การขอสำรองที่นั่งออนไลน์</span></li>
+                        <li><span className="line-clamp-1 text-sm text-gray-500" title="คำร้องขอติด W ออนไลน์">คำร้องขอติด W ออนไลน์</span></li>
+                        <li><span className="line-clamp-1 text-sm text-gray-500" title="ตรวจสอบคำร้อง">ตรวจสอบคำร้อง</span></li>
+                        <li><span className="line-clamp-1 text-sm text-gray-500" title="Email แจ้งเตือนคำร้อง">Email แจ้งเตือนคำร้อง</span></li>
+                        <li><span className="text-sm text-gray-500" title="ใบคำร้องสำหรับนักศึกษาปริญญาตรี">ใบคำร้องสำหรับนักศึกษาปริญญาตรี</span></li>
+                      </ul>
+                    </div>
+                    <div className="flex flex-col p-3">
+                      <span className="line-clamp-1">DSA SU กองกิจการนักศึกษา</span>
+                      <ul className="list-disc ml-10">
+                        <li><span className="text-sm text-gray-500" title="คุณสมบัติของผู้กู้ยืมกยศ.(กู้ยืมเพื่อการศึกษา)">คุณสมบัติของผู้กู้ยืมกยศ.(กู้ยืมเพื่อการศึกษา) </span></li>
+                        <li><span className="line-clamp-1 text-sm text-gray-500" title="ประเภทของผู้กู้ยืมเงิน ">ประเภทของผู้กู้ยืมเงิน</span></li>
+                        <li><span className="text-sm text-gray-500" title="คุณสมบัติทั่วไปของนักศึกษาผู้กู้ยืมเงินกองทุน">คุณสมบัติทั่วไปของนักศึกษาผู้กู้ยืมเงินกองทุน</span></li>
+                        <li><span className="text-sm text-gray-500" title="ลักษณะต้องห้ามของนักศึกษาผู้กู้ยืมเงินกองทุน ">ลักษณะต้องห้ามของนักศึกษาผู้กู้ยืมเงินกองทุน</span></li>
+                        <li><span className="text-sm text-gray-500" title="คุณสมบัติเฉพาะของนักศึกษาผู้กู้ยืมเงินกองทุน ลักษณะที่ 1,2 และ 3">คุณสมบัติเฉพาะของนักศึกษาผู้กู้ยืมเงินกองทุน ลักษณะที่ 1,2 และ 3</span></li>
+                        <li><span className="line-clamp-1 text-sm text-gray-500" title="หอพักนักศึกษา">หอพักนักศึกษา</span></li>
+                      </ul>
+                    </div>
+                    <div className="flex flex-col p-3 ">
+                      <span className="line-clamp-1">BDT.SU สำนักดิจิทัลเทคโนโลยี</span>
+                      <ul className="list-disc ml-10">
+                        <li><span className="line-clamp-1 text-sm text-gray-500" title="วิธีกู้คืน SU-IT Account">วิธีกู้คืน SU-IT Account</span></li>
+                        <li><span className="text-sm text-gray-500" title="วิธีลงทะเบียน SU-IT Account"> วิธีลงทะเบียน SU-IT Account</span></li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex flex-col p-3">
-                  <span className="line-clamp-1">DSA SU กองกิจการนักศึกษา</span>
-                  <ul className="list-disc ml-10">
-                    <li><span className="text-sm text-gray-500" title="คุณสมบัติของผู้กู้ยืมกยศ.(กู้ยืมเพื่อการศึกษา)">คุณสมบัติของผู้กู้ยืมกยศ.(กู้ยืมเพื่อการศึกษา) </span></li>
-                    <li><span className="line-clamp-1 text-sm text-gray-500" title="ประเภทของผู้กู้ยืมเงิน ">ประเภทของผู้กู้ยืมเงิน</span></li>
-                    <li><span className="text-sm text-gray-500" title="คุณสมบัติทั่วไปของนักศึกษาผู้กู้ยืมเงินกองทุน">คุณสมบัติทั่วไปของนักศึกษาผู้กู้ยืมเงินกองทุน</span></li>
-                    <li><span className="text-sm text-gray-500" title="ลักษณะต้องห้ามของนักศึกษาผู้กู้ยืมเงินกองทุน ">ลักษณะต้องห้ามของนักศึกษาผู้กู้ยืมเงินกองทุน</span></li>
-                    <li><span className="text-sm text-gray-500" title="คุณสมบัติเฉพาะของนักศึกษาผู้กู้ยืมเงินกองทุน ลักษณะที่ 1,2 และ 3">คุณสมบัติเฉพาะของนักศึกษาผู้กู้ยืมเงินกองทุน ลักษณะที่ 1,2 และ 3</span></li>
-                    <li><span className="line-clamp-1 text-sm text-gray-500" title="หอพักนักศึกษา">หอพักนักศึกษา</span></li>
-                  </ul>
-                </div>
-                <div className="flex flex-col p-3 ">
-                  <span className="line-clamp-1">BDT.SU สำนักดิจิทัลเทคโนโลยี</span>
-                  <ul className="list-disc ml-10">
-                    <li><span className="line-clamp-1 text-sm text-gray-500" title="วิธีกู้คืน SU-IT Account">วิธีกู้คืน SU-IT Account</span></li>
-                    <li><span className="text-sm text-gray-500" title="วิธีลงทะเบียน SU-IT Account"> วิธีลงทะเบียน SU-IT Account</span></li>
-                  </ul>
-                </div>
-              </div>
             </div>
           </div>
         </div>
