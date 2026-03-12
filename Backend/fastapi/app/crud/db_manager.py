@@ -57,7 +57,7 @@ def watch_collect():
 #     print("add completed")
 
 def add_docs(data):
-    print("test test")
+    # print("test test")
     documents = []
 
     for i,item in enumerate(data, start=1):
