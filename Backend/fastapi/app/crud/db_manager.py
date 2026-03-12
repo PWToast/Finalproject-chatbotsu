@@ -162,6 +162,7 @@ def query_by_text(text):
             })
     return formatted_docs
 
-# add_docs("Backend/fastapi/app/services/llm/docs-FAQ/...json",vector_store_from_client)
+# add_docs("Backend/fastapi/app/services/llm/docs-FAQ/รวมไฟล์ json.json",vector_store_from_client)
 # delete_docs(vector_store_from_client)
 # show_all_docs()
+
