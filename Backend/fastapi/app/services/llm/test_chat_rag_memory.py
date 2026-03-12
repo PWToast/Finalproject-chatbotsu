@@ -18,6 +18,7 @@ memory = MemorySaver()
 #     collection_name="rag_documents",#เปลี่ยนชื่อ collectionให้ถูกต้อง
 #     embedding_function=embedding_model,
 # )
+
 class BasicChatState(TypedDict):
     messages: Annotated[list, add_messages]
     rewritten_question: str
@@ -133,7 +134,7 @@ def generate_response(state: BasicChatState):
         # print(f"score (Distance): {score:.4f}")
         # print("-" * 20)
         #เก็บข้อความ
-        context += doc.page_content + "\n-----------"
+        context += doc.page_content + "\n-----------\n"
     print("context:", context)
     recent_messages = state["messages"][-7:-1] #เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
     # print(f"recent_messages:\n{recent_messages}")
@@ -239,7 +240,7 @@ def chat_rag_memory(message,embedder,user_id):
         "messages": HumanMessage(content=message),
         "is_fallback": False
     }, config=config)
-    print("---------------------------------------")
+    # print("---------------------------------------")
 
     response = {
         "user_message": message,

@@ -29,7 +29,8 @@
 
 # router = APIRouter(prefix="", tags=["line"])
 
-# client = chromadb.PersistentClient(path="app/services/llm/chroma_db")  #ดู path folderให้ถูกต้อง
+# # client = chromadb.PersistentClient(path="app/services/llm/chroma_db")  #ดู path folderให้ถูกต้อง
+# client = chromadb.HttpClient(host="localhost", port=4000)
 # embedding_model = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
 # vector_store_from_client = Chroma(
 #     client=client,
@@ -37,8 +38,7 @@
 #     embedding_function=embedding_model,
 # )
 
-# ENV_PATH = Path(__file__).resolve().parent / ".env"
-# load_dotenv(dotenv_path=ENV_PATH, override=True)
+# load_dotenv()
 # #ลายเซ็นที่ไลน์มอบให้เรา เพื่อบอกว่าข้อมูลที่ส่งมาหาบอทเรา มาจากไลน์จริงๆ
 # get_channel_secret = os.getenv('CHANNEL_SECRET')
 # #บัตรผ่านทางเผื่อดูว่ามีสิทธิ์ส่งข้อมูลไปหา lineผู้ใช้

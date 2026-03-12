@@ -59,7 +59,6 @@ def watch_collect():
 def add_docs(data):
     print("test test")
     documents = []
-    
 
     for i,item in enumerate(data, start=1):
         # now = datetime.now()
@@ -81,16 +80,17 @@ def add_docs(data):
     #show_all_docs()
 
 def show_all_docs():
-    print("Collection name:", collection.name)
-    print("Number of documents:", collection.count())
-    # print("Metadata fields:", collection.get()["metadatas"]) 
-
+     
     documents = collection.get()
     for doc_id, content, metadata in zip(documents["ids"], documents["documents"], documents["metadatas"]):
         print(f"ID: {doc_id}")
         print(f"Content: {content}")
         print(f"Metadata: {metadata}")
         print("-" * 30)
+    
+    print("Collection name:", collection.name)
+    print("Number of documents:", collection.count())
+    # print("Metadata fields:", collection.get()["metadatas"])
     
 def get_all_docs():
     results = collection.get()
@@ -162,6 +162,7 @@ def query_by_text(text):
             })
     return formatted_docs
 
-# add_docs("docs-FAQ/กองกิจการนักศึกษา/....json",vector_store_from_client)
+# add_docs("Backend/fastapi/app/services/llm/docs-FAQ/รวมไฟล์ json.json",vector_store_from_client)
 # delete_docs(vector_store_from_client)
+# show_all_docs()
 

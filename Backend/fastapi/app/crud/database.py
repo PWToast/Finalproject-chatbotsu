@@ -3,6 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from app.models.mysql_models import Base
 import os
 from dotenv import load_dotenv
+
 load_dotenv()
 #DATABASE_URL = "mysql+pymysql://user1:mysql123456@localhost:3307/my_db"
 #DATABASE_URL = "mysql+pymysql://user1:mysql123456@localhost:3306/my_db"
