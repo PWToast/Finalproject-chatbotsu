@@ -42,7 +42,7 @@ function HistoryTable({ data, handleRowClick }) {
                 className={`transition-colors ${
                   user.is_fallback
                     ? "bg-yellow-50 hover:bg-yellow-100"
-                    : "bg-white hover:bg-gray-50"
+                    : "bg-white hover:bg-gray-100"
                 }`}
               >
                 <td className="px-6 py-4">{formatThaiDate(user.timestamp)}</td>
