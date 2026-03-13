@@ -207,7 +207,7 @@ function Chatpage() {
                   className="self-center w-[90%] p-5 border border-transparent bg-[#007A6D] rounded-full text-center text-xl cursor-pointer"
                   onClick={createNewChatRoom}
                 >
-                  + New Chat
+                  + แชทใหม่
                 </div>
                 <div className="border-t border-black"></div>
                 <div className=" h-140 w-full flex flex-col gap-5 overflow-auto no-scrollbar">
@@ -222,7 +222,7 @@ function Chatpage() {
                         key={index}
                         onClick={() => selectSession(items.session_id)}
                       >
-                        <span>Chat</span>
+                        <span>แชท</span>
                         <div
                           class={`cursor-pointer rounded-full p-3 transition-colors 
                           ${
@@ -304,7 +304,7 @@ function Chatpage() {
             <div className="">
               <div className="border-2 border-solid rounded-xl h-215 overflow-auto no-scrollbar">
                 <div className="flex flex-col gap-3 p-5">
-                  <span className="self-center text-2xl">Suggestion</span>
+                  <span className="self-center text-2xl">หัวข้อแนะนำ</span>
                   <div className="flex flex-col p-3 ">
                     <span className="line-clamp-1">กองบริหารงานวิชาการ</span>
                     <ul className="list-disc ml-10">
