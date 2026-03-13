@@ -73,7 +73,7 @@ function AdminSidebar() {
       `}
       >
         <div className="py-4 text-center text-2xl font-bold border-b border-teal-600">
-          Admin Panel
+          แผงควบคุม
         </div>
         <nav className="flex-1 px-4 py-4 space-y-3">
           {navItems.map((item) => {

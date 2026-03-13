@@ -10,6 +10,9 @@ from langchain_chroma import Chroma
 from app.crud.edit_prompt import get_final_prompt
 
 llm = OllamaLLM(model="scb10x/typhoon2.1-gemma3-4b")
+
+
+
 memory = MemorySaver()
 # client = chromadb.PersistentClient(path="chroma_db")  #ดู path folderให้ถูกต้อง
 # embedding_model = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
@@ -31,7 +34,7 @@ def get_route(state: BasicChatState):
     route = state.get("route_decision", "general")
     return route
 
-def agency_check(state: BasicChatState):#อาจจะต้องไปใส่ทีหลัง เพราะมีการ rewrite
+def agency_check(state: BasicChatState):
     user_question = state["rewritten_question"]
 
     system_raw, human_raw = get_final_prompt("agency_check")
@@ -116,7 +119,7 @@ def retrieve(state: BasicChatState,config):
     
     user_query = state["rewritten_question"]
     # print("user_query at retrieve: ",user_query)
-    vectordb = config.get("configurable", {}).get("embedding_model")
+    vectordb = config.get("configurable", {}).get("vectordb")
     results = vectordb.similarity_search_with_score(
         user_query, 
         k=5
@@ -205,12 +208,13 @@ def general_chat(state: BasicChatState):
 
 graph = StateGraph(BasicChatState)
 
+graph.add_node("rewrite_query", rewrite_query)
 graph.add_node("agency_check", agency_check) 
 graph.add_node("llm_decision", llm_decision)
 graph.add_node("retrieve", retrieve)
 graph.add_node("general_chat",general_chat)
 graph.add_node("generate", generate_response) 
-graph.add_node("rewrite_query", rewrite_query)
+
 
 graph.set_entry_point("rewrite_query")
 graph.add_edge("rewrite_query", "agency_check")
@@ -231,10 +235,10 @@ graph.add_edge("general_chat",END)
 
 app = graph.compile(checkpointer=memory)
 
-def chat_rag_memory(message,embedder,user_id):
+def chat_rag_memory(message,vectordb,user_id):
     config = {"configurable": {
         "thread_id": user_id, 
-        "embedding_model": embedder
+        "vectordb": vectordb
     }}
     res = app.invoke({
         "messages": HumanMessage(content=message),
@@ -247,7 +251,7 @@ def chat_rag_memory(message,embedder,user_id):
         "rewritten_question": res["rewritten_question"], #เพิ่มฟิลด์ลง dbด้วย
         "ai_message": res["messages"][-1].content,
         "question_agency": res["agency"],
-        "route_decision": res["route_decision"], #เพิ่มฟิลด์ลง dbด้วย
+        "route_decision": res["route_decision"], 
         "is_fallback": res["is_fallback"],
     }
     print(response)
