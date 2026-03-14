@@ -15,10 +15,13 @@ cd <ชื่อโฟลเดอร์โปรเจค>
 cd frontend
 npm install
 npm run dev
+```
 
+```bash
 cd backend
 docker-compose up -d
-
+```
+```bash
 cd backend/fastapi
 
 # สร้างและเปิดใช้งาน Virtual Environment
@@ -31,6 +34,7 @@ source .venv/bin/activate
 
 # ติดตั้ง Dependencies
 pip install -r requirements.txt
+```
 
 # ฐานข้อมูล (เลือก Port ตามที่ใช้งานจริง)
 # หาก 3306 ชน ให้เปลี่ยนไปใช้ 3307 ในการเชื่อมต่อ
