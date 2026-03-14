@@ -129,15 +129,16 @@ def retrieve(state: BasicChatState,config):
 
 def generate_response(state: BasicChatState):
 
-    
+    threshold = 0.7
     # print("เนื้อหาที่ได้จากvectorDB:")
     context = ""
     for doc, score in state["documents"]:
         # print(f"\n{doc.page_content}")
-        # print(f"score (Distance): {score:.4f}")
+        print(f"score (Distance): {score:.4f}")
         # print("-" * 20)
         #เก็บข้อความ
-        context += doc.page_content + "\n-----------\n"
+        if score >= threshold:
+            context += doc.page_content + "\n-----------\n"
     print("context:", context)
     recent_messages = state["messages"][-7:-1] #เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
     # print(f"recent_messages:\n{recent_messages}")
