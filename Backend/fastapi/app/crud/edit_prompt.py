@@ -11,7 +11,7 @@ db = client["chatbot_conversation"]
 collection = db["prompts"]
 
 def get_db_prompt(node_id: str):
-
+    # decision, rewrite, agency, rag, general
     return collection.find_one({"node_id": node_id})
 
 def upsert_db_prompt(data: dict):
