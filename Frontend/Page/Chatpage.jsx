@@ -126,17 +126,22 @@ function Chatpage() {
       const buffermessage = inputmessage;
       setInputMessage("");
 
+      setCurrentMessages((prev) => [
+        ...prev,
+        { user_message: buffermessage, ai_message: "กำลังพิมพ์..." },
+      ]);
+
       const res = await axios.post("http://localhost:8000/chat_rag_memory", {
-        message: inputmessage,
+        message: buffermessage,
         email: emailToken,
         session_id: sessionToUse,
       });
-      const newResponse = {
-        user_message: buffermessage,
-        ai_message: res.data.response,
-      };
 
-      setCurrentMessages((prev) => [...prev, newResponse]);
+      setCurrentMessages((prev) => {
+        const newMessages = [...prev];
+        newMessages[newMessages.length - 1].ai_message = res.data.response;
+        return newMessages;
+      });
 
       if (isNewSession) {
         // ถ้าเป็นห้องใหม่ ส่ง true ไปบอกให้ข้ามการเช็ค state

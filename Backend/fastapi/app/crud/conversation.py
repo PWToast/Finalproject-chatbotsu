@@ -21,7 +21,7 @@ def save_conversation(user_id,platform,response):
                "question_agency": response["question_agency"],
                "is_fallback": response["is_fallback"]
             }#เว็บมี session_id กับ message_idด้วย
-    print(mydict)
+    # print(mydict)
     collection.insert_one(mydict)
 
 def update_daily_stats(platform,response):
