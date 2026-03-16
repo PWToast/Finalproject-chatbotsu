@@ -86,9 +86,9 @@ def agency_check(state: BasicChatState):
     system_raw, human_raw = get_final_prompt("agency_check")
     system_prompt = system_raw.format()
     human_prompt = human_raw.format(user_question=user_question)
-    print("---agency---")
-    print(f"system_prompt:\n{system_prompt}")
-    print(f"human_prompt:\n{human_prompt}")
+    # print("---agency---")
+    # print(f"system_prompt:\n{system_prompt}")
+    # print(f"human_prompt:\n{human_prompt}")
     llm_response = llm.chat.completions.create(
         model="typhoon-v2.5-30b-a3b-instruct",
         messages=[
