@@ -8,11 +8,15 @@ import chromadb
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from app.crud.edit_prompt import get_final_prompt
+from openai import OpenAI
 
-llm = OllamaLLM(model="scb10x/typhoon2.1-gemma3-4b")
-
-
-
+# llm = OllamaLLM(model="scb10x/typhoon2.1-gemma3-4b")
+# 
+llm = OpenAI(
+        api_key="sk-ec57KJniI86p7HzkmcoYP8680ldOIKP9DsEIZfoZ8SamDO2Z",
+        base_url="https://api.opentyphoon.ai/v1"
+    )
+# 
 memory = MemorySaver()
 # client = chromadb.PersistentClient(path="chroma_db")  #ดู path folderให้ถูกต้อง
 # embedding_model = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
@@ -33,51 +37,6 @@ class BasicChatState(TypedDict):
 def get_route(state: BasicChatState):
     route = state.get("route_decision", "general")
     return route
-
-def agency_check(state: BasicChatState):
-    user_question = state["rewritten_question"]
-
-    system_raw, human_raw = get_final_prompt("agency_check")
-    system_prompt = system_raw.format()
-    human_prompt = human_raw.format(user_question=user_question)
-    agency_check_prompt = [
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=human_prompt)
-    ]
-    # print("agency_check_prompt: ",agency_check_prompt)
-    result =  llm.invoke(agency_check_prompt).strip()
-    if result not in ["กองบริหารวิชาการ","สำนักดิจิทัลเทคโนโลยี","กองกิจการนักศึกษา","อื่นๆ"]:
-        # print("not in any agency")
-        result = "อื่นๆ"
-    # print('หมวด: ', result)
-    return {"agency": result} 
-
-def llm_decision(state: BasicChatState):
-    recent_messages = state["messages"][-7:-1] #เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
-    # print(f"recent_messages:\n{recent_messages}")
-    
-    history = ""
-    if recent_messages: #ถ้ามีข้อมูล
-        #จัดformatt เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
-        for msg in recent_messages: 
-            role = "User" if isinstance(msg, HumanMessage) else "AI"
-            history += f"{role}: {msg.content}\n"
-
-    user_question = state["rewritten_question"]
-    system_raw, human_raw = get_final_prompt("decision")
-    system_prompt = system_raw.format(history=history)
-    human_prompt = human_raw.format(user_question=user_question)
-    decision_prompt = [
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=human_prompt)
-    ]
-    # print("decision_prompt: ",decision_prompt)
-    route = llm.invoke(decision_prompt).strip()
-    if route not in ["retrieve","general"]:
-        # print("not in any route")
-        route = "general"
-    # print('ตัดสินใจ: ', route)
-    return {"route_decision": route}
 
 def rewrite_query(state: BasicChatState):
     recent_messages = state["messages"][-7:-1] #เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
@@ -102,17 +61,85 @@ def rewrite_query(state: BasicChatState):
     system_raw, human_raw = get_final_prompt("rewrite")
     system_prompt = system_raw.format(history=history)
     human_prompt = human_raw.format(user_question=user_question)
-    rewrite_prompt = [
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=human_prompt)
-    ]
-    # print("rewrite_prompt: ",rewrite_prompt)
-    rewritten_question = llm.invoke(rewrite_prompt).strip()
+    # print("---rewrite---")
+    # print(f"system_prompt:\n{system_prompt}")
+    # print(f"human_prompt:\n{human_prompt}")
+    llm_response = llm.chat.completions.create(
+        model="typhoon-v2.5-30b-a3b-instruct",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": human_prompt}
+        ],
+        max_tokens=16384
+    )
+
+    rewritten_question = llm_response.choices[0].message.content
     # print("คำถามต้นฉบับ: ",user_question)
     # print("คำถามที่ rewrite: ",rewritten_question)
     #แทนที่คำถามล่าสุดให้เป็นอันที่ rewrite
     return {"messages": [HumanMessage(content=rewritten_question,id=recent_question.id)],
             "rewritten_question": rewritten_question}
+
+def agency_check(state: BasicChatState):
+    user_question = state["rewritten_question"]
+    
+    system_raw, human_raw = get_final_prompt("agency_check")
+    system_prompt = system_raw.format()
+    human_prompt = human_raw.format(user_question=user_question)
+    print("---agency---")
+    print(f"system_prompt:\n{system_prompt}")
+    print(f"human_prompt:\n{human_prompt}")
+    llm_response = llm.chat.completions.create(
+        model="typhoon-v2.5-30b-a3b-instruct",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": human_prompt}
+        ],
+        max_tokens=16384
+    )
+    result = llm_response.choices[0].message.content
+    # print("agency_check_prompt: ",agency_check_prompt)
+
+    # result =  llm.invoke(agency_check_prompt).strip()
+    if result not in ["กองบริหารวิชาการ","สำนักดิจิทัลเทคโนโลยี","กองกิจการนักศึกษา","อื่นๆ"]:
+        # print("not in any agency")
+        result = "อื่นๆ"
+    # print('หมวด: ', result)
+    return {"agency": result} 
+
+def llm_decision(state: BasicChatState):
+    recent_messages = state["messages"][-7:-1] #เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
+    # print(f"recent_messages:\n{recent_messages}")
+    
+    history = ""
+    if recent_messages: #ถ้ามีข้อมูล
+        #จัดformatt เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
+        for msg in recent_messages: 
+            role = "User" if isinstance(msg, HumanMessage) else "AI"
+            history += f"{role}: {msg.content}\n"
+
+    user_question = state["rewritten_question"]
+    system_raw, human_raw = get_final_prompt("decision")
+    system_prompt = system_raw.format(history=history)
+    human_prompt = human_raw.format(user_question=user_question)
+    # print("---decision---")
+    # print(f"system_prompt:\n{system_prompt}")
+    # print(f"human_prompt:\n{human_prompt}")
+
+    llm_response = llm.chat.completions.create(
+        model="typhoon-v2.5-30b-a3b-instruct",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": human_prompt}
+        ],
+        max_tokens=16384
+    )
+    route = llm_response.choices[0].message.content
+    if route not in ["retrieve","general"]:
+        # print("not in any route")
+        route = "general"
+    # print('ตัดสินใจ: ', route)
+    return {"route_decision": route}
 
 #Node นี้คือการดึง document จากข้อความผู้ใช้ เอาเฉพาะข้อความล่าสุดเท่านั้น
 def retrieve(state: BasicChatState,config):
@@ -129,7 +156,7 @@ def retrieve(state: BasicChatState,config):
 
 def generate_response(state: BasicChatState):
 
-    threshold = 0.35 # = 0.65
+    threshold = 0.50 # = 0.50
     # print("เนื้อหาที่ได้จากvectorDB:")
     context = ""
     for doc, score in state["documents"]:
@@ -155,12 +182,19 @@ def generate_response(state: BasicChatState):
     system_raw, human_raw = get_final_prompt("rag")
     system_prompt = system_raw.format(context=context,history=history)
     human_prompt = human_raw.format(user_question=user_question)
-    rag_prompt = [
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=human_prompt)
-    ]
-    # print("rag_prompt: ",rag_prompt)
-    response = llm.invoke(rag_prompt)
+    # print("---RAG---")
+    # print(f"system_prompt:\n{system_prompt}")
+    # print(f"human_prompt:\n{human_prompt}")
+    llm_response = llm.chat.completions.create(
+        model="typhoon-v2.5-30b-a3b-instruct",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": human_prompt}
+        ],
+        max_tokens=16384
+    )
+
+    response = llm_response.choices[0].message.content
     # print("คำตอบที่ได้จาก LLM:\n",response)
     fallback_message = "Unknown"
     agency = state["agency"]
@@ -191,12 +225,20 @@ def general_chat(state: BasicChatState):
     system_raw, human_raw = get_final_prompt("general")
     system_prompt = system_raw.format(history=history)
     human_prompt = human_raw.format(user_question=user_question)
-    general_prompt = [
-        SystemMessage(content=system_prompt),
-        HumanMessage(content=human_prompt)
-    ]
-    # print("general_prompt: ",general_prompt)
-    response = llm.invoke(general_prompt)
+    # print("---general---")
+    # print(f"system_prompt:\n{system_prompt}")
+    # print(f"human_prompt:\n{human_prompt}")
+    llm_response = llm.chat.completions.create(
+        model="typhoon-v2.5-30b-a3b-instruct",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": human_prompt}
+        ],
+        max_tokens=16384
+    )
+    
+    response = llm_response.choices[0].message.content
+
     agency = "อื่นๆ"
     fallback_message = "Unknown"
     is_fallback = False
@@ -214,8 +256,7 @@ graph.add_node("agency_check", agency_check)
 graph.add_node("llm_decision", llm_decision)
 graph.add_node("retrieve", retrieve)
 graph.add_node("general_chat",general_chat)
-graph.add_node("generate", generate_response) 
-
+graph.add_node("generate", generate_response)
 
 graph.set_entry_point("rewrite_query")
 graph.add_edge("rewrite_query", "agency_check")
@@ -249,7 +290,7 @@ def chat_rag_memory(message,vectordb,user_id):
 
     response = {
         "user_message": message,
-        "rewritten_question": res["rewritten_question"], #เพิ่มฟิลด์ลง dbด้วย
+        "rewritten_question": res["rewritten_question"], 
         "ai_message": res["messages"][-1].content,
         "question_agency": res["agency"],
         "route_decision": res["route_decision"], 
@@ -257,24 +298,3 @@ def chat_rag_memory(message,vectordb,user_id):
     }
     print(response)
     return response
-
-
-# answer = chat_rag_memory("คุณสมบัติของผู้กู้ยืมกยศ.มีกี่ลักษณะ",vector_store_from_client,"test_user_123")
-
-# answer = chat_rag_memory("ขอรายละเอียดลักษณะที่2",vector_store_from_client,"test_user_123")
-
-# answer = chat_rag_memory("ขอลักษณะที่3ด้วย",vector_store_from_client,"test_user_123")
-
-# answer = chat_rag_memory("ลักษณะที่1ด้วย",vector_store_from_client,"test_user_123")
-
-# answer = chat_rag_memory("ต้องการลงทะเบียนเรียนล่าช้าต้องทำไง",vector_store_from_client,"test_user_123")
-
-# answer = chat_rag_memory("เมื่อกี้ฉันถามอะไรไปบ้าง",vector_store_from_client,"test_user_123")
-
-# answer = chat_rag_memory("สวัสดี นายชื่อไร",vector_store_from_client,"test_user_123")
-
-# answer = chat_rag_memory("อยากเป็นโจรสลัด",vector_store_from_client,"test_user_123")
-
-# answer = chat_rag_memory("เข้าสู่ระบบ suit accountไม่ได้",vector_store_from_client,"test_user_123")
-
-# เอาrewriteไปรันพร้อม api แก้ข้อมูลเข้าออกด้วย

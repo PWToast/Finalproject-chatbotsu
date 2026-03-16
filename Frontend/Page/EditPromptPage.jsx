@@ -12,6 +12,7 @@ const NODE_VARIABLES = {
   rag: ["{context}", "{history}", "{user_question}"],
   general: ["{history}", "{user_question}"],
   agency_check: ["{user_question}"],
+  answer_fallback: ["{user_question}", "{user_question}"],
 };
 
 function EditPromptPage() {
@@ -136,6 +137,9 @@ function EditPromptPage() {
               <option value="rag">การสืบค้นข้อมูล (RAG)</option>
               <option value="general">การสนทนาทั่วไป (General)</option>
               <option value="agency_check">การระบุหมวดคำถาม (Agency)</option>
+              <option value="answer_fallback">
+                การตั้งรูปแบบคำถามตอบกลับ (fallback)
+              </option>
             </select>
           </div>
         </div>

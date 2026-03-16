@@ -59,6 +59,7 @@ function Chatpage() {
   const createNewChatRoom = () => {
     const newRoom = {
       session_id: uuidv4(),
+      chatname: "แชทใหม่...",
       state: "empty",
       message: [],
       isSelect: false,
@@ -92,9 +93,19 @@ function Chatpage() {
         email,
         session_id: currentSession,
         state: "active",
+        chatname: inputmessage,
       };
       await axios.post("http://localhost:8000/createsession", data);
       console.log("db update succes!");
+
+      setChatRoom((prev) =>
+        prev.map((room) =>
+          room.session_id === currentSession
+            ? { ...room, chatname: inputmessage, state: "active" }
+            : //อัพเดตชื่อห้องแชทหลังจากเริ่มต้นแชทสำเร็จ
+              room,
+        ),
+      );
     } catch (error) {
       alert("error", error);
       console.log(error);
@@ -181,6 +192,7 @@ function Chatpage() {
         );
         console.log(res.data);
         const sessionsWithMessage = res.data.map((session) => ({
+          chatname: session.chatname || "แชทเริ่มต้น",
           ...session,
           message: [],
         }));
@@ -214,7 +226,7 @@ function Chatpage() {
                   {chatroom.map((items, index) => (
                     <div className="flex flex-col">
                       <div
-                        className={`h-10 flex flex-row items-center justify-between font-bold text-xl cursor-pointer rounded-4xl p-5 transition-all ${
+                        className={`h-10 flex flex-row items-center justify-between cursor-pointer rounded-4xl p-6 transition-all ${
                           items.isSelect
                             ? "bg-[#00897B] text-white" // สีเมื่อถูกเลือก
                             : " hover:bg-[#FFFBDE]" // สีปกติ
@@ -222,14 +234,21 @@ function Chatpage() {
                         key={index}
                         onClick={() => selectSession(items.session_id)}
                       >
-                        <span>แชท</span>
+                        <div className="flex-1 min-w-0 mr-2">
+                          <span
+                            className="block truncate text-base font-bold"
+                            title={items.chatname}
+                          >
+                            {items.chatname}
+                          </span>
+                        </div>
                         <div
                           class={`cursor-pointer rounded-full p-3 transition-colors 
-                          ${
-                            items.isSelect
-                              ? "hover:bg-white/20 text-teal-100 hover:text-white"
-                              : "hover:bg-red-100 text-red-500"
-                          }`}
+                            ${
+                              items.isSelect
+                                ? "hover:bg-white/20 text-teal-100 hover:text-white"
+                                : "hover:bg-red-100 text-red-500"
+                            }`}
                           onClick={(e) => {
                             e.stopPropagation();
                             deleteChatRoom(items.session_id);

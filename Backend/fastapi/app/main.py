@@ -37,3 +37,6 @@ app.include_router(prompt_router)
 #chroma run --path app/services/llm/chroma_db --host localhost --port 4000
 #run chroma บน port 4000 
 
+#สร้างแอดมิน ต้องสมัครสมาชิกก่อน
+# cd backend 
+# docker exec -it mysql-db-container mysql -u root -p -e "UPDATE users SET role = 'admin' WHERE username = 'admin';" my_db

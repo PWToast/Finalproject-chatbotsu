@@ -50,6 +50,7 @@ class SessionCreated(BaseModel):
     email:str
     session_id:str
     state:str
+    chatname: str
 
 #response
 class UserResponse(BaseModel):
