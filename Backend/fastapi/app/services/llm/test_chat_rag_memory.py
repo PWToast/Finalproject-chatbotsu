@@ -30,9 +30,11 @@ class BasicChatState(TypedDict):
     messages: Annotated[list, add_messages]
     rewritten_question: str
     documents: list
+    old_documents: Annotated[list, add_messages]
     agency: str 
     route_decision: str
-    is_fallback: bool 
+    is_fallback: bool
+    original_message: str 
 
 def get_route(state: BasicChatState):
     route = state.get("route_decision", "general")
@@ -53,7 +55,7 @@ def rewrite_query(state: BasicChatState):
     user_question = recent_question.content
     #ถ้าไม่มีประวัติไม่ต้อง Rewrite
     if not history:
-        # print("ไม่พบประวัติสนทนา ไม่ต้อง rewrite")
+        print("ไม่พบประวัติสนทนา ไม่ต้อง rewrite")
         #ไม่ต้องอัปเดตอะไร
         return {"rewritten_question": user_question}#ใช้คำถามต้นฉบับ
     
@@ -75,7 +77,7 @@ def rewrite_query(state: BasicChatState):
 
     rewritten_question = llm_response.choices[0].message.content
     # print("คำถามต้นฉบับ: ",user_question)
-    # print("คำถามที่ rewrite: ",rewritten_question)
+    print("คำถามที่ rewrite: ",rewritten_question)
     #แทนที่คำถามล่าสุดให้เป็นอันที่ rewrite
     return {"messages": [HumanMessage(content=rewritten_question,id=recent_question.id)],
             "rewritten_question": rewritten_question}
@@ -118,6 +120,7 @@ def llm_decision(state: BasicChatState):
             role = "User" if isinstance(msg, HumanMessage) else "AI"
             history += f"{role}: {msg.content}\n"
 
+    # print("history", history)
     user_question = state["rewritten_question"]
     system_raw, human_raw = get_final_prompt("decision")
     system_prompt = system_raw.format(history=history)
@@ -159,10 +162,12 @@ def generate_response(state: BasicChatState):
     threshold = 0.50 # = 0.50
     # print("เนื้อหาที่ได้จากvectorDB:")
     context = ""
+    old_documents = ""
     for doc, score in state["documents"]:
         # print(f"\n{doc.page_content}")
         print(f"score (Distance): {score:.4f}")
         # print("-" * 20)
+        old_documents += doc.page_content + "\n-----------\n"
         #เก็บข้อความ
         if score <= threshold:
             context += doc.page_content + "\n-----------\n"
@@ -201,11 +206,28 @@ def generate_response(state: BasicChatState):
     is_fallback = False
     if response == fallback_message:
         agency = "อื่นๆ"
-        response = "ขออภัยครับ ผมยังไม่มีข้อมูลในส่วนนี้ คุณสามารถลองสอบถามเรื่อง การลงทะเบียน, เพิ่ม-ถอน, บริการคอมพิวเตอร์, กยศ. หรือเรื่องหอพัก แทนได้นะครับ หากมีข้อสงสัยอื่นเพิ่มเติม พิมพ์ถามใหม่ได้เลยครับ"
+        # response = "ขออภัยครับ ผมยังไม่มีข้อมูลในส่วนนี้ คุณสามารถลองสอบถามเรื่อง การลงทะเบียน, เพิ่ม-ถอน, บริการคอมพิวเตอร์, กยศ. หรือเรื่องหอพัก แทนได้ครับ สนใจหัวข้อไหนเป็นพิเศษไหมครับ?"
         is_fallback = True
+        print("เข้า fallback_suggest rag")
+        old_documents = state["old_documents"][-1] if state["old_documents"] else ""
+        print("old_documents:",old_documents)
+        system_raw, human_raw = get_final_prompt("fallback_suggest")
+        system_prompt = system_raw.format(history=history,old_documents=old_documents)
+        human_prompt = human_raw.format()
+        
+        fallback_llm_response = llm.chat.completions.create(
+            model="typhoon-v2.5-30b-a3b-instruct",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": human_prompt}
+            ],
+            max_tokens=16384
+        )
+
+        response = fallback_llm_response.choices[0].message.content
     # print("หมวดปัจจุบัน: ", agency)
     # print(f"คำตอบสุดท้าย:\n{response}\n")
-    return {"messages": [AIMessage(content=response)],"agency": agency,"is_fallback":is_fallback}
+    return {"messages": [AIMessage(content=response)],"agency": agency,"is_fallback":is_fallback, "old_documents": old_documents}
 
 #Node นี้คือเส้นทางหากต้องการคุยทั่วไป แนะนำตัว หรือถามคำถามทั่วไป, หรือเกี่ยวกับประวัติแชท 
 #ต้องถามให้รัดกุมนะรู้สึก model จะยังสับสนและแยกไม่ออกในบางที
@@ -243,8 +265,26 @@ def general_chat(state: BasicChatState):
     fallback_message = "Unknown"
     is_fallback = False
     if response == fallback_message:
-        response = "ขออภัยครับ ผมยังไม่มีข้อมูลในส่วนนี้ คุณสามารถลองสอบถามเรื่อง การลงทะเบียน, เพิ่ม-ถอน, บริการคอมพิวเตอร์, กยศ. หรือเรื่องหอพัก แทนได้นะครับ หากมีข้อสงสัยอื่นเพิ่มเติม พิมพ์ถามใหม่ได้เลยครับ"
+        agency = "อื่นๆ"
+        #response = "ขออภัยครับ ผมยังไม่มีข้อมูลในส่วนนี้ คุณสามารถลองสอบถามเรื่อง การลงทะเบียน, เพิ่ม-ถอน, บริการคอมพิวเตอร์, กยศ. หรือเรื่องหอพัก แทนได้นะครับ หากมีข้อสงสัยอื่นเพิ่มเติม พิมพ์ถามใหม่ได้เลยครับ"
         is_fallback = True
+        print("เข้า fallback_suggest general")
+        system_raw, human_raw = get_final_prompt("fallback_suggest")
+        old_documents = state["old_documents"][-1] if state["old_documents"] else ""
+        print("old_documents:",old_documents)
+        system_prompt = system_raw.format(history=history,old_documents=old_documents)
+        human_prompt = human_raw.format()
+        
+        fallback_llm_response = llm.chat.completions.create(
+            model="typhoon-v2.5-30b-a3b-instruct",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": human_prompt}
+            ],
+            max_tokens=16384
+        )
+
+        response = fallback_llm_response.choices[0].message.content
     # print("หมวดปัจจุบัน: ", agency)
     # print(f"คำตอบสุดท้าย:\n{response}\n")
     return {"messages": [AIMessage(content=response)],"agency": agency,"is_fallback":is_fallback}
@@ -284,6 +324,7 @@ def chat_rag_memory(message,vectordb,user_id):
     }}
     res = app.invoke({
         "messages": HumanMessage(content=message),
+        "original_message": message,
         "is_fallback": False
     }, config=config)
     # print("---------------------------------------")
