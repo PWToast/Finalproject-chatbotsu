@@ -11,9 +11,8 @@ from app.crud.edit_prompt import get_final_prompt
 from openai import OpenAI
 
 # llm = OllamaLLM(model="scb10x/typhoon2.1-gemma3-4b")
-# 
-API_KEY = "sk-ec57KJniI86p7HzkmcoYP8680ldOIKP9DsEIZfoZ8SamDO2Z"
-
+# api key
+API_KEY = "api-key"
 
 llm = OpenAI(
         api_key=API_KEY,
