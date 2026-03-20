@@ -12,8 +12,11 @@ from openai import OpenAI
 
 # llm = OllamaLLM(model="scb10x/typhoon2.1-gemma3-4b")
 # 
+API_KEY = "sk-ec57KJniI86p7HzkmcoYP8680ldOIKP9DsEIZfoZ8SamDO2Z"
+
+
 llm = OpenAI(
-        api_key="sk-ec57KJniI86p7HzkmcoYP8680ldOIKP9DsEIZfoZ8SamDO2Z",
+        api_key=API_KEY,
         base_url="https://api.opentyphoon.ai/v1"
     )
 # 
@@ -29,7 +32,7 @@ memory = MemorySaver()
 class BasicChatState(TypedDict):
     messages: Annotated[list, add_messages]
     rewritten_question: str
-    documents: list
+    context: str
     old_documents: Annotated[list, add_messages]
     agency: str 
     route_decision: str
@@ -40,32 +43,44 @@ def get_route(state: BasicChatState):
     route = state.get("route_decision", "general")
     return route
 
+def get_fallback_message(state: BasicChatState,history):
+    print("เข้า fallback_suggest")
+    # เตรียมเอกสารอ้างอิงเก่า ไว้แนะนำผู้ใช้
+    old_documents = state["old_documents"][-1] if state["old_documents"] else ""
+    # print("old_documents:\n",old_documents)
+    system_raw, human_raw = get_final_prompt("fallback_suggest")
+    system_prompt = system_raw.format(history=history,old_documents=old_documents)
+    human_prompt = human_raw.format()
+    # เรียกใช้ llm
+    fallback_llm_response = llm.chat.completions.create(
+        model="typhoon-v2.5-30b-a3b-instruct",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": human_prompt}
+        ],
+        max_tokens=16384
+    )
+    response = fallback_llm_response.choices[0].message.content
+    return response
+
 def rewrite_query(state: BasicChatState):
     recent_messages = state["messages"][-7:-1] #เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
-    # print(f"recent_messages:\n{recent_messages}")
-    
     history = ""
-    if recent_messages: #ถ้ามีข้อมูล
-        #จัดformatt เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
+    #จัดformat ให้ขึ้นต้นด้วย User:,AI:
+    if recent_messages:
         for msg in recent_messages: 
             role = "User" if isinstance(msg, HumanMessage) else "AI"
             history += f"{role}: {msg.content}\n"
-
     recent_question = state["messages"][-1]
     user_question = recent_question.content
     #ถ้าไม่มีประวัติไม่ต้อง Rewrite
     if not history:
-        print("ไม่พบประวัติสนทนา ไม่ต้อง rewrite")
-        #ไม่ต้องอัปเดตอะไร
         return {"rewritten_question": user_question}#ใช้คำถามต้นฉบับ
-    
-    # print(f"format ประวัติสนทนา:\n{history}")
+    # ดึง prompt มาใช้งาน
     system_raw, human_raw = get_final_prompt("rewrite")
     system_prompt = system_raw.format(history=history)
     human_prompt = human_raw.format(user_question=user_question)
-    # print("---rewrite---")
-    # print(f"system_prompt:\n{system_prompt}")
-    # print(f"human_prompt:\n{human_prompt}")
+    # เรียกใช้ llm
     llm_response = llm.chat.completions.create(
         model="typhoon-v2.5-30b-a3b-instruct",
         messages=[
@@ -74,23 +89,19 @@ def rewrite_query(state: BasicChatState):
         ],
         max_tokens=16384
     )
-
     rewritten_question = llm_response.choices[0].message.content
-    # print("คำถามต้นฉบับ: ",user_question)
-    print("คำถามที่ rewrite: ",rewritten_question)
-    #แทนที่คำถามล่าสุดให้เป็นอันที่ rewrite
+    #แทนที่ข้อความล่าสุดให้เป็นอันที่ผ่าน rewrite
     return {"messages": [HumanMessage(content=rewritten_question,id=recent_question.id)],
             "rewritten_question": rewritten_question}
 
 def agency_check(state: BasicChatState):
     user_question = state["rewritten_question"]
-    
+    print("after rewrite: ",user_question)
+    # ดึง prompt มาใช้งาน
     system_raw, human_raw = get_final_prompt("agency_check")
     system_prompt = system_raw.format()
     human_prompt = human_raw.format(user_question=user_question)
-    # print("---agency---")
-    # print(f"system_prompt:\n{system_prompt}")
-    # print(f"human_prompt:\n{human_prompt}")
+    # เรียกใช้ llm
     llm_response = llm.chat.completions.create(
         model="typhoon-v2.5-30b-a3b-instruct",
         messages=[
@@ -100,35 +111,25 @@ def agency_check(state: BasicChatState):
         max_tokens=16384
     )
     result = llm_response.choices[0].message.content
-    # print("agency_check_prompt: ",agency_check_prompt)
-
-    # result =  llm.invoke(agency_check_prompt).strip()
     if result not in ["กองบริหารวิชาการ","สำนักดิจิทัลเทคโนโลยี","กองกิจการนักศึกษา","อื่นๆ"]:
-        # print("not in any agency")
         result = "อื่นๆ"
-    # print('หมวด: ', result)
     return {"agency": result} 
 
 def llm_decision(state: BasicChatState):
-    recent_messages = state["messages"][-7:-1] #เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
-    # print(f"recent_messages:\n{recent_messages}")
-    
+    recent_messages = state["messages"][-7:-1] #เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด    
     history = ""
+    #จัดformat ให้ขึ้นต้นด้วย User:,AI:
     if recent_messages: #ถ้ามีข้อมูล
-        #จัดformatt เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
         for msg in recent_messages: 
             role = "User" if isinstance(msg, HumanMessage) else "AI"
             history += f"{role}: {msg.content}\n"
 
-    # print("history", history)
     user_question = state["rewritten_question"]
+    # ดึง prompt มาใช้งาน
     system_raw, human_raw = get_final_prompt("decision")
     system_prompt = system_raw.format(history=history)
     human_prompt = human_raw.format(user_question=user_question)
-    # print("---decision---")
-    # print(f"system_prompt:\n{system_prompt}")
-    # print(f"human_prompt:\n{human_prompt}")
-
+    # เรียกใช้ llm
     llm_response = llm.chat.completions.create(
         model="typhoon-v2.5-30b-a3b-instruct",
         messages=[
@@ -138,58 +139,50 @@ def llm_decision(state: BasicChatState):
         max_tokens=16384
     )
     route = llm_response.choices[0].message.content
+
     if route not in ["retrieve","general"]:
-        # print("not in any route")
         route = "general"
-    # print('ตัดสินใจ: ', route)
+
     return {"route_decision": route}
 
-#Node นี้คือการดึง document จากข้อความผู้ใช้ เอาเฉพาะข้อความล่าสุดเท่านั้น
 def retrieve(state: BasicChatState,config):
-    
+    #นำคำถามผู้ใช้ไปค้นหา
     user_query = state["rewritten_question"]
-    # print("user_query at retrieve: ",user_query)
     vectordb = config.get("configurable", {}).get("vectordb")
     results = vectordb.similarity_search_with_score(
         user_query, 
         k=5
     )
 
-    return {"documents": results}
-
-def generate_response(state: BasicChatState):
-
-    threshold = 0.50 # = 0.50
-    # print("เนื้อหาที่ได้จากvectorDB:")
+    threshold = 0.50 # = 0.50 
     context = ""
     old_documents = ""
-    for doc, score in state["documents"]:
-        # print(f"\n{doc.page_content}")
-        print(f"score (Distance): {score:.4f}")
-        # print("-" * 20)
-        old_documents += doc.page_content + "\n-----------\n"
-        #เก็บข้อความ
+
+    for doc, score in results:
+        # จัดเก็บเนื้อหาทั้งหมด
+        old_documents += doc.page_content
+        #จัดเก็บเนื้อหาที่ผ่าน threshold เข้า context
         if score <= threshold:
             context += doc.page_content + "\n-----------\n"
-    print("context:", context)
-    recent_messages = state["messages"][-7:-1] #เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
-    # print(f"recent_messages:\n{recent_messages}")
     
+    return {"context": context, "old_documents": old_documents}
+
+def generate_response(state: BasicChatState):
+    print("RAG")
+    recent_messages = state["messages"][-7:-1] #เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
     history = ""
-    if recent_messages: #ถ้ามีข้อมูล
-        #จัดformatt เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
+    #จัดformat ให้ขึ้นต้นด้วย User:,AI:
+    if recent_messages:
         for msg in recent_messages: 
             role = "User" if isinstance(msg, HumanMessage) else "AI"
             history += f"{role}: {msg.content}\n"
-    
     user_question = state["rewritten_question"]
-    # print("user_query at generate: ",latest_query)
+    context = state["context"]
+    # ดึง prompt มาใช้งาน
     system_raw, human_raw = get_final_prompt("rag")
     system_prompt = system_raw.format(context=context,history=history)
     human_prompt = human_raw.format(user_question=user_question)
-    # print("---RAG---")
-    # print(f"system_prompt:\n{system_prompt}")
-    # print(f"human_prompt:\n{human_prompt}")
+    # เรียกใช้ llm
     llm_response = llm.chat.completions.create(
         model="typhoon-v2.5-30b-a3b-instruct",
         messages=[
@@ -198,58 +191,34 @@ def generate_response(state: BasicChatState):
         ],
         max_tokens=16384
     )
-
     response = llm_response.choices[0].message.content
-    # print("คำตอบที่ได้จาก LLM:\n",response)
     fallback_message = "Unknown"
     agency = state["agency"]
+    # หากไม่พบคำตอบจะใช้ fallback ในการตอบ
     is_fallback = False
     if response == fallback_message:
         agency = "อื่นๆ"
-        # response = "ขออภัยครับ ผมยังไม่มีข้อมูลในส่วนนี้ คุณสามารถลองสอบถามเรื่อง การลงทะเบียน, เพิ่ม-ถอน, บริการคอมพิวเตอร์, กยศ. หรือเรื่องหอพัก แทนได้ครับ สนใจหัวข้อไหนเป็นพิเศษไหมครับ?"
+        response = get_fallback_message(state,history)
         is_fallback = True
-        print("เข้า fallback_suggest rag")
-        old_documents = state["old_documents"][-1] if state["old_documents"] else ""
-        print("old_documents:",old_documents)
-        system_raw, human_raw = get_final_prompt("fallback_suggest")
-        system_prompt = system_raw.format(history=history,old_documents=old_documents)
-        human_prompt = human_raw.format()
-        
-        fallback_llm_response = llm.chat.completions.create(
-            model="typhoon-v2.5-30b-a3b-instruct",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": human_prompt}
-            ],
-            max_tokens=16384
-        )
+    return {"messages": [AIMessage(content=response)],"agency": agency,
+            "is_fallback":is_fallback}
 
-        response = fallback_llm_response.choices[0].message.content
-    # print("หมวดปัจจุบัน: ", agency)
-    # print(f"คำตอบสุดท้าย:\n{response}\n")
-    return {"messages": [AIMessage(content=response)],"agency": agency,"is_fallback":is_fallback, "old_documents": old_documents}
-
-#Node นี้คือเส้นทางหากต้องการคุยทั่วไป แนะนำตัว หรือถามคำถามทั่วไป, หรือเกี่ยวกับประวัติแชท 
-#ต้องถามให้รัดกุมนะรู้สึก model จะยังสับสนและแยกไม่ออกในบางที
 def general_chat(state: BasicChatState):
-    #ตอบคำถามทั่วไป
-    recent_messages = state["messages"][-7:-1] #เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
-    # print(f"recent_messages:\n{recent_messages}")
-    
+    print("General")
+    recent_messages = state["messages"][-7:-1] #เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด    
     history = ""
-    if recent_messages: #ถ้ามีข้อมูล
-        #จัดformatt เอา3ประวัติสนทนาล่าสุด ยกเว้นคำถามล่าสุด
+    #จัดformat ให้ขึ้นต้นด้วย User:,AI:
+    if recent_messages:
         for msg in recent_messages: 
             role = "User" if isinstance(msg, HumanMessage) else "AI"
             history += f"{role}: {msg.content}\n"
 
     user_question = state["rewritten_question"]
+    # ดึง prompt มาใช้งาน
     system_raw, human_raw = get_final_prompt("general")
     system_prompt = system_raw.format(history=history)
     human_prompt = human_raw.format(user_question=user_question)
-    # print("---general---")
-    # print(f"system_prompt:\n{system_prompt}")
-    # print(f"human_prompt:\n{human_prompt}")
+    # เรียกใช้ llm
     llm_response = llm.chat.completions.create(
         model="typhoon-v2.5-30b-a3b-instruct",
         messages=[
@@ -258,35 +227,15 @@ def general_chat(state: BasicChatState):
         ],
         max_tokens=16384
     )
-    
     response = llm_response.choices[0].message.content
-
     agency = "อื่นๆ"
     fallback_message = "Unknown"
+    # หากไม่พบคำตอบจะใช้ fallback ในการตอบ
     is_fallback = False
     if response == fallback_message:
         agency = "อื่นๆ"
-        #response = "ขออภัยครับ ผมยังไม่มีข้อมูลในส่วนนี้ คุณสามารถลองสอบถามเรื่อง การลงทะเบียน, เพิ่ม-ถอน, บริการคอมพิวเตอร์, กยศ. หรือเรื่องหอพัก แทนได้นะครับ หากมีข้อสงสัยอื่นเพิ่มเติม พิมพ์ถามใหม่ได้เลยครับ"
+        response = get_fallback_message(state,history)
         is_fallback = True
-        print("เข้า fallback_suggest general")
-        system_raw, human_raw = get_final_prompt("fallback_suggest")
-        old_documents = state["old_documents"][-1] if state["old_documents"] else ""
-        print("old_documents:",old_documents)
-        system_prompt = system_raw.format(history=history,old_documents=old_documents)
-        human_prompt = human_raw.format()
-        
-        fallback_llm_response = llm.chat.completions.create(
-            model="typhoon-v2.5-30b-a3b-instruct",
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": human_prompt}
-            ],
-            max_tokens=16384
-        )
-
-        response = fallback_llm_response.choices[0].message.content
-    # print("หมวดปัจจุบัน: ", agency)
-    # print(f"คำตอบสุดท้าย:\n{response}\n")
     return {"messages": [AIMessage(content=response)],"agency": agency,"is_fallback":is_fallback}
 
 graph = StateGraph(BasicChatState)
@@ -318,6 +267,7 @@ graph.add_edge("general_chat",END)
 app = graph.compile(checkpointer=memory)
 
 def chat_rag_memory(message,vectordb,user_id):
+    print("original question: ",message)
     config = {"configurable": {
         "thread_id": user_id, 
         "vectordb": vectordb
