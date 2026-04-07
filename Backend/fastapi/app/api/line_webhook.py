@@ -65,7 +65,7 @@ async def callback(request: Request, x_line_signature: str = Header(None)):
 def handle_message(event: MessageEvent):
     line_user_id = event.source.user_id #ใช้สำหรับ thread_id
     question = event.message.text
-    print("question: ",question)
+    # print("question: ",question)
     
     response = chat_rag_memory(question,vector_store_from_client,line_user_id) 
     answer = response["ai_message"]
