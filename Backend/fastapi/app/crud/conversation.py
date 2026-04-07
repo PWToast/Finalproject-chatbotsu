@@ -28,6 +28,8 @@ def update_daily_stats(platform,response):
     collection = mydb["daily_stats"]
     today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     inc_data = {}
+
+    #เช็คจะอัปเดตฟิลด์ไหน
     if platform.lower() == "line":
         platform_to_inc = "chat_line_count"
     else:
@@ -47,9 +49,11 @@ def update_daily_stats(platform,response):
         "กองกิจการนักศึกษา": 0,
         "อื่นๆ": 0
     }
+    # pop ฟิลด์ที่จะอัปเดต
     if agency in agencies_default:
         agencies_default.pop(agency)
 
+    # โครงสร้างที่จะอัปเดต
     set_default_log = {
         "date": today,
         "chat_line_count": 0,
@@ -61,9 +65,11 @@ def update_daily_stats(platform,response):
     set_default_log.pop(platform_to_inc)
     set_default_log.pop(status_to_inc)
 
+    #สร้าง template โครงสร้างข้อมูล เอา agencyมาเติม
     for name, value in agencies_default.items():
         set_default_log[f"agencies.{name}"] = value
     
+    #setOnInsert คือจะสร้างเมื่อเป็นของวันใหม่
     collection.update_one(
         {"date": today},
         {
@@ -82,6 +88,7 @@ def get_conversations(filters: QueryFilters):
     collection = mydb["chat_history"]
     query = {}
 
+    #setว่าจะเอาค่าไรไหนบ้าง
     if filters.agency:
         query["question_agency"] = filters.agency 
     if filters.platform:
@@ -112,7 +119,7 @@ def get_conversations(filters: QueryFilters):
     # print(f"Total docs: {count}")
 
     pipeline = [
-        { "$match": query },
+        { "$match": query },#กรองข้อมูลตามที่set
         { "$sort": { "timestamp": sort } },#-1ใหม่ไปเก่า ,1 เก่าไปใหม่
         { "$skip": skip_value },#ข้ามตามจำนวนรายการแรกที่หาเจอ
         { "$limit": page_size },#ดึง10อัน

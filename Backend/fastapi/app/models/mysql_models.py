@@ -35,3 +35,4 @@ class Session_Users(Base):
     email = Column(String(100), unique=False, index=True, nullable=False)
     session_id = Column(String(50), primary_key=True, unique=False, index=True, nullable=False)
     state = Column(String(10), unique=False, index=True, nullable=False)
+    chatname = Column(String(255),unique=False, index=True, nullable=False)
