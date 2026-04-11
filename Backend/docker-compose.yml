@@ -58,10 +58,10 @@ services:
     depends_on:
       - backend-api
     
-  # --- 3. FastAPI (เพิ่มเข้าไป) ---
+  # --- 3. FastAPI 
   backend-api:
     build:
-      context: . # เพราะ Dockerfile อยู่ในโฟลเดอร์ Backend เดียวกับไฟล์นี้
+      context: .
       dockerfile: Dockerfile
     container_name: fastapi-server
     ports:
@@ -83,13 +83,13 @@ services:
         reservations:
           memory: 2G # การันตีว่าต้องได้เท่านี้
 
-  # --- 4. React Frontend (เพิ่มเข้าไป) ---
+  # --- 4. React Frontend 
   frontend:
     build:
-      context: ../Frontend # ถอยออกไป 1 ชั้นแล้วเข้าโฟลเดอร์ Frontend
+      context: ../Frontend #
       dockerfile: Dockerfile
     container_name: react-frontend
     ports:
-      - "5173:80"         # Map เข้าพอร์ต 5173 ตามที่ CORS ตั้งไว้
+      - "5173:80" # Map เข้าพอร์ต 5173 ตามที่ CORS ตั้งไว้
     depends_on:
       - backend-api
