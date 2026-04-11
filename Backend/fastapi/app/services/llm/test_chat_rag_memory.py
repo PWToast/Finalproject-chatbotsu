@@ -9,11 +9,13 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from app.crud.edit_prompt import get_final_prompt
 from openai import OpenAI
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
+API_KEY = os.getenv("TYPHOON_API_KEY")
 # llm = OllamaLLM(model="scb10x/typhoon2.1-gemma3-4b")
 # api key
-API_KEY = "sk-6abLqQiH0gXdeUWTSV2MoF6dSwotuAduSVs7IRsX1Vs6QRnS"
-
 llm = OpenAI(
         api_key=API_KEY,
         base_url="https://api.opentyphoon.ai/v1"
