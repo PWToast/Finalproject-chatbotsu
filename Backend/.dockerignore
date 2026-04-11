@@ -2,6 +2,7 @@ fastapi/.venv/
 fastapi/__pycache__/
 fastapi/app/services/llm/chroma_db/
 
+
 node_modules/
 mysql_data/
 mongo_data/
