@@ -30,7 +30,8 @@ from app.crud.user import is_new_line_user
 router = APIRouter(prefix="", tags=["line"])
 
 # client = chromadb.PersistentClient(path="app/services/llm/chroma_db")  #ดู path folderให้ถูกต้อง
-client = chromadb.HttpClient(host="localhost", port=4000)
+client = chromadb.HttpClient(host="chromadb", port=8000)
+#client = chromadb.HttpClient(host="localhost", port=4000)
 embedding_model = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
 vector_store_from_client = Chroma(
     client=client,

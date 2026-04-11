@@ -12,7 +12,7 @@ from openai import OpenAI
 
 # llm = OllamaLLM(model="scb10x/typhoon2.1-gemma3-4b")
 # api key
-API_KEY = "api-key"
+API_KEY = "sk-6abLqQiH0gXdeUWTSV2MoF6dSwotuAduSVs7IRsX1Vs6QRnS"
 
 llm = OpenAI(
         api_key=API_KEY,

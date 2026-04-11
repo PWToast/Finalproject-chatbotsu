@@ -9,6 +9,7 @@ app/__pycache__
 # ใส่ / ต่อท้ายโฟลเดอร์เพื่อให้ Git มั่นใจว่ายกเว้นทั้งโฟลเดอร์
 chroma_db/
 mysql_data/
+mongo_data/
 *.sqlite3
 
 # 3. Node.js (React / Dashboard)

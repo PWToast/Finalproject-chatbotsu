@@ -1,4 +1,4 @@
-import Navbar from "/component/navbar";
+import Navbar from "/component/Navbar";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { CiLogout } from "react-icons/ci";
