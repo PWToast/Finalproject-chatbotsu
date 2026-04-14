@@ -1,11 +1,15 @@
-fastapi/.venv/
-fastapi/__pycache__/
-fastapi/app/services/llm/chroma_db/
+**/.venv/
+**/__pycache__/
+**/.env
+**/.git/
 
+**/chroma_db/
+**/mongo_data/
+**/mysql_data/
+**/uploads/
 
-node_modules/
-mysql_data/
-mongo_data/
-.git/
 .vscode/
 *.pyc
+*.pyo
+*.pyd
+.DS_Store
