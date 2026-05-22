@@ -21,12 +21,14 @@ MONGO_URL=mongodb://localhost:27017/
 
 ACCESS_TOKEN=ใส่_CHANNEL_ACCESS_TOKEN_ของคุณที่นี่
 CHANNEL_SECRET=ใส่_CHANNEL_SECRET_ของคุณที่นี่
+
+TYPHOON_API_KEY=ใส่_TYPHOON_API_KEY_ของคุณที่นี่
 ```
 ฐานข้อมูล (เลือก Port ตามที่ใช้งานจริง) หาก 3306 ชน ให้เปลี่ยนไปใช้ 3307 ในการเชื่อมต่อ
 
 สำหรับ LINE Messaging API ACCESS_TOKEN และ CHANNEL_SECRET ไปเอาได้ที่ LINE Developers Console
 
-สำหรับ ACCESS_TOKEN ในโปรเจคนี้ใช้บริการ API จาก Typhoon 
+สำหรับ TYPHOON_API_KEY ในโปรเจคนี้ใช้บริการ API จาก Typhoon 
 สามารถนำ API key มาใส่ที่ .env ได้ที่ https://playground.opentyphoon.ai/
 
 # Docker
