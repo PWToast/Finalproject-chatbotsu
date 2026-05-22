@@ -12,12 +12,6 @@ git clone https://github.com/PWToast/Finalproject-chatbotsu.git
 cd Finalproject-chatbotsu
 ```
 
-เปิด Terminal ใหม่
-```bash
-cd backend
-docker-compose up -d
-```
-
 # สร้างไฟล์ .env ไว้ใน Backend/fastapi โดยมีข้อมูลดังนี้
 ```bash
 MYSQL_URL_3306=mysql+pymysql://user1:mysql123456@localhost:3306/my_db
@@ -34,3 +28,9 @@ CHANNEL_SECRET=ใส่_CHANNEL_SECRET_ของคุณที่นี่
 
 สำหรับ ACCESS_TOKEN ในโปรเจคนี้ใช้บริการ API จาก Typhoon 
 สามารถนำ API key มาใส่ที่ .env ได้ที่ https://playground.opentyphoon.ai/
+
+เปิด Terminal ใหม่
+```bash
+cd backend
+docker-compose up -d
+```
