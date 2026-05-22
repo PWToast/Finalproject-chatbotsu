@@ -29,6 +29,8 @@ CHANNEL_SECRET=ใส่_CHANNEL_SECRET_ของคุณที่นี่
 สำหรับ ACCESS_TOKEN ในโปรเจคนี้ใช้บริการ API จาก Typhoon 
 สามารถนำ API key มาใส่ที่ .env ได้ที่ https://playground.opentyphoon.ai/
 
+# Docker
+
 เปิด Terminal ใหม่
 ```bash
 cd backend
