@@ -24,7 +24,7 @@ CHANNEL_SECRET=ใส่_CHANNEL_SECRET_ของคุณที่นี่
 
 TYPHOON_API_KEY=ใส่_TYPHOON_API_KEY_ของคุณที่นี่
 ```
-ฐานข้อมูล (เลือก Port ตามที่ใช้งานจริง) หาก 3306 ชน ให้เปลี่ยนไปใช้ 3307 ในการเชื่อมต่อ
+ฐานข้อมูล (เลือก Port ตามที่ใช้งานจริง) หาก 3306 ชน ให้เปลี่ยนไปใช้ 3307 ในการเชื่อมต่อ (Backend/fastapi/app/crud/database.py)
 
 สำหรับ LINE Messaging API ACCESS_TOKEN และ CHANNEL_SECRET ไปเอาได้ที่ LINE Developers Console
 
