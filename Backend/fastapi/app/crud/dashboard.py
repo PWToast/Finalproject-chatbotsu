@@ -14,6 +14,7 @@ mydb = myclient["chatbot_conversation"]
 
 def get_summary():
     collection = mydb["daily_stats"]
+    #มัดรวม บวกสะสม
     pipeline = [    
         {
             "$group": {
@@ -42,6 +43,7 @@ def get_summary():
     all_data =  collection.find().to_list(None)
     total_agencies = {}
     for day in all_data:
+        #ดึงข้อมูลแต่วันมาบวกรวมของแต่ agency
         for agency, count in day.get("agencies", {}).items():
             total_agencies[agency] = total_agencies.get(agency, 0) + count
     
@@ -50,16 +52,16 @@ def get_summary():
     
     try:
         db = SessionLocal()
-        #นับแยก platform
+        #นับuser_id แยกตามแต่ละplatform 
         stats = db.query(User.platform, func.count(User.user_id).label('count')).group_by(User.platform).all()    
         platform_stats = {row.platform: row.count for row in stats}
         #นับรวม
         total_users = db.query(func.count(User.user_id)).scalar()
     finally:
         db.close()
-    print(f"total: {total_users}")
-    print(f"web: {platform_stats.get("web",0)}")
-    print(f"line: {platform_stats.get("line",0)}")
+    # print(f"total: {total_users}")
+    # print(f"web: {platform_stats.get("web",0)}")
+    # print(f"line: {platform_stats.get("line",0)}")
     return {
         "total_chat_web": summary.get("total_chat_web", 0),
         "total_chat_line": summary.get("total_chat_line", 0),

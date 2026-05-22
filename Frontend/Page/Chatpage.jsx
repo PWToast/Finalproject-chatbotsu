@@ -1,4 +1,4 @@
-import Navbar from "/component/navbar";
+import Navbar from "/component/Navbar";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { CiLogout } from "react-icons/ci";
@@ -59,6 +59,7 @@ function Chatpage() {
   const createNewChatRoom = () => {
     const newRoom = {
       session_id: uuidv4(),
+      chatname: "แชทใหม่...",
       state: "empty",
       message: [],
       isSelect: false,
@@ -92,9 +93,19 @@ function Chatpage() {
         email,
         session_id: currentSession,
         state: "active",
+        chatname: inputmessage,
       };
       await axios.post("http://localhost:8000/createsession", data);
       console.log("db update succes!");
+
+      setChatRoom((prev) =>
+        prev.map((room) =>
+          room.session_id === currentSession
+            ? { ...room, chatname: inputmessage, state: "active" }
+            : //อัพเดตชื่อห้องแชทหลังจากเริ่มต้นแชทสำเร็จ
+              room,
+        ),
+      );
     } catch (error) {
       alert("error", error);
       console.log(error);
@@ -115,17 +126,21 @@ function Chatpage() {
       const buffermessage = inputmessage;
       setInputMessage("");
 
+      setCurrentMessages((prev) => [
+        ...prev,
+        { user_message: buffermessage, ai_message: "กำลังพิมพ์..." },
+      ]);
+
       const res = await axios.post("http://localhost:8000/chat_rag_memory", {
-        message: inputmessage,
+        message: buffermessage,
         email: emailToken,
         session_id: sessionToUse,
       });
-      const newResponse = {
-        user_message: buffermessage,
-        ai_message: res.data.response,
-      };
-
-      setCurrentMessages((prev) => [...prev, newResponse]);
+      setCurrentMessages((prev) => {
+        const newMessages = [...prev];
+        newMessages[newMessages.length - 1].ai_message = res.data.response;
+        return newMessages;
+      });
 
       if (isNewSession) {
         // ถ้าเป็นห้องใหม่ ส่ง true ไปบอกให้ข้ามการเช็ค state
@@ -181,6 +196,7 @@ function Chatpage() {
         );
         console.log(res.data);
         const sessionsWithMessage = res.data.map((session) => ({
+          chatname: session.chatname || "แชทเริ่มต้น",
           ...session,
           message: [],
         }));
@@ -214,7 +230,7 @@ function Chatpage() {
                   {chatroom.map((items, index) => (
                     <div className="flex flex-col">
                       <div
-                        className={`h-10 flex flex-row items-center justify-between font-bold text-xl cursor-pointer rounded-4xl p-5 transition-all ${
+                        className={`h-10 flex flex-row items-center justify-between cursor-pointer rounded-4xl p-6 transition-all ${
                           items.isSelect
                             ? "bg-[#00897B] text-white" // สีเมื่อถูกเลือก
                             : " hover:bg-[#FFFBDE]" // สีปกติ
@@ -222,14 +238,21 @@ function Chatpage() {
                         key={index}
                         onClick={() => selectSession(items.session_id)}
                       >
-                        <span>แชท</span>
+                        <div className="flex-1 min-w-0 mr-2">
+                          <span
+                            className="block truncate text-base font-bold"
+                            title={items.chatname}
+                          >
+                            {items.chatname}
+                          </span>
+                        </div>
                         <div
                           class={`cursor-pointer rounded-full p-3 transition-colors 
-                          ${
-                            items.isSelect
-                              ? "hover:bg-white/20 text-teal-100 hover:text-white"
-                              : "hover:bg-red-100 text-red-500"
-                          }`}
+                            ${
+                              items.isSelect
+                                ? "hover:bg-white/20 text-teal-100 hover:text-white"
+                                : "hover:bg-red-100 text-red-500"
+                            }`}
                           onClick={(e) => {
                             e.stopPropagation();
                             deleteChatRoom(items.session_id);
@@ -313,7 +336,7 @@ function Chatpage() {
                           className="line-clamp-1 text-sm text-gray-500"
                           title="ขั้นตอนการลงทะเบียนเรียน"
                         >
-                          ขั้นตอนการลงทะเบียนเรียน{" "}
+                          ขั้นตอนการลงทะเบียนเรียน{" "}w
                         </span>
                       </li>
                       <li>

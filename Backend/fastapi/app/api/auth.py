@@ -148,6 +148,7 @@ def create_session(item: SessionCreated, db: Session = Depends(get_db)):
         return {"message":'create session success!'}
     
     except Exception as e:
+        print(str(e))
         raise HTTPException(status_code=500, detail=str(e))
     
 @router.get("/getsession/{email}")

@@ -30,7 +30,8 @@ from app.crud.user import is_new_line_user
 router = APIRouter(prefix="", tags=["line"])
 
 # client = chromadb.PersistentClient(path="app/services/llm/chroma_db")  #ดู path folderให้ถูกต้อง
-client = chromadb.HttpClient(host="localhost", port=4000)
+client = chromadb.HttpClient(host="chromadb", port=8000)
+#client = chromadb.HttpClient(host="localhost", port=4000)
 embedding_model = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
 vector_store_from_client = Chroma(
     client=client,
@@ -65,7 +66,7 @@ async def callback(request: Request, x_line_signature: str = Header(None)):
 def handle_message(event: MessageEvent):
     line_user_id = event.source.user_id #ใช้สำหรับ thread_id
     question = event.message.text
-    print("question: ",question)
+    # print("question: ",question)
     
     response = chat_rag_memory(question,vector_store_from_client,line_user_id) 
     answer = response["ai_message"]

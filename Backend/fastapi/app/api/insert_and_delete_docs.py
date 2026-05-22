@@ -8,9 +8,9 @@ from app.crud.db_manager import add_docs, get_all_docs, delete_docs, query_by_ag
 from app.api.auth import admin_required
 router = APIRouter(prefix="", tags=["file_upload"])
 
-@router.get("/filetest")
-async def file_test(current_admin: dict = Depends(admin_required)):
-    return {"message": "hello this is file_upload api test"}
+# @router.get("/filetest")
+# async def file_test(current_admin: dict = Depends(admin_required)):
+#     return {"message": "hello this is file_upload api test"}
 
 @router.get("/getalldocs")
 async def get_all_documents(current_admin: dict = Depends(admin_required)):
@@ -27,10 +27,10 @@ async def query_by_agency_name(item: str,current_admin: dict = Depends(admin_req
     response = query_by_agency(item)
     return {"response": response}
 
-@router.get("/querybycategory/{item}")
-async def query_by_category_name(item: str, current_admin: dict = Depends(admin_required)):
-    response = query_by_category(item)
-    return {"response": response}
+# @router.get("/querybycategory/{item}")
+# async def query_by_category_name(item: str, current_admin: dict = Depends(admin_required)):
+#     response = query_by_category(item)
+#     return {"response": response}
 
 @router.get("/querybytext/{item}")
 async def query_by_text_field(item: str, current_admin: dict = Depends(admin_required)):
@@ -61,31 +61,31 @@ async def text_upload(form: FormToSend, current_admin: dict = Depends(admin_requ
     print(form)
     return form
 
-@router.post("/fileupload")
-#ในฟังก์ชัน upload_file ตรง fileupload: UploadFile คำว่า "fileupload" คือ key และต้องใส่ชื่อให้ตรงตอนส่ง request หรือยิง api
-async def upload_files(fileupload: List[UploadFile], current_admin: dict = Depends(admin_required)):
-    upload_dir = "uploads"
-    #ถ้ายังไม่มีโฟลเดอร์ชื่อ uoloads มันจะสร้างขึ้นมา
-    os.makedirs(upload_dir, exist_ok=True)
+# @router.post("/fileupload")
+# #ในฟังก์ชัน upload_file ตรง fileupload: UploadFile คำว่า "fileupload" คือ key และต้องใส่ชื่อให้ตรงตอนส่ง request หรือยิง api
+# async def upload_files(fileupload: List[UploadFile], current_admin: dict = Depends(admin_required)):
+#     upload_dir = "uploads"
+#     #ถ้ายังไม่มีโฟลเดอร์ชื่อ uoloads มันจะสร้างขึ้นมา
+#     os.makedirs(upload_dir, exist_ok=True)
 
-    saved_files = []
+#     saved_files = []
 
-    #อนุญาตให้อัพโหลดเฉพาะไฟล์ pdf และ text เท่านั้น
-    for file in fileupload:
-        if file.content_type not in ["application/pdf", "text/plain"]:
-            raise HTTPException(status_code = 422, detail = "allow only pdf and txt")
+#     #อนุญาตให้อัพโหลดเฉพาะไฟล์ pdf และ text เท่านั้น
+#     for file in fileupload:
+#         if file.content_type not in ["application/pdf", "text/plain"]:
+#             raise HTTPException(status_code = 422, detail = "allow only pdf and txt")
 
-        file_location = os.path.join(upload_dir, file.filename)
+#         file_location = os.path.join(upload_dir, file.filename)
 
-        with open(file_location, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+#         with open(file_location, "wb") as buffer:
+#             shutil.copyfileobj(file.file, buffer)
 
-        saved_files.append({
-                "file_name": file.filename,
-                "content_type": file.content_type
-            })
+#         saved_files.append({
+#                 "file_name": file.filename,
+#                 "content_type": file.content_type
+#             })
     
-    return {
-        "message": "All files uploaded successfully!",
-        "data": saved_files
-    }
+#     return {
+#         "message": "All files uploaded successfully!",
+#         "data": saved_files
+#     }
