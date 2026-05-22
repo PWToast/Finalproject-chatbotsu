@@ -19,6 +19,8 @@ MYSQL_URL_3307=mysql+pymysql://user1:mysql123456@localhost:3307/my_db
 
 MONGO_URL=mongodb://localhost:27017/
 
+NGROK_TOKEN=ใส่_NGROK_TOKEN_ของคุณที่นี่
+
 ACCESS_TOKEN=ใส่_CHANNEL_ACCESS_TOKEN_ของคุณที่นี่
 CHANNEL_SECRET=ใส่_CHANNEL_SECRET_ของคุณที่นี่
 
