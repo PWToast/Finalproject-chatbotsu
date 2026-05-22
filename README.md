@@ -41,3 +41,5 @@ TYPHOON_API_KEY=ใส่_TYPHOON_API_KEY_ของคุณที่นี่
 cd backend
 docker-compose up -d
 ```
+
+เมื่อติดตั้งสมบูรณ์และเปิด docker สามารถเข้าใช้งานได้ที่ http://localhost:5173/
