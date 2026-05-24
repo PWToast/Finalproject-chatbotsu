@@ -1,11 +1,8 @@
 # โปรเจค: การพัฒนาแชทบอทสำหรับตอบคำถามที่พบบ่อยในมหาวิทยาลัยศิลปากร โดยใช้เทคนิคการสร้างข้อความโดยมีการเสริมด้วยการค้นคืนข้อมูล
 
 ![image alt](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/a0ef45717a22aab8b79efc1b0243f7b2eaf2ba09/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg)
----
-## โปรเจคนี้ใช้พื้นที่บน Docker โดยประมาณ 
-10 GB (image) 
-5 GB (Containers) 
 
+---
 ## 🛠 ขั้นตอนการติดตั้งและเริ่มใช้งาน
 
 Clone โปรเจคจาก GitHub ลงมาที่เครื่อง:
@@ -39,6 +36,10 @@ TYPHOON_API_KEY=ใส่_TYPHOON_API_KEY_ของคุณที่นี่
 สามารถนำ API key มาใส่ที่ .env ได้ที่ https://playground.opentyphoon.ai/
 
 # Docker
+
+## โปรเจคนี้ใช้พื้นที่บน Docker โดยประมาณ 
+10 GB (image) 
+5 GB (Containers) 
 
 เปิด Terminal ใหม่
 ```bash
