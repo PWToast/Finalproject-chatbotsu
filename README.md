@@ -3,10 +3,10 @@
 ![image alt](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/a0ef45717a22aab8b79efc1b0243f7b2eaf2ba09/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg)
 
 ## Features
-ผู้ใช้ทั่วไป 
+## ผู้ใช้ทั่วไป 
 - ล็อคอิน, สมัครสมาชิก
 - สร้างห้อง, ลบห้อง, คุยกับ Ai
-ผู้ดูแลระบบ
+## ผู้ดูแลระบบ
 - DashBoard
 - เพิ่มข้อมูลลง VectorDB
 - จัดการข้อมูล VectorDB, ลบข้อมูลเอกสาร VectorDB
