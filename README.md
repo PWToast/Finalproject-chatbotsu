@@ -14,7 +14,7 @@
 - ตรวจสอบประวัติการสนทนา
 - จัดการแก้ไข prompt
 
-![SU Chatbot FAQ](web%20screenshot/screenshot%201.png)
+![คลิกเพื่อดูรูป screenshot 1](web%20screenshot/screenshot%201.png)
 ![SU Chatbot FAQ](web%20screenshot/screenshot%202.png)
 ![SU Chatbot FAQ](web%20screenshot/screenshot%203.png)
 ![SU Chatbot FAQ](web%20screenshot/screenshot%204.png)
