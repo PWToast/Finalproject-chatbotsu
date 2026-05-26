@@ -14,7 +14,7 @@
 - ตรวจสอบประวัติการสนทนา
 - จัดการแก้ไข prompt
 
-![image alt]([web/https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/c876a080b511d4e652a502852819b4fa148af152/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/1c0ee6e93026576048f3a8b52520841e87882a94/web%20screenshot/screenshot%201.png))
+![image alt](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/tree/0634d462958ac8d37463450462ae774bf45498e6/web%20screenshot)
 ![image alt]([https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/c876a080b511d4e652a502852819b4fa148af152/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/1c0ee6e93026576048f3a8b52520841e87882a94/web%20screenshot/screenshot%202.png))
 ![image alt]([https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/c876a080b511d4e652a502852819b4fa148af152/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/1c0ee6e93026576048f3a8b52520841e87882a94/web%20screenshot/screenshot%203.png))
 ![image alt]([https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/c876a080b511d4e652a502852819b4fa148af152/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/1c0ee6e93026576048f3a8b52520841e87882a94/web%20screenshot/screenshot%204.png))
