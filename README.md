@@ -15,15 +15,7 @@
 - จัดการแก้ไข prompt
 
 ![SU Chatbot FAQ](web%20screenshot/screenshot%201.png)
-![image alt]([https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/c876a080b511d4e652a502852819b4fa148af152/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/1c0ee6e93026576048f3a8b52520841e87882a94/web%20screenshot/screenshot%202.png))
-![image alt]([https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/c876a080b511d4e652a502852819b4fa148af152/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/1c0ee6e93026576048f3a8b52520841e87882a94/web%20screenshot/screenshot%203.png))
-![image alt]([https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/c876a080b511d4e652a502852819b4fa148af152/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/1c0ee6e93026576048f3a8b52520841e87882a94/web%20screenshot/screenshot%204.png))
-![image alt]([https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/c876a080b511d4e652a502852819b4fa148af152/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/1c0ee6e93026576048f3a8b52520841e87882a94/web%20screenshot/screenshot%205.png))
-![image alt]([https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/c876a080b511d4e652a502852819b4fa148af152/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/1c0ee6e93026576048f3a8b52520841e87882a94/web%20screenshot/screenshot%206.png))
-![image alt]([https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/c876a080b511d4e652a502852819b4fa148af152/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/1c0ee6e93026576048f3a8b52520841e87882a94/web%20screenshot/screenshot%207.png))
-![image alt]([https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/c876a080b511d4e652a502852819b4fa148af152/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/1c0ee6e93026576048f3a8b52520841e87882a94/web%20screenshot/screenshot%208.png))
-![image alt]([https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/c876a080b511d4e652a502852819b4fa148af152/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/1c0ee6e93026576048f3a8b52520841e87882a94/web%20screenshot/screenshot%209.png))
-![image alt]([https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/c876a080b511d4e652a502852819b4fa148af152/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/1c0ee6e93026576048f3a8b52520841e87882a94/web%20screenshot/screenshot%2010.png))
+![SU Chatbot FAQ](web%20screenshot/screenshot%202.png)
 
 ---
 ## 🛠 ขั้นตอนการติดตั้งและเริ่มใช้งาน
