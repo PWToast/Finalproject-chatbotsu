@@ -1,6 +1,6 @@
 # โปรเจค: การพัฒนาแชทบอทสำหรับตอบคำถามที่พบบ่อยในมหาวิทยาลัยศิลปากร โดยใช้เทคนิคการสร้างข้อความโดยมีการเสริมด้วยการค้นคืนข้อมูล
 
-![image alt](https://github.com/PWToast/Finalproject_SU-Chatbot-FAQ/blob/a0ef45717a22aab8b79efc1b0243f7b2eaf2ba09/SU%20Chatbot%20FAQ%20-%20Tech%20Stack.jpg)
+![image alt]()
 
 ## Features
 ## ผู้ใช้ทั่วไป 
