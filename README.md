@@ -7,6 +7,10 @@
 - ล็อคอิน, สมัครบัญชี
 - สร้างห้อง, ลบห้อง และ เลือกห้องที่ต้องการเพื่อคุยกับ Ai
 - สนทนากับ Ai
+
+![SU Chatbot FAQ1](web%20screenshot/screenshot%201.png)
+![SU Chatbot FAQ2](web%20screenshot/screenshot%202.png)
+![SU Chatbot FAQ3](web%20screenshot/screenshot%203.png)
 ## ผู้ดูแลระบบ
 - DashBoard
 - เพิ่มข้อมูลลง VectorDB
@@ -14,9 +18,6 @@
 - ตรวจสอบประวัติการสนทนา
 - จัดการแก้ไข prompt
 
-![SU Chatbot FAQ1](web%20screenshot/screenshot%201.png)
-![SU Chatbot FAQ2](web%20screenshot/screenshot%202.png)
-![SU Chatbot FAQ3](web%20screenshot/screenshot%203.png)
 ![SU Chatbot FAQ4](web%20screenshot/screenshot%204.png)
 ![SU Chatbot FAQ5](web%20screenshot/screenshot%205.png)
 ![SU Chatbot FAQ6](web%20screenshot/screenshot%206.png)
