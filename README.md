@@ -40,6 +40,7 @@ cd Finalproject-chatbotsu
 # สร้างไฟล์ .env ไว้ใน Backend/fastapi โดยมีข้อมูลดังนี้
 ```bash
 MYSQL_URL_3306=mysql+pymysql://user1:mysql123456@localhost:3306/my_db
+MYSQL_URL_3306=mysql+pymysql://user1:mysql123456@localhost:3307/my_db # เผื่อไว้สำหรับไม่สามารถเชื่อมต่อด้วย port 3306 ได้
 
 MONGO_URL=mongodb://localhost:27017/
 
