@@ -16,6 +16,14 @@
 
 ![SU Chatbot FAQ](web%20screenshot/screenshot%201.png)
 ![SU Chatbot FAQ](web%20screenshot/screenshot%202.png)
+![SU Chatbot FAQ](web%20screenshot/screenshot%203.png)
+![SU Chatbot FAQ](web%20screenshot/screenshot%204.png)
+![SU Chatbot FAQ](web%20screenshot/screenshot%205.png)
+![SU Chatbot FAQ](web%20screenshot/screenshot%206.png)
+![SU Chatbot FAQ](web%20screenshot/screenshot%207.png)
+![SU Chatbot FAQ](web%20screenshot/screenshot%208.png)
+![SU Chatbot FAQ](web%20screenshot/screenshot%209.png)
+![SU Chatbot FAQ](web%20screenshot/screenshot%2010.png)
 
 ---
 ## 🛠 ขั้นตอนการติดตั้งและเริ่มใช้งาน
